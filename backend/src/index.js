@@ -1,6 +1,9 @@
+// backend/src/index.js
+
 // imports 
-const express = require('express');
-const connectDB = require('./config/db');
+import express from 'express';
+import connectDB from './config/db.js';
+import testRoutes from './routes/test.js';
 
 // initialize express app and connect to database
 const app = express();
@@ -8,6 +11,9 @@ connectDB();
 
 // middleware to parse JSON requests
 app.use(express.json());
+
+// mount routes
+app.use('/api/test', testRoutes);
 
 // start server
 const PORT = process.env.PORT || 5000;
