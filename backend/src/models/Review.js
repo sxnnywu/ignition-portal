@@ -1,4 +1,4 @@
-// backend/src/models/File.js
+// backend/src/models/Review.js
 
 // imports
 import mongoose from "mongoose";
