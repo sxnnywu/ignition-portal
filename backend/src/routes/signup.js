@@ -9,20 +9,48 @@ import express from "express";
 // create router
 const router = express.Router();
 
+// validate email format
+function isValidEmail(email) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// password validation
+// - at least 8 characters
+// - at least 1 lowercase letter
+// - at least 1 uppercase letter
+// - at least 1 number
+function isStrongPassword(password) {
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  return passwordRegex.test(password);
+}
+
 // signup route
 router.post("/signup", async (req, res) => {
     
     try {
         const { name, email, password } = req.body;
 
-        // blank fields
+        // check for missing fields
         if (!name || !email || !password)
             return res.status(400).json({ message: "All fields are required." });
+
+        // validate email format
+        if (!isValidEmail(email))
+            return res.status(400).json({ message: "Invalid email format." });
 
         // check if email is already in use
         const existing = await User.findOne({ email });
         if (existing)
             return res.status(409).json({ message: "Email already in use." });
+
+        // validate password strength
+        if (!isStrongPassword(password))
+            return res.status(400).json({
+                message:
+                    "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one number.",
+            });
 
     // hash password
     const hashed = await bcrypt.hash(password, 10);
@@ -35,7 +63,7 @@ router.post("/signup", async (req, res) => {
       role: "applicant",
     });
 
-    // issue token
+    // generate JWT
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,

@@ -5,6 +5,10 @@ import express from "express";
 import connectDB from "./config/db.js";
 import testRoutes from "./routes/test.js";
 import signupRoutes from "./routes/signup.js";
+import dotenv from "dotenv";
+
+// load environment variables
+dotenv.config();
 
 // initialize express app and connect to database
 const app = express();
@@ -15,7 +19,7 @@ app.use(express.json());
 
 // mount routes
 app.use("/api/test", testRoutes);
-app.use("/api", signupRoutes);
+app.use("/", signupRoutes);
 
 // start server
 const PORT = process.env.PORT || 8000;
