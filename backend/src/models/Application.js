@@ -37,7 +37,7 @@ const ApplicationSchema = new mongoose.Schema(
 
     submittedAt: {
       type: Date,
-      default: null,
+      default: Date.now,
     },
   },
   { timestamps: true },
