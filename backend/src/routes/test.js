@@ -149,27 +149,8 @@ router.get('/youssef-test-application', async (req, res) => {
       });
     }
 
-    // create test applications
-    const doc1 = await Application.create({
-      userId: user._id,
-      status: 'draft',
-      version: 1,
-      answers: {
-        test_question_one: 'Draft answer 1',
-      },
-    });
-
-    const doc2 = await Application.create({
-      userId: user._id,
-      status: 'submitted',
-      version: 2,
-      answers: {
-        test_question_one: 'Submitted answer 1',
-        test_question_two: 'Submitted answer 2',
-      },
-    });
-
-    const doc3 = await Application.create({
+    // create test application
+    const doc = await Application.create({
       userId: user._id,
       status: 'under_review',
       version: 3,
@@ -183,7 +164,7 @@ router.get('/youssef-test-application', async (req, res) => {
     // respond with success message
     return res.json({
       message: 'Successfully wrote applications to database.',
-      inserted: { doc1, doc2, doc3 },
+      inserted: doc,
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
