@@ -157,7 +157,6 @@ router.get('/youssef-test-application', async (req, res) => {
       answers: {
         test_question_one: 'Draft answer 1',
       },
-      submittedAt: null,
     });
 
     const doc2 = await Application.create({
@@ -168,7 +167,6 @@ router.get('/youssef-test-application', async (req, res) => {
         test_question_one: 'Submitted answer 1',
         test_question_two: 'Submitted answer 2',
       },
-      submittedAt: new Date(),
     });
 
     const doc3 = await Application.create({
@@ -180,7 +178,6 @@ router.get('/youssef-test-application', async (req, res) => {
         test_question_two: 'Review answer 2',
         test_question_three: 'Review answer 3',
       },
-      submittedAt: new Date(),
     });
 
     // respond with success message
