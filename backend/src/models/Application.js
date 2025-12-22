@@ -1,14 +1,50 @@
-// backend/src/models/File.js
-// temporary file to test file model
+// backend/src/models/Application.js
 
 // imports
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // create application schema
-const applicationSchema = mongoose.Schema({});
+const ApplicationSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
+    },
+
+    status: {
+      type: String,
+      enum: [
+        'draft',
+        'submitted',
+        'under_review',
+        'accepted',
+        'waitlisted',
+        'rejected',
+      ],
+      default: 'draft',
+    },
+
+    version: {
+      type: Number,
+      default: 1,
+    },
+
+    answers: {
+      type: Object,
+      default: {},
+    },
+
+    submittedAt: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+  { timestamps: true },
+);
 
 // create application model
-const Application = mongoose.model("Application", applicationSchema);
+const Application = mongoose.model('Application', ApplicationSchema);
 
 // export application model
 export default Application;
