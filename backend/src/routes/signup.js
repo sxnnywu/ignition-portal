@@ -89,4 +89,51 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+// login route
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // check for missing fields
+    if (!email || !password)
+      return res.status(400).json({ message: "Email and password are required." });
+
+    // find user by email
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(401).json({ message: "Invalid email or password." });
+
+    // check if password field exists (for existing users without hashed passwords)
+    if (!user.password)
+      return res.status(401).json({ message: "Invalid email or password." });
+
+    // compare passwords
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword)
+      return res.status(401).json({ message: "Invalid email or password." });
+
+    // generate JWT
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    // respond with user and token
+    res.status(200).json({
+      message: "Login successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      token,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 export default router;

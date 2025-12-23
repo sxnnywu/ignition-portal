@@ -8,6 +8,50 @@ import User from '../models/User.js';
 // create router
 const router = express.Router();
 
+// GET /applications - get all applications
+router.get('/', async (req, res) => {
+  try {
+    // fetch all applications
+    const applications = await Application.find().populate('userId', 'name email role');
+
+    // respond with applications
+    res.status(200).json({
+      message: 'All applications fetched',
+      applications: applications,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET /applications/:id - get application by id
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // validate id format
+    if (!id)
+      return res.status(400).json({ message: 'Application ID is required' });
+
+    // find application by id
+    const application = await Application.findById(id).populate('userId', 'name email role');
+
+    // application not found
+    if (!application)
+      return res.status(404).json({ message: 'Application not found' });
+
+    // respond with application
+    res.status(200).json({
+      message: 'Application fetched',
+      application: application,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // GET /applications/me?userId=...
 router.get('/me', async (req, res) => {
   try {
