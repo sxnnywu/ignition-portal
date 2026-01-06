@@ -156,6 +156,113 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// POST /applications/:id/submit
+// submit an application (applicant)
+router.post('/:id/submit',
+  auth,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.userId;
+
+      // validate application id format
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'Invalid application ID' });
+      }
+
+      // fetch application
+      const application = await Application.findById(id);
+
+      // application not found
+      if (!application) {
+        return res.status(404).json({ message: 'Application not found' });
+      }
+
+      // verify ownership - only the owner can submit their application
+      if (application.userId.toString() !== userId) {
+        return res.status(403).json({
+          message: 'Unauthorized: You can only submit your own application'
+        });
+      }
+
+      // check if application is already submitted
+      if (application.status !== 'draft') {
+        return res.status(400).json({
+          message: `Cannot submit application with status: ${application.status}`
+        });
+      }
+
+      // update application status to submitted
+      application.status = 'submitted';
+      application.submittedAt = new Date();
+      await application.save();
+
+      // return success response
+      return res.status(200).json({
+        message: 'Application submitted successfully',
+        application,
+      });
+    }
+    // error handling
+    catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+  });
+
+// POST /applications/:id/status
+// change application status (admin-only)
+router.post('/:id/status',
+  auth,
+  requireRole('admin'),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      // validate status is provided
+      if (!status) {
+        return res.status(400).json({ message: 'Status is required' });
+      }
+
+      // validate status is a valid enum value
+      const validStatuses = ['draft', 'submitted', 'under_review', 'accepted', 'waitlisted', 'rejected'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          message: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+        });
+      }
+
+      // validate application id format
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ message: 'Invalid application ID' });
+      }
+
+      // fetch application
+      const application = await Application.findById(id);
+
+      // application not found
+      if (!application) {
+        return res.status(404).json({ message: 'Application not found' });
+      }
+
+      // update application status
+      application.status = status;
+      await application.save();
+
+      // return success response
+      return res.status(200).json({
+        message: 'Application status updated successfully',
+        application,
+      });
+    }
+    // error handling
+    catch (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+  });
+
 // POST /applications/:id/review
 // add a review to an application (reviewers and admins)
 router.post('/:id/review',
