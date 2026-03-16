@@ -62,7 +62,7 @@ function Info() {
         <button className="info-back-btn" onClick={() => navigate('/')}>
           <img src={backBtn} alt="Back" />
         </button>
-        <button className="info-continue-btn">
+        <button className="info-continue-btn" onClick={() => navigate('/education')}>
           <img src={continueBtn} alt="Continue" />
         </button>
       </div>
