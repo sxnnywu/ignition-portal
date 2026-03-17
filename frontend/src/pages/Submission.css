@@ -6,11 +6,14 @@
   justify-content: center;
   background-color: #EDF7FF;
   flex-direction: column;
+  padding-top: 2cqw;
+  box-sizing: border-box;
 }
 
 .submission-content {
   max-width: 1440px;
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,10 +22,12 @@
 
 .submission-header {
   width: 18cqw;
-  margin-bottom: 3cqw;
+  padding-top: 1.5cqw;
 }
 
 .submission-card {
+  margin-top: auto;
+  margin-bottom: auto;
   background-color: #FFF5EB;
   border-radius: 1.5cqw;
   padding: 3.5cqw 4cqw;
@@ -64,6 +69,14 @@
   padding: 0;
   cursor: pointer;
   transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.submission-back-btn:focus,
+.submission-submit-btn:focus {
+  outline: none;
 }
 
 .submission-back-btn:active,
