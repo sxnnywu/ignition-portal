@@ -1,0 +1,46 @@
+.landing {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EDF7FF;
+}
+
+.landing-content {
+  position: relative;
+  max-width: 1440px;
+  width: 100%;
+}
+
+.landing-bg {
+  width: 100%;
+  display: block;
+}
+
+.start-application-btn {
+  position: absolute;
+  bottom: 33.5%;
+  left: 23%;
+  width: 22%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.start-application-btn:active {
+  transform: scale(0.95);
+}
+
+.start-application-btn img {
+  width: 100%;
+  display: block;
+}
+
+body {
+  margin: 0;
+  background-color: #EDF7FF;
+  font-family: 'Satoshi', sans-serif;
+}
