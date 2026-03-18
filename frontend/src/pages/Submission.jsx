@@ -2,9 +2,9 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSubmitApplication } from '../hooks/useSubmitApplication'
 import './Submission.css'
-import headerImg from '../assets/backgrounds/Header.png'
-import backBtn from '../assets/buttons/back-button.png'
-import submitBtn from '../assets/buttons/Submit Button.png'
+import headerImg from '../assets/backgrounds/header.svg'
+import backBtn from '../assets/buttons/back-button.svg'
+import submitBtn from '../assets/buttons/submit-button.svg'
 
 function Submission() {
   const navigate = useNavigate()
