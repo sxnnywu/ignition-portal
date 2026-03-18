@@ -14,11 +14,14 @@ function Submission() {
 
   const handleSubmit = async () => {
     if (!id) return
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      setError('You must be logged in to submit.')
+      return
+    }
     setIsPending(true)
     setError(null)
     try {
-      // grab the JWT token the backend gave us when we logged in
-      const token = sessionStorage.getItem('token')
       // POST to the backend submit endpoint, sending the token so the backend knows who we are
       const res = await fetch(`/applications/${id}/submit`, {
         method: 'POST',
