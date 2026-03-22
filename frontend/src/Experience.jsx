@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import './Experience.css'
 import experienceBg from './assets/backgrounds/experience.png'
 import backBtn from './assets/buttons/back.png'
@@ -6,6 +7,40 @@ import continueBtn from './assets/buttons/continue.png'
 
 function Experience() {
   const navigate = useNavigate()
+  const [attended2025, setAttended2025] = useState('')
+  const [hackathonsAttended, setHackathonsAttended] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleContinue = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          answers: {
+            attended2025,
+            hackathonsAttended,
+          },
+          status: 'draft',
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save experience data')
+      }
+
+      navigate('/teammates')
+    } catch (error) {
+      console.error('Error saving experience data:', error)
+      alert('Error saving your data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="experience">
@@ -16,7 +51,11 @@ function Experience() {
           <div className="experience-form-section">
             <label className="experience-section-label">Did you attend IgnitionHacks 2025?</label>
             <div className="experience-field-row">
-              <select className="experience-select">
+              <select 
+                className="experience-select"
+                value={attended2025}
+                onChange={(e) => setAttended2025(e.target.value)}
+              >
                 <option value="" disabled selected>Select</option>
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
@@ -27,7 +66,11 @@ function Experience() {
           <div className="experience-form-section">
             <label className="experience-section-label">How many hackathons have you attended?</label>
             <div className="experience-field-row">
-              <select className="experience-select">
+              <select 
+                className="experience-select"
+                value={hackathonsAttended}
+                onChange={(e) => setHackathonsAttended(e.target.value)}
+              >
                 <option value="" disabled selected>Select</option>
                 <option value="0">0</option>
                 <option value="1">1</option>
@@ -43,7 +86,11 @@ function Experience() {
         <button className="experience-back-btn" onClick={() => navigate('/education')}>
           <img src={backBtn} alt="Back" />
         </button>
-        <button className="experience-continue-btn" onClick={() => navigate('/teammates')}>
+        <button 
+          className="experience-continue-btn" 
+          onClick={handleContinue}
+          disabled={loading}
+        >
           <img src={continueBtn} alt="Continue" />
         </button>
       </div>
