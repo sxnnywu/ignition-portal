@@ -44,7 +44,7 @@ function Education() {
         <button className="education-back-btn" onClick={() => navigate('/info')}>
           <img src={backBtn} alt="Back" />
         </button>
-        <button className="education-continue-btn" onClick={() => navigate('/experience')}>
+        <button className="education-continue-btn">
           <img src={continueBtn} alt="Continue" />
         </button>
       </div>
