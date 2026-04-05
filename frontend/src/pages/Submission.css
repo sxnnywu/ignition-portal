@@ -80,9 +80,10 @@
   user-select: none;
 }
 
-.submission-back-btn:focus,
-.submission-submit-btn:focus {
-  outline: none;
+.submission-back-btn:focus-visible,
+.submission-submit-btn:focus-visible {
+  outline: 3px solid #7B5CF5;
+  outline-offset: 4px;
 }
 
 .submission-back-btn:active,
