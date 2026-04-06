@@ -21,7 +21,9 @@ function Info() {
             </div>
             <div className="info-field-row">
               <select className="info-select">
-                <option value="" disabled selected>Gender</option>
+                <option value="" disabled>
+                  Gender
+                </option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="nonbinary">Non-binary</option>
@@ -32,7 +34,9 @@ function Info() {
             </div>
             <div className="info-field-row">
               <select className="info-select">
-                <option value="" disabled selected>Ethnicity</option>
+                <option value="" disabled>
+                  Ethnicity
+                </option>
                 <option value="asian">Asian</option>
                 <option value="black">Black</option>
                 <option value="hispanic">Hispanic/Latino</option>

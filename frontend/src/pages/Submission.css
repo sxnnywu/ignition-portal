@@ -1,0 +1,102 @@
+.submission {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EDF7FF;
+  flex-direction: column;
+  padding-top: 2cqw;
+  box-sizing: border-box;
+}
+
+.submission-content {
+  max-width: 1440px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  container-type: inline-size;
+}
+
+.submission-header {
+  width: 18cqw;
+  padding-top: 1.5cqw;
+}
+
+.submission-card {
+  margin-top: auto;
+  margin-bottom: auto;
+  background-color: #FFF5EB;
+  border-radius: 1.5cqw;
+  padding: 3.5cqw 4cqw;
+  width: 55%;
+  box-sizing: border-box;
+}
+
+.submission-done {
+  font-size: 2cqw;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 0.3cqw 0;
+}
+
+.submission-title {
+  font-size: 3.5cqw;
+  font-weight: 800;
+  color: #7B5CF5;
+  margin: 0 0 1cqw 0;
+  text-transform: uppercase;
+}
+
+.submission-subtitle {
+  font-size: 1.4cqw;
+  color: #666;
+  margin: 0 0 2.5cqw 0;
+}
+
+.submission-error {
+  color: #e53e3e;
+  font-size: 1.2cqw;
+  margin: 0 0 1.5cqw 0;
+}
+
+.submission-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.submission-back-btn,
+.submission-submit-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.submission-back-btn:focus-visible,
+.submission-submit-btn:focus-visible {
+  outline: 3px solid #7B5CF5;
+  outline-offset: 4px;
+}
+
+.submission-back-btn:active,
+.submission-submit-btn:active {
+  transform: scale(0.95);
+}
+
+.submission-back-btn img {
+  width: 7cqw;
+  display: block;
+}
+
+.submission-submit-btn img {
+  width: 18cqw;
+  display: block;
+}
