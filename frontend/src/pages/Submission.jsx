@@ -14,9 +14,11 @@ function Submission() {
 
   const handleSubmit = async () => {
     if (!id) return
+    // grab the JWT token the backend gave us when we logged in
     const token = sessionStorage.getItem('token')
+    // if there's no token, don't attempt the request — show a clear message instead
     if (!token) {
-      setError('You must be logged in to submit.')
+      setError('You must be logged in to submit your application. Please log in and try again.')
       return
     }
     setIsPending(true)
