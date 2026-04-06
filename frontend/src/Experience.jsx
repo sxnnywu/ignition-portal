@@ -12,14 +12,20 @@ function Experience() {
   const [loading, setLoading] = useState(false)
 
   const handleContinue = async () => {
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      alert('You must be logged in to save your application. Please log in and try again.')
+      return
+    }
+
     setLoading(true)
     try {
-      const response = await fetch('/api/applications', {
+      const response = await fetch('/applications', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify({
           answers: {
             attended2025,
@@ -56,7 +62,9 @@ function Experience() {
                 value={attended2025}
                 onChange={(e) => setAttended2025(e.target.value)}
               >
-                <option value="" disabled selected>Select</option>
+                <option value="" disabled>
+                  Select
+                </option>
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
               </select>
@@ -71,7 +79,9 @@ function Experience() {
                 value={hackathonsAttended}
                 onChange={(e) => setHackathonsAttended(e.target.value)}
               >
-                <option value="" disabled selected>Select</option>
+                <option value="" disabled>
+                  Select
+                </option>
                 <option value="0">0</option>
                 <option value="1">1</option>
                 <option value="2">2</option>

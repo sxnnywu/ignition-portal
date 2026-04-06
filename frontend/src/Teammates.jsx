@@ -21,14 +21,20 @@ function Teammates() {
   }
 
   const handleContinue = async () => {
+    const token = sessionStorage.getItem('token')
+    if (!token) {
+      alert('You must be logged in to save your application. Please log in and try again.')
+      return
+    }
+
     setLoading(true)
     try {
-      const response = await fetch('/api/applications', {
+      const response = await fetch('/applications', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify({
           answers: {
             teammates,

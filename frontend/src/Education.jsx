@@ -18,7 +18,9 @@ function Education() {
             <div className="education-field-row">
               <input type="text" placeholder="Educational institution" className="education-input" />
               <select className="education-select">
-                <option value="" disabled selected>Level of education</option>
+                <option value="" disabled>
+                  Level of education
+                </option>
                 <option value="high-school">High School</option>
                 <option value="undergraduate">Undergraduate</option>
                 <option value="graduate">Graduate</option>
@@ -33,7 +35,9 @@ function Education() {
             <div className="education-field-row">
               <input type="text" placeholder="Program name" className="education-input" />
               <select className="education-select">
-                <option value="" disabled selected>Co-op student?</option>
+                <option value="" disabled>
+                  Co-op student?
+                </option>
                 <option value="yes">Yes</option>
                 <option value="no">No</option>
               </select>
