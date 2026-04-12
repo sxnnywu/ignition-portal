@@ -1,0 +1,108 @@
+.login {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EDF7FF;
+}
+
+.login-content {
+  position: relative;
+  max-width: 1440px;
+  width: 100%;
+  container-type: inline-size;
+}
+
+.login-bg {
+  width: 100%;
+  display: block;
+}
+
+.login-form {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8cqw;
+}
+
+.login-form-section {
+  width: 100%;
+}
+
+.login-input {
+  width: 100%;
+  padding: 1cqw 2cqw;
+  border: 2px solid #c9a66a;
+  border-radius: 1cqw;
+  font-size: 1.2cqw;
+  background: white;
+  color: #333;
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.login-input::placeholder {
+  color: #8B7355;
+  font-weight: 500;
+}
+
+.login-input:focus {
+  border-color: #a68855;
+}
+
+.login-links {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.3cqw;
+  gap: 1cqw;
+}
+
+.login-link {
+  background: none;
+  border: none;
+  color: #7a6249;
+  font-size: 1cqw;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.2s ease;
+}
+
+.login-link:hover {
+  color: #333;
+}
+
+.login-button {
+  position: absolute;
+  bottom: -60%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 52cqw;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.login-button:hover {
+  opacity: 0.9;
+}
+
+.login-button:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+.login-button img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
