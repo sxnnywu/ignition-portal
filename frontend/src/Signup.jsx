@@ -40,7 +40,6 @@ function Signup() {
 
     setIsPending(true)
     try {
-      // Backend User model uses a single `name` field, so concatenate here.
       const res = await fetch(apiUrl('/signup'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,9 +64,6 @@ function Signup() {
 
   return (
     <div className="signup">
-      {/* Full-page pre-rendered background: header, iggy, empty cream card with
-          "IGNITION HACKS" title + "Join us for Ignition Hacks V7!" subtitle are
-          all baked into the PNG. We only overlay the interactive form. */}
       <div className="signup-inner">
         <img src={signupBg} alt="" className="signup-bg" aria-hidden="true" />
 
@@ -114,7 +110,15 @@ function Signup() {
           />
 
           <p className="signup-login-hint">
-            Already have an account? <span className="signup-login-link">Log in</span>
+            Already have an account?{' '}
+            <button
+              type="button"
+              className="signup-login-link"
+              onClick={() => navigate('/login')}
+              disabled={isPending}
+            >
+              Log in
+            </button>
           </p>
 
           {error && <p className="signup-error">{error}</p>}
