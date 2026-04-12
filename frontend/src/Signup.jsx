@@ -4,6 +4,7 @@ import './Signup.css'
 import signupBg from './assets/backgrounds/sign-up-bg.png'
 import signupBtn from './assets/buttons/signup-button.png'
 import { setAuth } from './lib/auth'
+import { apiUrl } from './lib/api'
 
 // Matches the backend's password rule in backend/src/routes/signup.js so we can give
 // immediate feedback without round-tripping a 400.
@@ -40,7 +41,7 @@ function Signup() {
     setIsPending(true)
     try {
       // Backend User model uses a single `name` field, so concatenate here.
-      const res = await fetch('/signup', {
+      const res = await fetch(apiUrl('/signup'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

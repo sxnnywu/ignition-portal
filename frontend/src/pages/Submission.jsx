@@ -4,6 +4,7 @@ import './Submission.css'
 import headerImg from '../assets/backgrounds/header.svg'
 import backBtn from '../assets/buttons/back-button.svg'
 import submitBtn from '../assets/buttons/submit-button.svg'
+import { apiUrl } from '../lib/api'
 
 function Submission() {
   const navigate = useNavigate()
@@ -25,7 +26,7 @@ function Submission() {
     setError(null)
     try {
       // POST to the backend submit endpoint, sending the token so the backend knows who we are
-      const res = await fetch(`/applications/${id}/submit`, {
+      const res = await fetch(apiUrl(`/applications/${id}/submit`), {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })

@@ -2,6 +2,7 @@
 
 // imports
 import express from 'express';
+import cors from 'cors';
 import connectDB from './config/db.js';
 import testRoutes from './routes/test.js';
 import signupRoutes from './routes/signup.js';
@@ -14,6 +15,15 @@ dotenv.config();
 // initialize express app and connect to database
 const app = express();
 connectDB();
+
+const allowedOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(cors({
+  origin: allowedOrigins.length === 0 ? true : allowedOrigins,
+}));
 
 // middleware to parse JSON requests
 app.use(express.json());

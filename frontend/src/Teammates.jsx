@@ -4,6 +4,7 @@ import './Teammates.css'
 import teammatesBg from './assets/backgrounds/teammates.png'
 import backBtn from './assets/buttons/back.png'
 import continueBtn from './assets/buttons/continue.png'
+import { apiUrl } from './lib/api'
 
 function Teammates() {
   const navigate = useNavigate()
@@ -29,7 +30,7 @@ function Teammates() {
 
     setLoading(true)
     try {
-      const response = await fetch('/applications', {
+      const response = await fetch(apiUrl('/applications'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

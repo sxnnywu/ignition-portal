@@ -7,6 +7,7 @@ import appSubmittedBg from './assets/backgrounds/app-submitted-bg.png'
 import appUnderReviewBg from './assets/backgrounds/app-underreview-bg.png'
 import appAcceptedBg from './assets/backgrounds/app-accepted-bg.png'
 import { getToken, clearAuth } from './lib/auth'
+import { apiUrl } from './lib/api'
 
 // Per-status copy + CTA for the dashboard.
 // `none` / `draft` are rendered as HTML/CSS cards (no finalized PNG yet).
@@ -143,7 +144,7 @@ function Dashboard() {
     let cancelled = false
     const fetchStatus = async () => {
       try {
-        const res = await fetch('/applications/me', {
+        const res = await fetch(apiUrl('/applications/me'), {
           headers: { Authorization: `Bearer ${token}` },
         })
         if (cancelled) return
