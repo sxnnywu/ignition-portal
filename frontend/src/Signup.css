@@ -1,0 +1,184 @@
+/* Signup page uses sign-up-bg.png as a full-page pre-rendered background.
+   The header, iggy, cream card, purple "IGNITION HACKS" title, and
+   "Join us for Ignition Hacks V7!" subtitle are all baked into the PNG.
+   We only overlay the interactive form over the empty region of the card. */
+
+.signup {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #EDF7FF;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: 'Satoshi', sans-serif;
+  overflow-x: hidden;
+}
+
+.signup-inner {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+}
+
+.signup-bg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* The form overlay is absolutely positioned over the empty region of the card
+   in sign-up-bg.png. Percentages are relative to .signup-inner so the overlay
+   scales with the responsive image. Tuned against the asset — nudge these if
+   the PNG is re-exported. */
+.signup-card {
+  position: absolute;
+  top: 50%;
+  left: 30%;
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.signup-field-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.signup-field-row .signup-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.signup-input {
+  background-color: transparent;
+  border: 2px solid #7a5230;
+  border-radius: 0.85rem;
+  padding: 0.9rem 1.1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #4a3524;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.signup-input::placeholder {
+  color: #7a5230;
+  opacity: 0.85;
+}
+
+.signup-input:focus {
+  border-color: #4a3524;
+}
+
+.signup-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.signup-input-full {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+.signup-login-hint {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #4a3524;
+  margin: 0.25rem 0 1rem;
+  font-weight: 400;
+}
+
+.signup-login-link {
+  color: #4a3524;
+  text-decoration: underline;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.signup-error {
+  color: #b4332a;
+  background-color: rgba(255, 245, 235, 0.95);
+  border: 1px solid rgba(180, 51, 42, 0.4);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
+  margin: 0 0 0.75rem;
+  text-align: center;
+}
+
+.signup-submit-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.signup-submit-btn img {
+  width: 100%;
+  display: block;
+}
+
+.signup-submit-btn:active:not(:disabled) {
+  transform: translateY(2px);
+}
+
+.signup-submit-btn:disabled {
+  cursor: not-allowed;
+}
+
+/* Medium screens: inputs get a touch more breathing room. */
+@media (max-width: 900px) {
+  .signup-card {
+    top: 48%;
+    left: 25%;
+    width: 50%;
+  }
+  .signup-input {
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+  .signup-input-full {
+    margin-bottom: 0.85rem;
+  }
+}
+
+/* Small screens: stack First/Last name, tighten the overlay. */
+@media (max-width: 640px) {
+  .signup-card {
+    top: 46%;
+    left: 14%;
+    width: 72%;
+  }
+  .signup-field-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+  .signup-input {
+    padding: 0.6rem 0.85rem;
+    font-size: 0.9rem;
+    border-width: 1.5px;
+  }
+  .signup-input-full {
+    margin-bottom: 0.7rem;
+  }
+  .signup-login-hint {
+    font-size: 0.8rem;
+    margin: 0.15rem 0 0.6rem;
+  }
+  .signup-error {
+    padding: 0.45rem 0.7rem;
+    font-size: 0.75rem;
+  }
+}
