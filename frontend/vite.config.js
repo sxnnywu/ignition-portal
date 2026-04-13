@@ -14,6 +14,18 @@ export default defineConfig({
         target: process.env.BACKEND_URL || 'http://localhost:8000',
         changeOrigin: true,
       },
+      '/forgot-password': {
+        target: process.env.BACKEND_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/reset-password': {
+        target: process.env.BACKEND_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
+      '/login': {
+        target: process.env.BACKEND_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
     },
   },
 })
