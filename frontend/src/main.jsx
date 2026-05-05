@@ -12,6 +12,8 @@ import Education from './Education.jsx'
 import Experience from './Experience.jsx'
 import Teammates from './Teammates.jsx'
 import Submission from './pages/Submission'
+import AdminApp from './admin/AdminApp.jsx'
+import AdminTestApp from './admin/AdminTestApp.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -29,6 +31,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/experience" element={<Experience />} />
         <Route path="/teammates" element={<Teammates />} />
         <Route path="/submission/:id" element={<Submission />} />
+        <Route path="/admin/*" element={<AdminApp />} />
+        <Route path="/admin-test/*" element={<AdminTestApp />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>,

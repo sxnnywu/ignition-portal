@@ -1,0 +1,243 @@
+.all-apps {
+  font-family: 'Satoshi', sans-serif;
+}
+
+.all-apps-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.all-apps-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 32px;
+  font-weight: 400;
+  color: #4a3524;
+  margin: 0;
+}
+
+.all-apps-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.all-apps-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1.5px solid #d4c5b0;
+  border-radius: 10px;
+  padding: 8px 16px;
+  min-width: 240px;
+}
+
+.all-apps-search-input {
+  border: none;
+  outline: none;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  color: #4a3524;
+  background: transparent;
+  flex: 1;
+}
+
+.all-apps-search-input::placeholder {
+  color: #8B7355;
+}
+
+.all-apps-export-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: #765C3A;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.all-apps-export-btn:hover {
+  background: #765C3A;
+}
+
+/* Table Container */
+.all-apps-table-container {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #e8ddd0;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.all-apps-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #f0e8de;
+}
+
+.all-apps-table-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #4a3524;
+}
+
+.all-apps-sort {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.all-apps-sort-label {
+  font-size: 13px;
+  color: #8B7355;
+}
+
+.all-apps-sort-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #fff;
+  border: 1px solid #d4c5b0;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+
+.all-apps-sort-select {
+  border: none;
+  outline: none;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  color: #4a3524;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  padding-right: 4px;
+}
+
+/* Table */
+.all-apps-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.all-apps-table thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8B7355;
+  background: #faf6f0;
+  border-bottom: 1px solid #f0e8de;
+}
+
+.all-apps-table tbody td {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #4a3524;
+  border-bottom: 1px solid #f5f0e8;
+  vertical-align: middle;
+}
+
+.all-apps-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.all-apps-table tbody tr:hover {
+  background: #fefcf8;
+}
+
+.all-apps-cell-id {
+  font-weight: 600;
+  color: #8B7355;
+  white-space: nowrap;
+}
+
+.all-apps-applicant {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.all-apps-cell-school {
+  color: #7a5230;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.all-apps-cell-score {
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Quick Action Dropdown */
+.all-apps-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #d4c5b0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: #fff;
+  max-width: 160px;
+}
+
+.all-apps-status-select {
+  border: none;
+  outline: none;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  color: #4a3524;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+  flex: 1;
+}
+
+.all-apps-status-select:disabled {
+  opacity: 0.5;
+}
+
+/* View Button */
+.all-apps-view-btn {
+  padding: 6px 18px;
+  border: 1.5px solid #d4c5b0;
+  border-radius: 8px;
+  background: #fff;
+  color: #4a3524;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.all-apps-view-btn:hover {
+  background: #f5efe8;
+  border-color: #765C3A;
+}
+
+/* Loading / Empty */
+.all-apps-loading,
+.all-apps-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: #8B7355;
+  font-size: 15px;
+}
