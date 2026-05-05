@@ -9,7 +9,7 @@ function authHeaders() {
 }
 
 export async function fetchStats() {
-  const res = await fetch(apiUrl('/admin/stats'), { headers: authHeaders() });
+  const res = await fetch(apiUrl('/api/admin/stats'), { headers: authHeaders() });
   if (!res.ok) throw new Error('Failed to fetch stats');
   return res.json();
 }
@@ -21,7 +21,7 @@ export async function fetchApplications({ page = 1, limit = 20, status, search, 
   if (sort) params.set('sort', sort);
   if (order) params.set('order', order);
 
-  const res = await fetch(apiUrl(`/admin/applications?${params}`), { headers: authHeaders() });
+  const res = await fetch(apiUrl(`/api/admin/applications?${params}`), { headers: authHeaders() });
   if (!res.ok) throw new Error('Failed to fetch applications');
   return res.json();
 }
@@ -41,7 +41,7 @@ export async function exportCsv({ status, search } = {}) {
   if (status && status !== 'all') params.set('status', status);
   if (search) params.set('search', search);
 
-  const res = await fetch(apiUrl(`/admin/export-csv?${params}`), { headers: authHeaders() });
+  const res = await fetch(apiUrl(`/api/admin/export-csv?${params}`), { headers: authHeaders() });
   if (!res.ok) throw new Error('Failed to export CSV');
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
@@ -57,13 +57,13 @@ export async function fetchUsers({ page = 1, limit = 20, role, search } = {}) {
   if (role && role !== 'all') params.set('role', role);
   if (search) params.set('search', search);
 
-  const res = await fetch(apiUrl(`/admin/users?${params}`), { headers: authHeaders() });
+  const res = await fetch(apiUrl(`/api/admin/users?${params}`), { headers: authHeaders() });
   if (!res.ok) throw new Error('Failed to fetch users');
   return res.json();
 }
 
 export async function createUser({ name, email, role, password }) {
-  const res = await fetch(apiUrl('/admin/users'), {
+  const res = await fetch(apiUrl('/api/admin/users'), {
     method: 'POST',
     headers: authHeaders(),
     body: JSON.stringify({ name, email, role, password }),
@@ -76,7 +76,7 @@ export async function createUser({ name, email, role, password }) {
 }
 
 export async function updateUserRole(id, role) {
-  const res = await fetch(apiUrl(`/admin/users/${id}/role`), {
+  const res = await fetch(apiUrl(`/api/admin/users/${id}/role`), {
     method: 'PUT',
     headers: authHeaders(),
     body: JSON.stringify({ role }),
@@ -89,7 +89,7 @@ export async function updateUserRole(id, role) {
 }
 
 export async function deleteUser(id) {
-  const res = await fetch(apiUrl(`/admin/users/${id}`), {
+  const res = await fetch(apiUrl(`/api/admin/users/${id}`), {
     method: 'DELETE',
     headers: authHeaders(),
   });

@@ -32,7 +32,7 @@ app.use(express.json());
 // mount routes
 app.use('/api/test', testRoutes);
 app.use('/applications', applicationsRoutes);
-app.use('/admin', adminRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/', signupRoutes);
 
 // start server
