@@ -1,0 +1,104 @@
+.add-user-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.add-user-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  width: 440px;
+  max-width: 90vw;
+  position: relative;
+  font-family: 'Satoshi', sans-serif;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.add-user-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+}
+
+.add-user-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #4a3524;
+  margin: 0 0 20px;
+}
+
+.add-user-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.add-user-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a3524;
+}
+
+.add-user-input,
+.add-user-select {
+  padding: 10px 14px;
+  border: 1.5px solid #d4c5b0;
+  border-radius: 8px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 14px;
+  color: #4a3524;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.add-user-input:focus,
+.add-user-select:focus {
+  border-color: #765C3A;
+}
+
+.add-user-input::placeholder {
+  color: #8B7355;
+}
+
+.add-user-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin: 0;
+}
+
+.add-user-submit {
+  padding: 12px;
+  background: #765C3A;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+
+.add-user-submit:hover:not(:disabled) {
+  background: #765C3A;
+}
+
+.add-user-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}

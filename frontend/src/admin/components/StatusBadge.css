@@ -1,0 +1,34 @@
+.status-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge--accepted {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge--waitlisted {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.status-badge--rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-badge--reviewed {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge--pending {
+  background: #fef3c7;
+  color: #92400e;
+}
