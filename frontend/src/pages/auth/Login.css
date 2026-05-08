@@ -1,4 +1,4 @@
-.login {
+.auth-login {
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -7,19 +7,19 @@
   background-color: #EDF7FF;
 }
 
-.login-content {
+.auth-login-content {
   position: relative;
   max-width: 1440px;
   width: 100%;
   container-type: inline-size;
 }
 
-.login-bg {
+.auth-login-bg {
   width: 100%;
   display: block;
 }
 
-.login-form {
+.auth-login-form {
   position: absolute;
   bottom: 30%;
   left: 50%;
@@ -30,11 +30,11 @@
   gap: 0.8cqw;
 }
 
-.login-form-section {
+.auth-login-form-section {
   width: 100%;
 }
 
-.login-input {
+.auth-login-input {
   width: 100%;
   padding: 1cqw 2cqw;
   border: 2px solid #c9a66a;
@@ -47,21 +47,21 @@
   box-sizing: border-box;
 }
 
-.login-input::placeholder {
+.auth-login-input::placeholder {
   color: #8B7355;
   font-weight: 500;
 }
 
-.login-input:focus {
+.auth-login-input:focus {
   border-color: #a68855;
 }
 
-.login-input:disabled {
+.auth-login-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.login-links {
+.auth-login-links {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -69,7 +69,7 @@
   gap: 1cqw;
 }
 
-.login-link {
+.auth-login-link {
   background: none;
   border: none;
   color: #7a6249;
@@ -81,16 +81,16 @@
   transition: color 0.2s ease;
 }
 
-.login-link:hover {
+.auth-login-link:hover {
   color: #333;
 }
 
-.login-link:disabled {
+.auth-login-link:disabled {
   cursor: not-allowed;
   opacity: 0.7;
 }
 
-.login-error {
+.auth-login-error {
   color: #b4332a;
   background-color: rgba(255, 245, 235, 0.95);
   border: 1px solid rgba(180, 51, 42, 0.4);
@@ -101,7 +101,7 @@
   text-align: center;
 }
 
-.login-button {
+.auth-login-button {
   position: absolute;
   bottom: -60%;
   left: 50%;
@@ -114,19 +114,19 @@
   transition: transform 0.1s ease;
 }
 
-.login-button:hover {
+.auth-login-button:hover {
   opacity: 0.9;
 }
 
-.login-button:active {
+.auth-login-button:active {
   transform: translateX(-50%) scale(0.95);
 }
 
-.login-button:disabled {
+.auth-login-button:disabled {
   cursor: not-allowed;
 }
 
-.login-button img {
+.auth-login-button img {
   width: 100%;
   height: auto;
   display: block;

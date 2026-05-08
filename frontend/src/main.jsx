@@ -1,28 +1,34 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Landing from "./Landing.jsx";
-import Login from "./Login.jsx";
-import Signup from "./Signup.jsx";
-import ForgotPassword from "./ForgotPassword.jsx";
-import ResetPassword from "./ResetPassword.jsx";
-import Dashboard from "./Dashboard.jsx";
-import Info from "./Info.jsx";
-import Education from "./Education.jsx";
-import Experience from "./Experience.jsx";
-import Teammates from "./Teammates.jsx";
-import Submission from "./pages/Submission";
+
+import Login from "./pages/auth/Login";
+import Signup from "./pages/auth/Signup";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+
+import Landing from "./pages/hacker/Landing";
+import Dashboard from "./pages/hacker/Dashboard";
+import Info from "./pages/hacker/Info";
+import Education from "./pages/hacker/Education";
+import Experience from "./pages/hacker/Experience";
+import Teammates from "./pages/hacker/Teammates";
+import Submission from "./pages/hacker/Submission";
+
 import "./index.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
+        {/* Auth */}
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Hacker */}
         <Route path="/landing" element={<Landing />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/info" element={<Info />} />

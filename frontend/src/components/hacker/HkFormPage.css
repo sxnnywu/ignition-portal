@@ -1,4 +1,7 @@
-.experience {
+/* Shared layout for hacker application form pages (Info, Education, Experience, Teammates).
+   Each page uses a full-page background PNG with form fields overlaid absolutely. */
+
+.hk-page {
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -7,19 +10,21 @@
   background-color: #EDF7FF;
 }
 
-.experience-content {
+.hk-page-content {
   position: relative;
   max-width: 1440px;
   width: 100%;
   container-type: inline-size;
 }
 
-.experience-bg {
+.hk-page-bg {
   width: 100%;
   display: block;
 }
 
-.experience-form {
+/* --- Form overlay --- */
+
+.hk-form {
   position: absolute;
   top: 55%;
   left: 7.5%;
@@ -28,43 +33,51 @@
   gap: 8%;
 }
 
-.experience-form-section {
+.hk-form--vertical {
+  flex-direction: column;
+  gap: 2cqw;
+  top: 50%;
+}
+
+.hk-form-section {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.8cqw;
 }
 
-.experience-section-label {
+.hk-section-label {
   font-size: 1.6cqw;
   font-weight: 500;
   color: #333;
   margin-bottom: 0.3cqw;
 }
 
-.experience-field-row {
+.hk-field-row {
   display: flex;
   gap: 0.6cqw;
 }
 
-.experience-input,
-.experience-select {
+/* --- Inputs & selects --- */
+
+.hk-input,
+.hk-select {
   flex: 1;
   padding: 1cqw 1cqw;
   border: 1px solid #ccc;
   border-radius: 0.5cqw;
   font-size: 1.2cqw;
   background: white;
-  color: #999;
+  color: #333;
   outline: none;
   font-family: inherit;
 }
 
-.experience-input::placeholder {
+.hk-input::placeholder {
   color: #999;
 }
 
-.experience-select {
+.hk-select {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -73,12 +86,18 @@
   cursor: pointer;
 }
 
-.experience-input:focus,
-.experience-select:focus {
+.hk-select--placeholder {
+  color: #999;
+}
+
+.hk-input:focus,
+.hk-select:focus {
   border-color: #999;
 }
 
-.experience-back-btn {
+/* --- Navigation buttons --- */
+
+.hk-back-btn {
   position: absolute;
   bottom: 5%;
   left: 6.3%;
@@ -90,16 +109,16 @@
   transition: transform 0.1s ease;
 }
 
-.experience-back-btn:active {
+.hk-back-btn:active {
   transform: scale(0.95);
 }
 
-.experience-back-btn img {
+.hk-back-btn img {
   width: 100%;
   display: block;
 }
 
-.experience-continue-btn {
+.hk-continue-btn {
   position: absolute;
   bottom: 5%;
   right: 8%;
@@ -111,11 +130,16 @@
   transition: transform 0.1s ease;
 }
 
-.experience-continue-btn:active {
+.hk-continue-btn:active {
   transform: scale(0.95);
 }
 
-.experience-continue-btn img {
+.hk-continue-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.hk-continue-btn img {
   width: 100%;
   display: block;
 }

@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Signup.css'
-import signupBg from './assets/backgrounds/sign-up-bg.png'
-import signupBtn from './assets/buttons/signup-button.png'
-import { setAuth } from './lib/auth'
-import { apiUrl } from './lib/api'
+import signupBg from '../../assets/backgrounds/sign-up-bg.png'
+import signupBtn from '../../assets/buttons/signup-button.png'
+import { setAuth } from '../../lib/auth'
+import { apiUrl } from '../../lib/api'
 
-// Matches the backend's password rule in backend/src/routes/signup.js so we can give
-// immediate feedback without round-tripping a 400.
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
 const PASSWORD_RULES =
   'Password must be at least 8 characters and include a lowercase letter, an uppercase letter, and a number.'
@@ -63,15 +61,15 @@ function Signup() {
   }
 
   return (
-    <div className="signup">
-      <div className="signup-inner">
-        <img src={signupBg} alt="" className="signup-bg" aria-hidden="true" />
+    <div className="auth-signup">
+      <div className="auth-signup-inner">
+        <img src={signupBg} alt="" className="auth-signup-bg" aria-hidden="true" />
 
-        <form className="signup-card" onSubmit={handleSubmit} noValidate>
-          <div className="signup-field-row">
+        <form className="auth-signup-card" onSubmit={handleSubmit} noValidate>
+          <div className="auth-signup-field-row">
             <input
               type="text"
-              className="signup-input"
+              className="auth-signup-input"
               placeholder="First name"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
@@ -80,7 +78,7 @@ function Signup() {
             />
             <input
               type="text"
-              className="signup-input"
+              className="auth-signup-input"
               placeholder="Last name"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
@@ -91,7 +89,7 @@ function Signup() {
 
           <input
             type="email"
-            className="signup-input signup-input-full"
+            className="auth-signup-input auth-signup-input-full"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -101,7 +99,7 @@ function Signup() {
 
           <input
             type="password"
-            className="signup-input signup-input-full"
+            className="auth-signup-input auth-signup-input-full"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -109,11 +107,11 @@ function Signup() {
             autoComplete="new-password"
           />
 
-          <p className="signup-login-hint">
+          <p className="auth-signup-login-hint">
             Already have an account?{' '}
             <button
               type="button"
-              className="signup-login-link"
+              className="auth-signup-login-link"
               onClick={() => navigate('/login')}
               disabled={isPending}
             >
@@ -121,11 +119,11 @@ function Signup() {
             </button>
           </p>
 
-          {error && <p className="signup-error">{error}</p>}
+          {error && <p className="auth-signup-error">{error}</p>}
 
           <button
             type="submit"
-            className="signup-submit-btn"
+            className="auth-signup-submit-btn"
             disabled={isPending}
             aria-label={isPending ? 'Signing up...' : 'Sign up'}
           >

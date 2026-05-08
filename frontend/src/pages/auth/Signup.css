@@ -1,9 +1,4 @@
-/* Signup page uses sign-up-bg.png as a full-page pre-rendered background.
-   The header, iggy, cream card, purple "IGNITION HACKS" title, and
-   "Join us for Ignition Hacks V7!" subtitle are all baked into the PNG.
-   We only overlay the interactive form over the empty region of the card. */
-
-.signup {
+.auth-signup {
   width: 100vw;
   min-height: 100vh;
   background-color: #EDF7FF;
@@ -14,23 +9,19 @@
   overflow-x: hidden;
 }
 
-.signup-inner {
+.auth-signup-inner {
   position: relative;
   width: 100%;
   max-width: 1440px;
 }
 
-.signup-bg {
+.auth-signup-bg {
   display: block;
   width: 100%;
   height: auto;
 }
 
-/* The form overlay is absolutely positioned over the empty region of the card
-   in sign-up-bg.png. Percentages are relative to .signup-inner so the overlay
-   scales with the responsive image. Tuned against the asset — nudge these if
-   the PNG is re-exported. */
-.signup-card {
+.auth-signup-card {
   position: absolute;
   top: 50%;
   left: 30%;
@@ -46,18 +37,18 @@
   box-shadow: none;
 }
 
-.signup-field-row {
+.auth-signup-field-row {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.signup-field-row .signup-input {
+.auth-signup-field-row .auth-signup-input {
   flex: 1;
   min-width: 0;
 }
 
-.signup-input {
+.auth-signup-input {
   background-color: transparent;
   border: 2px solid #7a5230;
   border-radius: 0.85rem;
@@ -69,27 +60,27 @@
   transition: border-color 0.15s ease;
 }
 
-.signup-input::placeholder {
+.auth-signup-input::placeholder {
   color: #7a5230;
   opacity: 0.85;
 }
 
-.signup-input:focus {
+.auth-signup-input:focus {
   border-color: #4a3524;
 }
 
-.signup-input:disabled {
+.auth-signup-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.signup-input-full {
+.auth-signup-input-full {
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 1rem;
 }
 
-.signup-login-hint {
+.auth-signup-login-hint {
   text-align: center;
   font-size: 0.9rem;
   color: #4a3524;
@@ -97,7 +88,7 @@
   font-weight: 400;
 }
 
-.signup-login-link {
+.auth-signup-login-link {
   background: none;
   border: none;
   color: #4a3524;
@@ -107,12 +98,12 @@
   font: inherit;
 }
 
-.signup-login-link:disabled {
+.auth-signup-login-link:disabled {
   cursor: not-allowed;
   opacity: 0.7;
 }
 
-.signup-error {
+.auth-signup-error {
   color: #b4332a;
   background-color: rgba(255, 245, 235, 0.95);
   border: 1px solid rgba(180, 51, 42, 0.4);
@@ -123,7 +114,7 @@
   text-align: center;
 }
 
-.signup-submit-btn {
+.auth-signup-submit-btn {
   width: 100%;
   background: none;
   border: none;
@@ -132,58 +123,58 @@
   transition: transform 0.1s ease;
 }
 
-.signup-submit-btn img {
+.auth-signup-submit-btn img {
   width: 100%;
   display: block;
 }
 
-.signup-submit-btn:active:not(:disabled) {
+.auth-signup-submit-btn:active:not(:disabled) {
   transform: translateY(2px);
 }
 
-.signup-submit-btn:disabled {
+.auth-signup-submit-btn:disabled {
   cursor: not-allowed;
 }
 
 @media (max-width: 900px) {
-  .signup-card {
+  .auth-signup-card {
     top: 48%;
     left: 25%;
     width: 50%;
   }
-  .signup-input {
+  .auth-signup-input {
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
   }
-  .signup-input-full {
+  .auth-signup-input-full {
     margin-bottom: 0.85rem;
   }
 }
 
 @media (max-width: 640px) {
-  .signup-card {
+  .auth-signup-card {
     top: 46%;
     left: 14%;
     width: 72%;
   }
-  .signup-field-row {
+  .auth-signup-field-row {
     flex-direction: column;
     gap: 0.75rem;
     margin-bottom: 0.75rem;
   }
-  .signup-input {
+  .auth-signup-input {
     padding: 0.6rem 0.85rem;
     font-size: 0.9rem;
     border-width: 1.5px;
   }
-  .signup-input-full {
+  .auth-signup-input-full {
     margin-bottom: 0.7rem;
   }
-  .signup-login-hint {
+  .auth-signup-login-hint {
     font-size: 0.8rem;
     margin: 0.15rem 0 0.6rem;
   }
-  .signup-error {
+  .auth-signup-error {
     padding: 0.45rem 0.7rem;
     font-size: 0.75rem;
   }

@@ -1,4 +1,4 @@
-.dashboard {
+.hk-dash {
   width: 100vw;
   min-height: 100vh;
   background-color: #EDF7FF;
@@ -8,14 +8,13 @@
   box-sizing: border-box;
 }
 
-.dashboard-header {
+.hk-dash-header {
   display: block;
   width: min(18rem, 40%);
   margin: 0 auto 1.5rem;
 }
 
-/* Iggy peeks out from behind the top-right corner of the status card. */
-.dashboard-iggy {
+.hk-dash-iggy {
   position: absolute;
   top: 7rem;
   right: clamp(2rem, 10vw, 10rem);
@@ -25,14 +24,14 @@
   pointer-events: none;
 }
 
-.dashboard-content {
+.hk-dash-content {
   max-width: 820px;
   margin: 4rem auto 0;
   position: relative;
   z-index: 1;
 }
 
-.dashboard-card {
+.hk-dash-card {
   width: 100%;
   background-color: #FFF5EB;
   border-radius: 1.5rem;
@@ -41,20 +40,20 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
 }
 
-.dashboard-card-loading {
+.hk-dash-card-loading {
   min-height: 14rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.dashboard-loading {
+.hk-dash-loading {
   color: #4a3524;
   margin: 0;
   font-size: 1.15rem;
 }
 
-.dashboard-welcome {
+.hk-dash-welcome {
   font-size: 1.75rem;
   font-weight: 400;
   color: #1a1a1a;
@@ -62,7 +61,7 @@
   letter-spacing: 0.01em;
 }
 
-.dashboard-title {
+.hk-dash-title {
   font-size: 2.75rem;
   font-weight: 400;
   color: #a78bfa;
@@ -71,14 +70,14 @@
   line-height: 1;
 }
 
-.dashboard-subtitle {
+.hk-dash-subtitle {
   font-size: 1.15rem;
   color: #3a3a3a;
   margin: 0 0 2rem;
   font-weight: 400;
 }
 
-.dashboard-status-row {
+.hk-dash-status-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -86,26 +85,26 @@
   flex-wrap: wrap;
 }
 
-.dashboard-status-label-group {
+.hk-dash-status-label-group {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.dashboard-status-label {
+.hk-dash-status-label {
   font-size: 1.2rem;
   font-weight: 400;
   color: #7a5230;
   letter-spacing: 0.01em;
 }
 
-.dashboard-check-icon {
+.hk-dash-check-icon {
   width: 1.4rem;
   height: 1.4rem;
   flex-shrink: 0;
 }
 
-.dashboard-cta-btn {
+.hk-dash-cta-btn {
   background-color: #6b4520;
   color: #ffffff;
   border: none;
@@ -119,33 +118,16 @@
   transition: transform 0.1s ease, background-color 0.15s ease;
 }
 
-.dashboard-cta-btn:hover {
+.hk-dash-cta-btn:hover {
   background-color: #57361a;
 }
 
-.dashboard-cta-btn:active {
+.hk-dash-cta-btn:active {
   transform: translateY(2px);
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
 }
 
-.dashboard-cta-image-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.1s ease;
-}
-
-.dashboard-cta-image-btn:active {
-  transform: scale(0.96);
-}
-
-.dashboard-cta-image-btn img {
-  display: block;
-  width: clamp(14rem, 22vw, 18rem);
-}
-
-.dashboard-error {
+.hk-dash-error {
   color: #b4332a;
   text-align: center;
   margin-top: 1rem;
@@ -153,8 +135,8 @@
 }
 
 /* --- PNG-backed status pages (submitted / under_review / accepted) --- */
-/* The PNG IS the whole page — header, iggy, card and label are baked in. */
-.dashboard-bg-page {
+
+.hk-dash-bg-page {
   min-height: 100vh;
   background-color: #EDF7FF;
   display: flex;
@@ -164,24 +146,20 @@
   margin: 0;
 }
 
-.dashboard-bg-wrapper {
+.hk-dash-bg-wrapper {
   position: relative;
   width: 100%;
   max-width: 1440px;
 }
 
-.dashboard-bg-img {
+.hk-dash-bg-img {
   display: block;
   width: 100%;
   height: auto;
 }
 
-/* Transparent hit-area positioned over the baked-in "Continue to Dashboard"
-   button on app-accepted-bg.png. Percentages are relative to the image size
-   so the hit area scales with the responsive image. */
-.dashboard-accept-hit {
+.hk-dash-accept-hit {
   position: absolute;
-  /* Tuned against app-accepted-bg.png (see asset for reference). */
   top: 55.5%;
   left: 53%;
   width: 24.5%;
@@ -193,12 +171,12 @@
   border-radius: 0.85rem;
 }
 
-.dashboard-accept-hit:focus-visible {
+.hk-dash-accept-hit:focus-visible {
   outline: 3px solid #4b2ea8;
   outline-offset: 2px;
 }
 
-.dashboard-sr-only {
+.hk-dash-sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -210,8 +188,7 @@
   border: 0;
 }
 
-/* Error banner for the PNG-backed path (no dashboard-content wrapper to anchor against). */
-.dashboard-error-floating {
+.hk-dash-error-floating {
   position: fixed;
   left: 50%;
   bottom: 1.25rem;
@@ -226,34 +203,31 @@
 }
 
 @media (max-width: 640px) {
-  .dashboard-header {
+  .hk-dash-header {
     width: 60%;
   }
-  .dashboard-content {
+  .hk-dash-content {
     margin-top: 2.5rem;
   }
-  .dashboard-card {
+  .hk-dash-card {
     padding: 1.75rem 1.5rem 2rem;
   }
-  .dashboard-title {
+  .hk-dash-title {
     font-size: 2rem;
   }
-  .dashboard-welcome {
+  .hk-dash-welcome {
     font-size: 1.4rem;
   }
-  .dashboard-subtitle {
+  .hk-dash-subtitle {
     font-size: 1rem;
   }
-  .dashboard-iggy {
+  .hk-dash-iggy {
     width: 5rem;
     top: 4rem;
     right: 1.5rem;
   }
-  .dashboard-status-row {
+  .hk-dash-status-row {
     flex-direction: column;
     align-items: flex-start;
-  }
-  .dashboard-cta-image-btn img {
-    width: 100%;
   }
 }
