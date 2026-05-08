@@ -1,0 +1,53 @@
+.notfound-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #FFEFDA;
+  padding: 24px;
+}
+
+.notfound-card {
+  text-align: center;
+  max-width: 440px;
+}
+
+.notfound-code {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(5rem, 12vw, 8rem);
+  color: #765C3A;
+  line-height: 1;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.notfound-title {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  color: #333;
+  margin: 0 0 12px;
+}
+
+.notfound-message {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  color: #666;
+  margin: 0 0 32px;
+  line-height: 1.5;
+}
+
+.notfound-btn {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(0.9rem, 1.1vw, 1.05rem);
+  background-color: #765C3A;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 36px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.notfound-btn:hover {
+  background-color: #5D421F;
+}

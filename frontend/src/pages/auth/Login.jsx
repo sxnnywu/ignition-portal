@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import './Login.css'
 import loginBg from '../../assets/backgrounds/login.png'
 import loginBtn from '../../assets/buttons/login-button.png'
-import { getToken, setAuth } from '../../lib/auth'
+import { getToken, getUser, setAuth } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
 
 function Login() {
@@ -15,7 +15,12 @@ function Login() {
 
   useEffect(() => {
     if (getToken()) {
-      navigate('/dashboard', { replace: true })
+      const user = getUser()
+      if (user?.role === 'reviewer' || user?.role === 'admin') {
+        navigate('/reviewer', { replace: true })
+      } else {
+        navigate('/dashboard', { replace: true })
+      }
     }
   }, [navigate])
 
@@ -46,7 +51,11 @@ function Login() {
       }
 
       setAuth(data.token, data.user)
-      navigate('/dashboard', { replace: true })
+      if (data.user?.role === 'reviewer' || data.user?.role === 'admin') {
+        navigate('/reviewer', { replace: true })
+      } else {
+        navigate('/dashboard', { replace: true })
+      }
     } catch (err) {
       setError(err.message)
     } finally {

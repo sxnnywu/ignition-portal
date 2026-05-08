@@ -17,6 +17,21 @@ function isValidEmail(email) {
   return emailRegex.test(email);
 }
 
+// validate name - only letters and spaces allowed, no numbers
+function isValidName(name) {
+  const nameRegex = /^[a-zA-Z\s]+$/;
+  return nameRegex.test(name);
+}
+
+// format name - capitalize first letter, rest lowercase
+function formatName(name) {
+  return name
+    .trim()
+    .split(/\s+/) // split by whitespace
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
+}
+
 // password validation
 // - at least 8 characters
 // - at least 1 lowercase letter
@@ -37,6 +52,10 @@ router.post("/signup", async (req, res) => {
     // check for missing fields
     if (!name || !email || !password)
       return res.status(400).json({ message: "All fields are required." });
+
+    // validate name format (no numbers)
+    if (!isValidName(name))
+      return res.status(400).json({ message: "Name can only contain letters and spaces." });
 
     // validate email format
     if (!isValidEmail(email))
@@ -59,9 +78,10 @@ router.post("/signup", async (req, res) => {
       throw new Error("JWT_SECRET is not defined in environment variables");
     }
 
-    // create user
+    // format and create user
+    const formattedName = formatName(name);
     const user = await User.create({
-      name,
+      name: formattedName,
       email,
       password,
       role: "applicant",
@@ -103,6 +123,10 @@ router.post("/signup/reviewer", async (req, res) => {
     if (!name || !email || !password || !secret)
       return res.status(400).json({ message: "All fields are required." });
 
+    // validate name format (no numbers)
+    if (!isValidName(name))
+      return res.status(400).json({ message: "Name can only contain letters and spaces." });
+
     // validate email format
     if (!isValidEmail(email))
       return res.status(400).json({ message: "Invalid email format." });
@@ -129,9 +153,10 @@ router.post("/signup/reviewer", async (req, res) => {
       return res.status(403).json({ message: "Unauthorized." });
     }
 
-    // create user
+    // format and create user
+    const formattedName = formatName(name);
     const user = await User.create({
-      name,
+      name: formattedName,
       email,
       password,
       role: "reviewer",
@@ -173,6 +198,10 @@ router.post("/signup/admin", async (req, res) => {
     if (!name || !email || !password || !secret)
       return res.status(400).json({ message: "All fields are required." });
 
+    // validate name format (no numbers)
+    if (!isValidName(name))
+      return res.status(400).json({ message: "Name can only contain letters and spaces." });
+
     // validate email format
     if (!isValidEmail(email))
       return res.status(400).json({ message: "Invalid email format." });
@@ -199,9 +228,10 @@ router.post("/signup/admin", async (req, res) => {
       return res.status(403).json({ message: "Unauthorized." });
     }
 
-    // create user
+    // format and create user
+    const formattedName = formatName(name);
     const user = await User.create({
-      name,
+      name: formattedName,
       email,
       password,
       role: "admin",
