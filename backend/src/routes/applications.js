@@ -33,6 +33,49 @@ router.get('/',
     }
   });
 
+// GET /applications/reviewer - get submitted/under_review applications for reviewers
+router.get('/reviewer',
+  auth,
+  requireRole('reviewer', 'admin'),
+  async (req, res) => {
+    try {
+      const reviewerId = req.user.userId;
+
+      const applications = await Application.find({
+        status: { $in: ['submitted', 'under_review', 'accepted', 'waitlisted', 'rejected'] },
+      }).populate('userId', 'name email');
+
+      const reviews = await Review.find({ reviewerId });
+      const reviewMap = {};
+      for (const review of reviews) {
+        reviewMap[review.applicationId.toString()] = review;
+      }
+
+      const result = applications.map((app) => {
+        const review = reviewMap[app._id.toString()] || null;
+        return {
+          _id: app._id,
+          userId: app.userId,
+          status: app.status,
+          answers: app.answers,
+          submittedAt: app.submittedAt,
+          createdAt: app.createdAt,
+          reviewStatus: review ? 'reviewed' : 'pending',
+          yourScore: review ? review.totalScore : null,
+          reviewId: review ? review._id : null,
+        };
+      });
+
+      res.status(200).json({
+        message: 'Reviewer applications fetched',
+        applications: result,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Server error' });
+    }
+  });
+
 // GET /applications/me
 // get application of current user
 router.get('/me', auth, async (req, res) => {

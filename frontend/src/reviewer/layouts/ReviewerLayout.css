@@ -1,0 +1,20 @@
+.reviewer-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #FFEFDA;
+}
+
+.reviewer-layout-body {
+  display: flex;
+  flex: 1;
+}
+
+.reviewer-layout-main {
+  flex: 1;
+  padding: 32px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
