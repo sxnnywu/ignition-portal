@@ -1,19 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Landing from './Landing.jsx'
-import Login from './Login.jsx'
-import Signup from './Signup.jsx'
-import ForgotPassword from './ForgotPassword.jsx'
-import ResetPassword from './ResetPassword.jsx'
-import Dashboard from './Dashboard.jsx'
-import Info from './Info.jsx'
-import Education from './Education.jsx'
-import Experience from './Experience.jsx'
-import Teammates from './Teammates.jsx'
-import Submission from './pages/Submission'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Landing from "./Landing.jsx";
+import Login from "./Login.jsx";
+import Signup from "./Signup.jsx";
+import ForgotPassword from "./ForgotPassword.jsx";
+import ResetPassword from "./ResetPassword.jsx";
+import Dashboard from "./Dashboard.jsx";
+import Info from "./Info.jsx";
+import Education from "./Education.jsx";
+import Experience from "./Experience.jsx";
+import Teammates from "./Teammates.jsx";
+import Submission from "./pages/Submission";
+import "./index.css";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
@@ -32,4 +33,4 @@ createRoot(document.getElementById('root')).render(
       </Routes>
     </BrowserRouter>
   </StrictMode>,
-)
+);
