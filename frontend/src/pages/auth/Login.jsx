@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Login.css'
-import loginBg from './assets/backgrounds/login.png'
-import loginBtn from './assets/buttons/login-button.png'
-import { getToken, setAuth } from './lib/auth'
-import { apiUrl } from './lib/api'
+import loginBg from '../../assets/backgrounds/login.png'
+import loginBtn from '../../assets/buttons/login-button.png'
+import { getToken, setAuth } from '../../lib/auth'
+import { apiUrl } from '../../lib/api'
 
 function Login() {
   const navigate = useNavigate()
@@ -55,16 +55,16 @@ function Login() {
   }
 
   return (
-    <div className="login">
-      <div className="login-content">
-        <img src={loginBg} alt="" className="login-bg" aria-hidden="true" />
+    <div className="auth-login">
+      <div className="auth-login-content">
+        <img src={loginBg} alt="" className="auth-login-bg" aria-hidden="true" />
 
-        <form className="login-form" onSubmit={handleLogin} noValidate>
-          <div className="login-form-section">
+        <form className="auth-login-form" onSubmit={handleLogin} noValidate>
+          <div className="auth-login-form-section">
             <input
               type="email"
               placeholder="Email"
-              className="login-input"
+              className="auth-login-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isPending}
@@ -72,11 +72,11 @@ function Login() {
             />
           </div>
 
-          <div className="login-form-section">
+          <div className="auth-login-form-section">
             <input
               type="password"
               placeholder="Password"
-              className="login-input"
+              className="auth-login-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isPending}
@@ -84,10 +84,10 @@ function Login() {
             />
           </div>
 
-          <div className="login-links">
+          <div className="auth-login-links">
             <button
               type="button"
-              className="login-link"
+              className="auth-login-link"
               onClick={() => navigate('/signup')}
               disabled={isPending}
             >
@@ -95,7 +95,7 @@ function Login() {
             </button>
             <button
               type="button"
-              className="login-link"
+              className="auth-login-link"
               onClick={() => navigate('/forgot-password')}
               disabled={isPending}
             >
@@ -103,9 +103,9 @@ function Login() {
             </button>
           </div>
 
-          {error && <p className="login-error">{error}</p>}
+          {error && <p className="auth-login-error">{error}</p>}
 
-          <button type="submit" className="login-button" disabled={isPending}>
+          <button type="submit" className="auth-login-button" disabled={isPending}>
             <img
               src={loginBtn}
               alt={isPending ? 'Logging in...' : 'Log In'}

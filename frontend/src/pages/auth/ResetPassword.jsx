@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import './ForgotPassword.css'
-import resetBg from './assets/backgrounds/reset.png'
-import backBtn from './assets/buttons/login-back-button.png'
-import recoverBtn from './assets/buttons/recover-button.png'
-import { apiUrl } from './lib/api'
+import resetBg from '../../assets/backgrounds/reset.png'
+import backBtn from '../../assets/buttons/login-back-button.png'
+import recoverBtn from '../../assets/buttons/recover-button.png'
+import { apiUrl } from '../../lib/api'
 
 function ResetPassword() {
   const navigate = useNavigate()
@@ -22,10 +22,6 @@ function ResetPassword() {
       setError('Invalid reset link. Please request a new password reset.')
     }
   }, [token])
-
-  const handleBack = () => {
-    navigate('/login')
-  }
 
   const handleReset = async (e) => {
     e.preventDefault()
@@ -46,13 +42,8 @@ function ResetPassword() {
     try {
       const response = await fetch(apiUrl('/reset-password'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          token,
-          password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password }),
       })
 
       const data = await response.json()
@@ -66,7 +57,6 @@ function ResetPassword() {
       setConfirmPassword('')
       setIsSubmitted(true)
 
-      // Redirect to login after 2 seconds
       setTimeout(() => {
         navigate('/login')
       }, 2000)
@@ -79,34 +69,34 @@ function ResetPassword() {
   }
 
   return (
-    <div className="forgot-password">
-      <div className="forgot-password-content">
-        <img src={resetBg} alt="" className="forgot-password-bg" />
+    <div className="auth-forgot">
+      <div className="auth-forgot-content">
+        <img src={resetBg} alt="" className="auth-forgot-bg" />
 
-        <button className="forgot-password-back-button" onClick={handleBack}>
+        <button className="auth-forgot-back-button" onClick={() => navigate('/login')}>
           <img src={backBtn} alt="Back" />
         </button>
 
-        <div className="forgot-password-form">
+        <div className="auth-forgot-form">
           {!isSubmitted && !token ? (
-            <div className="forgot-password-error">
-              <p className="forgot-password-error-message">
+            <div className="auth-forgot-error">
+              <p className="auth-forgot-error-message">
                 Invalid or expired reset link. Please request a new one.
               </p>
             </div>
           ) : isSubmitted ? (
-            <div className="forgot-password-success">
-              <p className="forgot-password-success-message">
+            <div className="auth-forgot-success">
+              <p className="auth-forgot-success-message">
                 Password reset successful! Redirecting to login...
               </p>
             </div>
           ) : (
             <form onSubmit={handleReset}>
-              <div className="forgot-password-form-section">
+              <div className="auth-forgot-form-section">
                 <input
                   type="password"
                   placeholder="New Password"
-                  className="forgot-password-input"
+                  className="auth-forgot-input"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -114,11 +104,11 @@ function ResetPassword() {
                 />
               </div>
 
-              <div className="forgot-password-form-section">
+              <div className="auth-forgot-form-section">
                 <input
                   type="password"
                   placeholder="Confirm Password"
-                  className="forgot-password-input"
+                  className="auth-forgot-input"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
@@ -126,9 +116,9 @@ function ResetPassword() {
                 />
               </div>
 
-              <button 
+              <button
                 type="submit"
-                className="forgot-password-button" 
+                className="auth-forgot-button"
                 disabled={isLoading}
               >
                 <img src={recoverBtn} alt="Reset password" />
@@ -137,8 +127,8 @@ function ResetPassword() {
           )}
 
           {error && (
-            <div className="forgot-password-error">
-              <p className="forgot-password-error-message">{error}</p>
+            <div className="auth-forgot-error">
+              <p className="auth-forgot-error-message">{error}</p>
             </div>
           )}
         </div>

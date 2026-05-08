@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './ForgotPassword.css'
-import resetBg from './assets/backgrounds/reset.png'
-import backBtn from './assets/buttons/login-back-button.png'
-import recoverBtn from './assets/buttons/recover-button.png'
-import { apiUrl } from './lib/api'
+import resetBg from '../../assets/backgrounds/reset.png'
+import backBtn from '../../assets/buttons/login-back-button.png'
+import recoverBtn from '../../assets/buttons/recover-button.png'
+import { apiUrl } from '../../lib/api'
 
 function ForgotPassword() {
   const navigate = useNavigate()
@@ -12,10 +12,6 @@ function ForgotPassword() {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-
-  const handleBack = () => {
-    navigate('/login')
-  }
 
   const handleRecover = async (e) => {
     e.preventDefault()
@@ -25,9 +21,7 @@ function ForgotPassword() {
     try {
       const response = await fetch(apiUrl('/forgot-password'), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
 
@@ -49,21 +43,21 @@ function ForgotPassword() {
   }
 
   return (
-    <div className="forgot-password">
-      <div className="forgot-password-content">
-        <img src={resetBg} alt="" className="forgot-password-bg" />
+    <div className="auth-forgot">
+      <div className="auth-forgot-content">
+        <img src={resetBg} alt="" className="auth-forgot-bg" />
 
-        <button className="forgot-password-back-button" onClick={handleBack}>
+        <button className="auth-forgot-back-button" onClick={() => navigate('/login')}>
           <img src={backBtn} alt="Back" />
         </button>
 
-        <div className="forgot-password-form">
+        <div className="auth-forgot-form">
           <form onSubmit={handleRecover}>
-            <div className="forgot-password-form-section">
+            <div className="auth-forgot-form-section">
               <input
                 type="email"
                 placeholder="Email"
-                className="forgot-password-input"
+                className="auth-forgot-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -71,9 +65,9 @@ function ForgotPassword() {
               />
             </div>
 
-            <button 
+            <button
               type="submit"
-              className="forgot-password-button" 
+              className="auth-forgot-button"
               disabled={isLoading}
             >
               <img src={recoverBtn} alt="Recover password" />
@@ -81,14 +75,14 @@ function ForgotPassword() {
           </form>
 
           {error && (
-            <div className="forgot-password-error">
-              <p className="forgot-password-error-message">{error}</p>
+            <div className="auth-forgot-error">
+              <p className="auth-forgot-error-message">{error}</p>
             </div>
           )}
 
           {isSubmitted && (
-            <div className="forgot-password-success">
-              <p className="forgot-password-success-message">
+            <div className="auth-forgot-success">
+              <p className="auth-forgot-success-message">
                 Instructions have been sent to your email to reset your password.
               </p>
             </div>

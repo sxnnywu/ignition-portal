@@ -1,4 +1,4 @@
-.landing {
+.hk-landing {
   width: 100vw;
   height: 100vh;
   display: flex;
@@ -7,18 +7,18 @@
   background-color: #EDF7FF;
 }
 
-.landing-content {
+.hk-landing-content {
   position: relative;
   max-width: 1440px;
   width: 100%;
 }
 
-.landing-bg {
+.hk-landing-bg {
   width: 100%;
   display: block;
 }
 
-.start-application-btn {
+.hk-landing-start-btn {
   position: absolute;
   bottom: 33.5%;
   left: 23%;
@@ -30,17 +30,11 @@
   transition: transform 0.1s ease;
 }
 
-.start-application-btn:active {
+.hk-landing-start-btn:active {
   transform: scale(0.95);
 }
 
-.start-application-btn img {
+.hk-landing-start-btn img {
   width: 100%;
   display: block;
-}
-
-body {
-  margin: 0;
-  background-color: #EDF7FF;
-  font-family: 'Satoshi', sans-serif;
 }
