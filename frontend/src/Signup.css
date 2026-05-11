@@ -99,6 +99,13 @@
   text-decoration: underline;
 }
 
+.signup-error {
+  color: #e53e3e;
+  font-size: 1cqw;
+  margin: 0;
+  text-align: center;
+}
+
 .signup-button {
   position: absolute;
   bottom: -45%;

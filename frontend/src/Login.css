@@ -80,6 +80,13 @@
   color: #333;
 }
 
+.login-error {
+  color: #e53e3e;
+  font-size: 1cqw;
+  margin: 0;
+  text-align: center;
+}
+
 .login-button {
   position: absolute;
   bottom: -60%;

@@ -10,6 +10,13 @@ import Education from './Education.jsx'
 import Experience from './Experience.jsx'
 import Teammates from './Teammates.jsx'
 import Submission from './pages/Submission'
+import ReviewerSignup from './ReviewerSignup.jsx'
+import AdminSignup from './AdminSignup.jsx'
+import ProtectedRoute from './ProtectedRoute.jsx'
+import ReviewerDashboard from './pages/ReviewerDashboard.jsx'
+import ReviewerApplicationDetail from './pages/ReviewerApplicationDetail.jsx'
+import AdminDashboard from './pages/AdminDashboard.jsx'
+import AdminApplicationDetail from './pages/AdminApplicationDetail.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -18,6 +25,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/" element={<Login />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/signup/reviewer" element={<ReviewerSignup />} />
+        <Route path="/signup/admin" element={<AdminSignup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/landing" element={<Landing />} />
         <Route path="/info" element={<Info />} />
@@ -25,6 +34,26 @@ createRoot(document.getElementById('root')).render(
         <Route path="/experience" element={<Experience />} />
         <Route path="/teammates" element={<Teammates />} />
         <Route path="/submission/:id" element={<Submission />} />
+        <Route path="/reviewer/dashboard" element={
+          <ProtectedRoute allowedRoles={['reviewer']}>
+            <ReviewerDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/reviewer/application/:id" element={
+          <ProtectedRoute allowedRoles={['reviewer']}>
+            <ReviewerApplicationDetail />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/dashboard" element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/admin/application/:id" element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <AdminApplicationDetail />
+          </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   </StrictMode>,
