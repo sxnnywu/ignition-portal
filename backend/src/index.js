@@ -15,7 +15,7 @@ dotenv.config();
 
 // initialize express app and connect to database
 const app = express();
-connectDB();
+await connectDB();
 
 const allowedOrigins = (process.env.CORS_ORIGIN || '')
   .split(',')

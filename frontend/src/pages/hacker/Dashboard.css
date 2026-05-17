@@ -1,0 +1,233 @@
+.hk-dash {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #EDF7FF;
+  position: relative;
+  font-family: 'Jua', 'Satoshi', sans-serif;
+  padding: 2rem 1.5rem 3rem;
+  box-sizing: border-box;
+}
+
+.hk-dash-header {
+  display: block;
+  width: min(18rem, 40%);
+  margin: 0 auto 1.5rem;
+}
+
+.hk-dash-iggy {
+  position: absolute;
+  top: 7rem;
+  right: clamp(2rem, 10vw, 10rem);
+  width: clamp(6rem, 10vw, 9rem);
+  height: auto;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hk-dash-content {
+  max-width: 820px;
+  margin: 4rem auto 0;
+  position: relative;
+  z-index: 1;
+}
+
+.hk-dash-card {
+  width: 100%;
+  background-color: #FFF5EB;
+  border-radius: 1.5rem;
+  padding: 2.5rem 3rem 2.75rem;
+  box-sizing: border-box;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.hk-dash-card-loading {
+  min-height: 14rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hk-dash-loading {
+  color: #4a3524;
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.hk-dash-welcome {
+  font-size: 1.75rem;
+  font-weight: 400;
+  color: #1a1a1a;
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.hk-dash-title {
+  font-size: 2.75rem;
+  font-weight: 400;
+  color: #a78bfa;
+  margin: 0 0 0.75rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.hk-dash-subtitle {
+  font-size: 1.15rem;
+  color: #3a3a3a;
+  margin: 0 0 2rem;
+  font-weight: 400;
+}
+
+.hk-dash-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hk-dash-status-label-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.hk-dash-status-label {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: #7a5230;
+  letter-spacing: 0.01em;
+}
+
+.hk-dash-check-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  flex-shrink: 0;
+}
+
+.hk-dash-cta-btn {
+  background-color: #6b4520;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.85rem;
+  padding: 0.9rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, background-color 0.15s ease;
+}
+
+.hk-dash-cta-btn:hover {
+  background-color: #57361a;
+}
+
+.hk-dash-cta-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+}
+
+.hk-dash-error {
+  color: #b4332a;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+}
+
+/* --- PNG-backed status pages (submitted / under_review / accepted) --- */
+
+.hk-dash-bg-page {
+  min-height: 100vh;
+  background-color: #EDF7FF;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+  margin: 0;
+}
+
+.hk-dash-bg-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+}
+
+.hk-dash-bg-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hk-dash-accept-hit {
+  position: absolute;
+  top: 55.5%;
+  left: 53%;
+  width: 24.5%;
+  height: 11.5%;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 0.85rem;
+}
+
+.hk-dash-accept-hit:focus-visible {
+  outline: 3px solid #4b2ea8;
+  outline-offset: 2px;
+}
+
+.hk-dash-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.hk-dash-error-floating {
+  position: fixed;
+  left: 50%;
+  bottom: 1.25rem;
+  transform: translateX(-50%);
+  background-color: #fff5e5;
+  border: 1px solid #e0a84a;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1.1rem;
+  margin: 0;
+  max-width: 90vw;
+  z-index: 10;
+}
+
+@media (max-width: 640px) {
+  .hk-dash-header {
+    width: 60%;
+  }
+  .hk-dash-content {
+    margin-top: 2.5rem;
+  }
+  .hk-dash-card {
+    padding: 1.75rem 1.5rem 2rem;
+  }
+  .hk-dash-title {
+    font-size: 2rem;
+  }
+  .hk-dash-welcome {
+    font-size: 1.4rem;
+  }
+  .hk-dash-subtitle {
+    font-size: 1rem;
+  }
+  .hk-dash-iggy {
+    width: 5rem;
+    top: 4rem;
+    right: 1.5rem;
+  }
+  .hk-dash-status-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

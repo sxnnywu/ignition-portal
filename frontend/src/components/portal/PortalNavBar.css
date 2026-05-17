@@ -1,0 +1,78 @@
+.portal-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #765C3A;
+  color: #FFEFDA;
+  padding: 10px 24px;
+  box-shadow: 0px 4px 4px 0px #00000040;
+  position: relative;
+  z-index: 10;
+}
+
+.portal-navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.portal-navbar-logo {
+  height: 28px;
+  width: auto;
+}
+
+.portal-navbar-brand {
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.portal-navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.portal-navbar-btn {
+  font-family: 'Jua', sans-serif;
+  font-size: 0.9rem;
+  border: 2px solid #A38C6F;
+  border-radius: 1.5em;
+  padding: 8px 20px;
+  color: #FFFFFF;
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.portal-navbar-btn:hover {
+  opacity: 0.9;
+}
+
+.portal-navbar-btn--active {
+  background-color: #FFB44A;
+}
+
+.portal-navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.portal-navbar-user-icon {
+  height: 28px;
+  width: 28px;
+  padding: 6px;
+  background-color: #FFEFDA;
+  border-radius: 50%;
+}
+
+.portal-navbar-username {
+  font-family: 'Jua', sans-serif;
+  font-size: 0.95rem;
+  color: #FFEFDA;
+  white-space: nowrap;
+}

@@ -1,29 +1,35 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      '/applications': {
-        target: process.env.BACKEND_URL || 'http://localhost:8000',
+      "/applications": {
+        // target: import.meta.env.BACKEND_URL || "http://localhost:8000",
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
-      '/signup': {
-        target: process.env.BACKEND_URL || 'http://localhost:8000',
+      "/signup": {
+        // target: import.meta.env.BACKEND_URL || "http://localhost:8000",
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
-      '/forgot-password': {
-        target: process.env.BACKEND_URL || 'http://localhost:8000',
+      "/forgot-password": {
+        // target: import.meta.env.BACKEND_URL || "http://localhost:8000",
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
-      '/reset-password': {
-        target: process.env.BACKEND_URL || 'http://localhost:8000',
+      "/reset-password": {
+        // target: import.meta.env.BACKEND_URL || "http://localhost:8000",
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
-      '/login': {
-        target: process.env.BACKEND_URL || 'http://localhost:8000',
+      "/login": {
+        // target: import.meta.env.BACKEND_URL || "http://localhost:8000",
+        target: "http://localhost:8000",
         changeOrigin: true,
       },
       '/api/admin': {
@@ -32,4 +38,4 @@ export default defineConfig({
       },
     },
   },
-})
+});

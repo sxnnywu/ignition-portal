@@ -1,0 +1,40 @@
+.hk-landing {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #EDF7FF;
+}
+
+.hk-landing-content {
+  position: relative;
+  max-width: 1440px;
+  width: 100%;
+}
+
+.hk-landing-bg {
+  width: 100%;
+  display: block;
+}
+
+.hk-landing-start-btn {
+  position: absolute;
+  bottom: 33.5%;
+  left: 23%;
+  width: 22%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.hk-landing-start-btn:active {
+  transform: scale(0.95);
+}
+
+.hk-landing-start-btn img {
+  width: 100%;
+  display: block;
+}

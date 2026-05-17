@@ -1,0 +1,92 @@
+import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import HkFormPage from '../../components/hacker/HkFormPage'
+import experienceBg from '../../assets/backgrounds/experience.png'
+import { getToken } from '../../lib/auth'
+import { apiUrl } from '../../lib/api'
+
+function Experience() {
+  const navigate = useNavigate()
+  const [attended2025, setAttended2025] = useState('')
+  const [hackathonsAttended, setHackathonsAttended] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleContinue = async () => {
+    const token = getToken()
+    if (!token) {
+      alert('You must be logged in to save your application. Please log in and try again.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await fetch(apiUrl('/applications'), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          answers: { attended2025, hackathonsAttended },
+          status: 'draft',
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to save experience data')
+      }
+
+      navigate('/teammates')
+    } catch (error) {
+      console.error('Error saving experience data:', error)
+      alert('Error saving your data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <HkFormPage
+      backgroundSrc={experienceBg}
+      backTo="/education"
+      onContinue={handleContinue}
+      continueDisabled={loading}
+    >
+      <div className="hk-form-section">
+        <label className="hk-section-label">Did you attend IgnitionHacks 2025?</label>
+        <div className="hk-field-row">
+          <select
+            className="hk-select"
+            value={attended2025}
+            onChange={(e) => setAttended2025(e.target.value)}
+          >
+            <option value="" disabled>Select</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="hk-form-section">
+        <label className="hk-section-label">How many hackathons have you attended?</label>
+        <div className="hk-field-row">
+          <select
+            className="hk-select"
+            value={hackathonsAttended}
+            onChange={(e) => setHackathonsAttended(e.target.value)}
+          >
+            <option value="" disabled>Select</option>
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5 or more</option>
+          </select>
+        </div>
+      </div>
+    </HkFormPage>
+  )
+}
+
+export default Experience
