@@ -1,0 +1,72 @@
+.rv-main-page {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.rv-main-content {
+  flex: 1;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background-color: #FFEFDA;
+  overflow-y: auto;
+}
+
+/* Top bar: title + search */
+.rv-content-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.rv-content-title {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  color: #333;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.rv-search-input {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(0.8rem, 0.95vw, 0.95rem);
+  padding: 8px 16px;
+  border: 1px solid #A38C6F;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  color: #333;
+  outline: none;
+  width: 240px;
+  max-width: 100%;
+  transition: border-color 0.15s ease;
+}
+
+.rv-search-input::placeholder {
+  color: #999;
+}
+
+.rv-search-input:focus {
+  border-color: #765C3A;
+}
+
+/* Loading / error states */
+.rv-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  color: #765C3A;
+}
+
+.rv-error {
+  text-align: center;
+  padding: 24px;
+  color: #c00;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+}

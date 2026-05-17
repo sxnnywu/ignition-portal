@@ -1,0 +1,185 @@
+.rv-table-wrapper {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #A38C6F;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+}
+
+/* Header row: "Applications" title + sort dropdown */
+.rv-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+}
+
+.rv-table-title {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: #333;
+}
+
+.rv-table-sort {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
+  padding: 6px 12px;
+  border: 1px solid #A38C6F;
+  border-radius: 8px;
+  background: #FFFFFF;
+  color: #333;
+  cursor: pointer;
+  outline: none;
+}
+
+/* Table itself */
+.rv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rv-table th,
+.rv-table td {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  white-space: nowrap;
+}
+
+.rv-table thead tr {
+  background-color: #FFF8F0;
+}
+
+.rv-table th {
+  font-weight: 900;
+  color: #333;
+  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  border-bottom: 1px solid #E8DDD0;
+}
+
+.rv-table tbody tr {
+  border-bottom: 1px solid #F0E8DC;
+  transition: background-color 0.1s ease;
+}
+
+.rv-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.rv-table tbody tr:hover {
+  background-color: #FFFAF5;
+}
+
+/* Column-specific styles */
+.rv-table-cell-id {
+  font-weight: 400;
+  color: #666;
+}
+
+.rv-table-cell-applicant {
+  font-weight: 700;
+  color: #333;
+}
+
+.rv-table-cell-school {
+  font-weight: 400;
+  color: #555;
+}
+
+.rv-table-cell-submitted {
+  font-weight: 400;
+  color: #555;
+}
+
+.rv-table-cell-score {
+  font-weight: 700;
+  color: #333;
+}
+
+/* Status badges */
+.rv-status-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: clamp(0.6rem, 0.75vw, 0.75rem);
+  white-space: nowrap;
+}
+
+.rv-status-badge--reviewed {
+  background-color: #A172FF;
+  color: #332452;
+}
+
+.rv-status-badge--pending {
+  background-color: #AEFFFF;
+  color: #567F7F;
+}
+
+/* Action buttons */
+.rv-action-btn {
+  font-family: 'Jua', sans-serif;
+  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  background-color: #FFF8F0;
+  border: 1px solid #A38C6F;
+  border-radius: 8px;
+  padding: 6px 14px;
+  cursor: pointer;
+  color: #333;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.rv-action-btn:hover {
+  background-color: #F5EDE0;
+}
+
+.rv-action-btn-arrow {
+  margin-left: 4px;
+}
+
+/* Pagination */
+.rv-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px;
+  border-top: 1px solid #F0E8DC;
+}
+
+.rv-pagination-btn {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  padding: 4px 10px;
+  border: 1px solid #D9CDBE;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: #555;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.rv-pagination-btn:hover:not(:disabled) {
+  background-color: #FFF8F0;
+}
+
+.rv-pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.rv-pagination-btn--active {
+  background-color: #765C3A;
+  color: #FFFFFF;
+  border-color: #765C3A;
+}
+
+.rv-pagination-ellipsis {
+  padding: 4px 6px;
+  color: #999;
+  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+}
