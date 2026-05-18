@@ -13,10 +13,16 @@ export default defineConfig({
       '/login': {
         target: process.env.BACKEND_URL || 'http://localhost:8000',
         changeOrigin: true,
+        bypass: (req) => {
+          if (req.headers.accept?.includes('text/html')) return '/index.html';
+        },
       },
       '/signup': {
         target: process.env.BACKEND_URL || 'http://localhost:8000',
         changeOrigin: true,
+        bypass: (req) => {
+          if (req.headers.accept?.includes('text/html')) return '/index.html';
+        },
       },
     },
   },
