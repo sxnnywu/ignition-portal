@@ -1,0 +1,266 @@
+.admin-detail {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #EDF7FF;
+  display: flex;
+  justify-content: center;
+}
+
+.admin-detail-content {
+  max-width: 900px;
+  width: 100%;
+  padding: 2rem 2rem 4rem;
+  box-sizing: border-box;
+}
+
+.admin-detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0 1rem;
+  border-bottom: 2px solid #d6eaf8;
+  margin-bottom: 2rem;
+}
+
+.admin-detail-logo {
+  height: 2.5rem;
+}
+
+.admin-back-btn {
+  background: none;
+  border: 2px solid #c9a66a;
+  border-radius: 0.5rem;
+  padding: 0.4rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #7a6249;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.admin-back-btn:hover {
+  background-color: #fff5eb;
+}
+
+.admin-detail-loading {
+  color: #888;
+  margin-top: 3rem;
+  text-align: center;
+}
+
+.admin-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.admin-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.admin-detail-name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #333;
+  margin: 0;
+}
+
+.admin-detail-email {
+  font-size: 0.95rem;
+  color: #888;
+  margin: 0;
+}
+
+.admin-detail-section {
+  background: #FFF5EB;
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-detail-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #7B5CF5;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-avg-score {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c9a66a;
+}
+
+.admin-detail-empty {
+  color: #aaa;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* status section */
+.admin-status-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.admin-status-badge--draft       { background: #f0f0f0; color: #666; }
+.admin-status-badge--submitted   { background: #e0f0ff; color: #1a6fb5; }
+.admin-status-badge--under_review { background: #fef3c7; color: #92620a; }
+.admin-status-badge--accepted    { background: #d1fae5; color: #065f46; }
+.admin-status-badge--waitlisted  { background: #ede9fe; color: #5b21b6; }
+.admin-status-badge--rejected    { background: #fee2e2; color: #991b1b; }
+
+.admin-status-select {
+  padding: 0.4rem 0.8rem;
+  border: 2px solid #c9a66a;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: #333;
+  background: white;
+  outline: none;
+  cursor: pointer;
+}
+
+.admin-status-select:focus {
+  border-color: #7B5CF5;
+}
+
+.admin-status-save-btn {
+  background-color: #7B5CF5;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.4rem 1.2rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.admin-status-save-btn:hover:not(:disabled) {
+  background-color: #6344d4;
+}
+
+.admin-status-save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.admin-detail-error {
+  color: #e53e3e;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.admin-detail-success {
+  color: #2d8a4e;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* reviewer score cards */
+.admin-review-card {
+  border: 1px solid #e8d8c4;
+  border-radius: 0.7rem;
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.admin-review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-reviewer-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #333;
+  margin: 0;
+}
+
+.admin-review-total {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #7B5CF5;
+}
+
+.admin-review-scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-review-score-row {
+  background: #f0ebff;
+  border-radius: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  display: flex;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+}
+
+.admin-review-score-key {
+  color: #7a6249;
+  font-weight: 600;
+}
+
+.admin-review-score-val {
+  color: #5b21b6;
+  font-weight: 700;
+}
+
+/* answer rows */
+.admin-answer-row {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e8d8c4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.admin-answer-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.admin-answer-key {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #c9a66a;
+  margin: 0;
+}
+
+.admin-answer-value {
+  font-size: 0.95rem;
+  color: #333;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

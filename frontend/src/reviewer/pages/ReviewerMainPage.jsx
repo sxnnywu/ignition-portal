@@ -93,9 +93,8 @@ export default function ReviewerMainPage() {
   }, [applications, activeFilter, searchQuery])
 
   const handleActionClick = useCallback((app) => {
-    // TODO: navigate to review detail page when implemented
-    console.log('Action clicked for application:', app._id)
-  }, [])
+    navigate(`/reviewer/application/${app._id}`)
+  }, [navigate])
 
   if (loading) {
     return (

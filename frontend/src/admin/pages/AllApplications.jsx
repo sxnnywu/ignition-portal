@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fetchApplications, updateApplicationStatus, exportCsv } from '../api/adminApi';
 import FilterTabs from '../components/FilterTabs';
 import StatusBadge from '../components/StatusBadge';
@@ -33,6 +34,7 @@ const STATUS_LABELS = {
 };
 
 export default function AllApplications({ onDataChange }) {
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [loading, setLoading] = useState(true);
@@ -189,7 +191,10 @@ export default function AllApplications({ onDataChange }) {
                   <td><StatusBadge status={app.status} /></td>
                   <td className="all-apps-cell-score">{app.avgScore ?? '--'}</td>
                   <td>
-                    <button className="all-apps-view-btn">
+                    <button
+                      className="all-apps-view-btn"
+                      onClick={() => navigate(`/admin/application/${app._id}`)}
+                    >
                       View &rarr;
                     </button>
                   </td>

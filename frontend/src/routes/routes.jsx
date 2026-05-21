@@ -3,6 +3,8 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
+import AdminSignup from "../AdminSignup";
+import ReviewerSignup from "../ReviewerSignup";
 
 // hacker routes
 import Dashboard from "../pages/hacker/Dashboard";
@@ -16,6 +18,11 @@ import Teammates from "../pages/hacker/Teammates";
 // reviewer routes
 import ReviewerLayout from "../reviewer/layouts/ReviewerLayout";
 import ReviewerMainPage from "../reviewer/pages/ReviewerMainPage";
+import ReviewerApplicationDetail from "../pages/ReviewerApplicationDetail";
+
+// admin routes
+import AdminApp from "../admin/AdminApp";
+import AdminApplicationDetail from "../pages/AdminApplicationDetail";
 
 // shared
 import RequireRole from "../components/auth/RequireRole";
@@ -26,28 +33,101 @@ const routes = [
   { path: "/", element: <Login /> },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <Signup /> },
+  { path: "/signup/reviewer", element: <ReviewerSignup /> },
+  { path: "/signup/admin", element: <AdminSignup /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password", element: <ResetPassword /> },
 
   // --- applicant-only routes ---
-  { path: "/landing", element: <RequireRole allowed={['applicant']}><Landing /></RequireRole> },
-  { path: "/dashboard", element: <RequireRole allowed={['applicant']}><Dashboard /></RequireRole> },
-  { path: "/info", element: <RequireRole allowed={['applicant']}><Info /></RequireRole> },
-  { path: "/education", element: <RequireRole allowed={['applicant']}><Education /></RequireRole> },
-  { path: "/experience", element: <RequireRole allowed={['applicant']}><Experience /></RequireRole> },
-  { path: "/teammates", element: <RequireRole allowed={['applicant']}><Teammates /></RequireRole> },
-  { path: "/submission/:id", element: <RequireRole allowed={['applicant']}><Submission /></RequireRole> },
+  {
+    path: "/landing",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Landing />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Dashboard />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/info",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Info />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/education",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Education />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/experience",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Experience />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/teammates",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Teammates />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/submission/:id",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Submission />
+      </RequireRole>
+    ),
+  },
 
   // --- reviewer / admin routes ---
   {
     element: (
-      <RequireRole allowed={['reviewer', 'admin']}>
+      <RequireRole allowed={["admin"]}>
         <ReviewerLayout />
       </RequireRole>
     ),
-    children: [
-      { path: "/reviewer", element: <ReviewerMainPage /> },
-    ],
+    children: [{ path: "/admin", element: <AdminApp /> }],
+  },
+  {
+    path: "/admin/application/:id",
+    element: (
+      <RequireRole allowed={["admin"]}>
+        <AdminApplicationDetail />
+      </RequireRole>
+    ),
+  },
+  {
+    element: (
+      <RequireRole allowed={["reviewer", "admin"]}>
+        <ReviewerLayout />
+      </RequireRole>
+    ),
+    children: [{ path: "/reviewer", element: <ReviewerMainPage /> }],
+  },
+  {
+    path: "/reviewer/application/:id",
+    element: (
+      <RequireRole allowed={["reviewer", "admin"]}>
+        <ReviewerApplicationDetail />
+      </RequireRole>
+    ),
   },
 
   // --- 404 catch-all ---
