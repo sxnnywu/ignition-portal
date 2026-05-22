@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CloseIcon } from './Icons';
+import { CloseIcon } from '../../components/shared/Icons';
 import { createUser } from '../api/adminApi';
 import './AddUserModal.css';
 

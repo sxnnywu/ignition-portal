@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import '../../admin/pages/AdminApplicationDetail.css'
 import './ReviewerApplicationDetail.css'
-import headerImg from '../assets/backgrounds/header.svg'
+import { getToken, clearAuth } from '../../lib/auth'
+import { apiUrl } from '../../lib/api'
+import { invalidateCache, CACHE_KEYS } from '../../lib/cache'
 
 function ReviewerApplicationDetail() {
   const navigate = useNavigate()
   const { id } = useParams()
 
   const [application, setApplication] = useState(null)
-  const [existingReview, setExistingReview] = useState(null) // null = no review yet
+  const [existingReview, setExistingReview] = useState(null)
   const [scores, setScores] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -16,29 +19,37 @@ function ReviewerApplicationDetail() {
   const [successMsg, setSuccessMsg] = useState(null)
 
   useEffect(() => {
-    const token = sessionStorage.getItem('token')
-    if (!token) { navigate('/login'); return }
+    const token = getToken()
+    if (!token) {
+      navigate('/login', { replace: true })
+      return
+    }
 
-    // fetch the application and any existing review in parallel
+    const headers = { Authorization: `Bearer ${token}` }
+
     Promise.all([
-      fetch(`/applications/${id}`, { headers: { Authorization: `Bearer ${token}` } })
-        .then((r) => r.json().then((d) => ({ ok: r.ok, data: d }))),
-      fetch(`/applications/${id}/review/me`, { headers: { Authorization: `Bearer ${token}` } })
-        .then((r) => r.json().then((d) => ({ ok: r.ok, data: d }))),
+      fetch(apiUrl(`/applications/${id}`), { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, status: r.status, data: d }))),
+      fetch(apiUrl(`/applications/${id}/review/me`), { headers })
+        .then((r) => r.json().then((d) => ({ ok: r.ok, status: r.status, data: d }))),
     ])
       .then(([appResult, reviewResult]) => {
-        if (!appResult.ok) throw new Error(appResult.data.message || 'Failed to load application.')
+        if (appResult.status === 401) {
+          clearAuth()
+          navigate('/login', { replace: true })
+          return
+        }
+        if (!appResult.ok) {
+          throw new Error(appResult.data.message || 'Failed to load application.')
+        }
         setApplication(appResult.data.application)
 
         if (reviewResult.ok) {
-          // reviewer already has a review — pre-populate scores for editing
           setExistingReview(reviewResult.data.review)
-          // Map scores: Mongoose Map serialises as an object
           setScores(Object.fromEntries(
             Object.entries(reviewResult.data.review.scores).map(([k, v]) => [k, String(v)])
           ))
         } else {
-          // no review yet — seed empty score inputs from the answer keys
           const answers = appResult.data.application.answers || {}
           setScores(Object.fromEntries(Object.keys(answers).map((k) => [k, ''])))
         }
@@ -55,7 +66,6 @@ function ReviewerApplicationDetail() {
     setError(null)
     setSuccessMsg(null)
 
-    // validate all scores are non-negative numbers
     const parsedScores = {}
     for (const [key, raw] of Object.entries(scores)) {
       const val = Number(raw)
@@ -66,11 +76,11 @@ function ReviewerApplicationDetail() {
       parsedScores[key] = val
     }
 
-    const token = sessionStorage.getItem('token')
+    const token = getToken()
     setIsSaving(true)
     try {
       const method = existingReview ? 'PUT' : 'POST'
-      const res = await fetch(`/applications/${id}/review`, {
+      const res = await fetch(apiUrl(`/applications/${id}/review`), {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -81,6 +91,8 @@ function ReviewerApplicationDetail() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.message || 'Failed to save review.')
       setExistingReview(data.review)
+      // Stale the reviewer list so it reflects the new review status
+      invalidateCache(CACHE_KEYS.REVIEWER_APPS)
       setSuccessMsg(existingReview ? 'Review updated!' : 'Review submitted!')
     } catch (err) {
       setError(err.message)
@@ -91,9 +103,9 @@ function ReviewerApplicationDetail() {
 
   if (isLoading) {
     return (
-      <div className="reviewer-detail">
-        <div className="reviewer-detail-content">
-          <p className="reviewer-detail-loading">Loading application...</p>
+      <div className="app-detail">
+        <div className="app-detail-content">
+          <p className="app-detail-loading">Loading application...</p>
         </div>
       </div>
     )
@@ -102,35 +114,33 @@ function ReviewerApplicationDetail() {
   const answers = application?.answers || {}
 
   return (
-    <div className="reviewer-detail">
-      <div className="reviewer-detail-content">
-        <div className="reviewer-detail-header">
-          <img src={headerImg} alt="Ignition Hacks" className="reviewer-detail-logo" />
-          <button className="reviewer-back-btn" onClick={() => navigate('/reviewer/dashboard')}>
-            ← Back to queue
+    <div className="app-detail">
+      <div className="app-detail-content">
+        <div className="app-detail-header">
+          <button className="app-detail-back-btn" onClick={() => navigate('/reviewer')}>
+            &larr; Back to queue
           </button>
         </div>
 
-        <div className="reviewer-detail-body">
-          <div className="reviewer-detail-meta">
-            <h1 className="reviewer-detail-name">
+        <div className="app-detail-body">
+          <div className="app-detail-meta">
+            <h1 className="app-detail-name">
               {application?.userId?.name || 'Unknown Applicant'}
             </h1>
-            <p className="reviewer-detail-email">{application?.userId?.email || '—'}</p>
+            <p className="app-detail-email">{application?.userId?.email || '--'}</p>
             <span className="reviewer-detail-status">{application?.status}</span>
           </div>
 
-          {/* answers */}
-          <div className="reviewer-detail-section">
-            <h2 className="reviewer-detail-section-title">Application Answers</h2>
+          <div className="app-detail-section">
+            <h2 className="app-detail-section-title">Application Answers</h2>
             {Object.keys(answers).length === 0 ? (
-              <p className="reviewer-detail-empty">No answers submitted.</p>
+              <p className="app-detail-empty">No answers submitted.</p>
             ) : (
               Object.entries(answers).map(([key, value]) => (
                 <div key={key} className="reviewer-answer-row">
                   <div className="reviewer-answer-left">
-                    <p className="reviewer-answer-key">{key}</p>
-                    <p className="reviewer-answer-value">
+                    <p className="app-detail-answer-key">{key}</p>
+                    <p className="app-detail-answer-value">
                       {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                     </p>
                   </div>
@@ -150,8 +160,8 @@ function ReviewerApplicationDetail() {
             )}
           </div>
 
-          {error && <p className="reviewer-detail-error">{error}</p>}
-          {successMsg && <p className="reviewer-detail-success">{successMsg}</p>}
+          {error && <p className="app-detail-error">{error}</p>}
+          {successMsg && <p className="app-detail-success">{successMsg}</p>}
 
           <div className="reviewer-detail-actions">
             <button

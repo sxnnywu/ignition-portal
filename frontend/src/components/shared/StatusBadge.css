@@ -1,0 +1,38 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  min-width: 75px;
+  padding: 0 14px;
+  border-radius: 16px;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge--accepted {
+  background-color: #A9FF94;
+  color: #487F3A;
+}
+
+.status-badge--waitlisted {
+  background-color: #FFB44A;
+  color: #755221;
+}
+
+.status-badge--rejected {
+  background-color: #FF8B8B;
+  color: #6C3939;
+}
+
+.status-badge--reviewed {
+  background-color: #A172FF;
+  color: #332452;
+}
+
+.status-badge--pending {
+  background-color: #AEFFFF;
+  color: #567F7F;
+}

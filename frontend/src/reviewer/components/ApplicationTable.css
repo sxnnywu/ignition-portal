@@ -13,26 +13,28 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 16px;
+  padding: 20px;
 }
 
 .rv-table-title {
   font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
-  font-weight: 700;
-  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
-  color: #333;
+  font-weight: 900;
+  font-size: 15px;
+  color: #765C3A;
 }
 
 .rv-table-sort {
   font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
-  font-size: clamp(0.75rem, 0.9vw, 0.85rem);
-  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 4px 16px;
   border: 1px solid #A38C6F;
-  border-radius: 8px;
+  border-radius: 16px;
   background: #FFFFFF;
-  color: #333;
+  color: #765C3A;
   cursor: pointer;
   outline: none;
+  height: 25px;
 }
 
 /* Table itself */
@@ -43,25 +45,27 @@
 
 .rv-table th,
 .rv-table td {
-  padding: 10px 16px;
+  padding: 10px 15px;
   text-align: left;
-  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  font-size: 13px;
   white-space: nowrap;
+  color: #765C3A;
 }
 
 .rv-table thead tr {
   background-color: #FFF8F0;
+  border-top: 1px solid #A38C6F;
+  border-bottom: 1px solid #A38C6F;
 }
 
 .rv-table th {
   font-weight: 900;
-  color: #333;
-  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
-  border-bottom: 1px solid #E8DDD0;
+  color: #765C3A;
+  font-size: 13px;
 }
 
 .rv-table tbody tr {
-  border-bottom: 1px solid #F0E8DC;
+  border-bottom: 1px solid #A38C6F;
   transition: background-color 0.1s ease;
 }
 
@@ -76,59 +80,41 @@
 /* Column-specific styles */
 .rv-table-cell-id {
   font-weight: 400;
-  color: #666;
+  color: #765C3A;
 }
 
 .rv-table-cell-applicant {
   font-weight: 700;
-  color: #333;
+  color: #765C3A;
 }
 
 .rv-table-cell-school {
   font-weight: 400;
-  color: #555;
+  color: #765C3A;
 }
 
 .rv-table-cell-submitted {
   font-weight: 400;
-  color: #555;
+  color: #765C3A;
 }
 
 .rv-table-cell-score {
   font-weight: 700;
-  color: #333;
-}
-
-/* Status badges */
-.rv-status-badge {
-  display: inline-block;
-  padding: 3px 12px;
-  border-radius: 16px;
-  font-weight: 700;
-  font-size: clamp(0.6rem, 0.75vw, 0.75rem);
-  white-space: nowrap;
-}
-
-.rv-status-badge--reviewed {
-  background-color: #A172FF;
-  color: #332452;
-}
-
-.rv-status-badge--pending {
-  background-color: #AEFFFF;
-  color: #567F7F;
+  color: #765C3A;
 }
 
 /* Action buttons */
 .rv-action-btn {
   font-family: 'Jua', sans-serif;
-  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  font-size: 15px;
+  font-weight: 400;
   background-color: #FFF8F0;
   border: 1px solid #A38C6F;
-  border-radius: 8px;
-  padding: 6px 14px;
+  border-radius: 16px;
+  padding: 0 24px;
+  height: 37px;
   cursor: pointer;
-  color: #333;
+  color: #765C3A;
   white-space: nowrap;
   transition: background-color 0.15s ease;
 }
@@ -146,24 +132,25 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4px;
-  padding: 12px 16px;
-  border-top: 1px solid #F0E8DC;
+  gap: 10px;
+  padding: 16px;
 }
 
 .rv-pagination-btn {
-  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
-  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
-  padding: 4px 10px;
-  border: 1px solid #D9CDBE;
-  border-radius: 6px;
+  font-family: 'Jua', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  padding: 0 16px;
+  height: 37px;
+  border: 1px solid #A38C6F;
+  border-radius: 16px;
   background: #FFFFFF;
-  color: #555;
+  color: #765C3A;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
-.rv-pagination-btn:hover:not(:disabled) {
+.rv-pagination-btn:hover:not(:disabled):not(.rv-pagination-btn--active) {
   background-color: #FFF8F0;
 }
 
@@ -175,11 +162,11 @@
 .rv-pagination-btn--active {
   background-color: #765C3A;
   color: #FFFFFF;
-  border-color: #765C3A;
+  border-color: #A38C6F;
 }
 
 .rv-pagination-ellipsis {
   padding: 4px 6px;
-  color: #999;
-  font-size: clamp(0.7rem, 0.85vw, 0.85rem);
+  color: #765C3A;
+  font-size: 15px;
 }

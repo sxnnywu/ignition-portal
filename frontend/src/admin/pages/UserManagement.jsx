@@ -1,11 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { fetchUsers, updateUserRole, deleteUser } from '../api/adminApi';
-import FilterTabs from '../components/FilterTabs';
-import AvatarInitials from '../components/AvatarInitials';
-import Pagination from '../components/Pagination';
-import ConfirmModal from '../components/ConfirmModal';
+import FilterTabs from '../../components/shared/FilterTabs';
+import AvatarInitials from '../../components/shared/AvatarInitials';
+import Pagination from '../../components/shared/Pagination';
+import ConfirmModal from '../../components/shared/ConfirmModal';
 import AddUserModal from '../components/AddUserModal';
-import { SearchIcon, PlusIcon, TrashIcon, ChevronDownIcon } from '../components/Icons';
+import { SearchIcon, PlusIcon, TrashIcon, ChevronDownIcon } from '../../components/shared/Icons';
+import useCachedFetch from '../../hooks/useCachedFetch';
+import { CACHE_KEYS, invalidateCacheByPrefix } from '../../lib/cache';
 import './UserManagement.css';
 
 const ROLE_TABS = [
@@ -17,48 +19,43 @@ const ROLE_TABS = [
 const ROLE_OPTIONS = ['admin', 'reviewer', 'applicant'];
 
 export default function UserManagement() {
-  const [users, setUsers] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
-  const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [page, setPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [changingRole, setChangingRole] = useState(null);
 
-  const loadData = useCallback(async (page = 1) => {
-    setLoading(true);
-    try {
-      const data = await fetchUsers({
-        page,
-        limit: 20,
-        role: roleFilter,
-        search,
-      });
-      setUsers(data.users || []);
-      setPagination(data.pagination || { page: 1, totalPages: 1 });
-    } catch {
-      setUsers([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [roleFilter, search]);
+  const params = useMemo(
+    () => ({ page, limit: 20, role: roleFilter, search }),
+    [page, roleFilter, search],
+  );
 
-  useEffect(() => {
-    loadData(1);
-  }, [loadData]);
+  const cacheKey = CACHE_KEYS.adminUsers(params);
+
+  const fetchFn = useCallback(
+    () => fetchUsers(params),
+    [params],
+  );
+
+  const { data, loading, refresh } = useCachedFetch(cacheKey, fetchFn);
+
+  const users = data?.users || [];
+  const pagination = data?.pagination || { page: 1, totalPages: 1 };
 
   function handleSearchSubmit(e) {
     e.preventDefault();
     setSearch(searchInput);
+    setPage(1);
   }
 
   async function handleRoleChange(userId, newRole) {
     setChangingRole(userId);
     try {
       await updateUserRole(userId, newRole);
-      await loadData(pagination.page);
+      invalidateCacheByPrefix('admin-users:');
+      await refresh();
     } catch {
       // silent
     } finally {
@@ -71,10 +68,17 @@ export default function UserManagement() {
     try {
       await deleteUser(deleteTarget._id);
       setDeleteTarget(null);
-      await loadData(pagination.page);
+      invalidateCacheByPrefix('admin-users:');
+      await refresh();
     } catch {
       // silent
     }
+  }
+
+  function handleUserCreated() {
+    invalidateCacheByPrefix('admin-users:');
+    setPage(1);
+    refresh();
   }
 
   function capitalize(str) {
@@ -103,7 +107,11 @@ export default function UserManagement() {
         </div>
       </div>
 
-      <FilterTabs tabs={ROLE_TABS} active={roleFilter} onChange={v => setRoleFilter(v)} />
+      <FilterTabs
+        tabs={ROLE_TABS}
+        active={roleFilter}
+        onChange={v => { setRoleFilter(v); setPage(1); }}
+      />
 
       <div className="user-mgmt-table-container">
         <div className="user-mgmt-table-header">
@@ -170,13 +178,13 @@ export default function UserManagement() {
       <Pagination
         page={pagination.page}
         totalPages={pagination.totalPages}
-        onPageChange={p => loadData(p)}
+        onPageChange={p => setPage(p)}
       />
 
       {showAddModal && (
         <AddUserModal
           onClose={() => setShowAddModal(false)}
-          onCreated={() => loadData(1)}
+          onCreated={handleUserCreated}
         />
       )}
 

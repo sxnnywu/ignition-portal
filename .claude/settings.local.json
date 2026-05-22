@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(npx vite *)",
+      "Bash(dir /b \"C:\\\\Users\\\\youss\\\\Documents\\\\Coding Workspace\\\\Ignition-Hacks\\\\ignition-portal\\\\frontend\\\\src\\\\components\\\\shared\")",
+      "mcp__figma-desktop__get_design_context",
+      "mcp__figma-desktop__get_screenshot",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\youss\\\\Documents\\\\Coding Workspace\\\\Ignition-Hacks\\\\ignition-portal\\\\frontend\\\\src\" -Recurse -Filter \"*.jsx\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
+    ]
+  }
+}

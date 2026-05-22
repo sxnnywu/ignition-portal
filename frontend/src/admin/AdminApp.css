@@ -1,16 +1,54 @@
 .admin-app {
-  min-height: 100vh;
-  background: #FFF5EB;
-  font-family: 'Satoshi', sans-serif;
-}
-
-.admin-body {
   display: flex;
+  flex: 1;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
 }
 
 .admin-main {
   flex: 1;
-  padding: 32px 40px;
-  min-height: calc(100vh - 64px);
+  padding: 40px;
   overflow-x: auto;
+  background-color: #FFEFDA;
+}
+
+/* Sidebar stats groups */
+.admin-stats-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.admin-stats-group-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 15px;
+  color: #FFFFFF;
+}
+
+.admin-stats-box {
+  background: #5D421F;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 220px;
+}
+
+.admin-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.admin-stats-label {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-weight: 400;
+  color: #FFEFDA;
+}
+
+.admin-stats-count {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-weight: 700;
 }

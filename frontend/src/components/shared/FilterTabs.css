@@ -1,0 +1,37 @@
+.filter-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 37px;
+  padding: 0 16px;
+  border: 1px solid #A38C6F;
+  border-radius: 16px;
+  background: #FFFFFF;
+  color: #765C3A;
+  font-family: 'Jua', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  background: #FFF8F0;
+}
+
+.filter-tab--active {
+  background: #765C3A;
+  color: #FFFFFF;
+  border-color: #A38C6F;
+}
+
+.filter-tab--active:hover {
+  background: #765C3A;
+}

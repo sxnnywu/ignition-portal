@@ -103,27 +103,6 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
-// GET /applications/queue
-// get all reviewable applications (reviewer-only)
-router.get('/queue',
-  auth,
-  requireRole('reviewer'),
-  async (req, res) => {
-    try {
-      const applications = await Application.find({
-        status: { $in: ['submitted', 'under_review'] },
-      }).populate('userId', 'name email');
-
-      res.status(200).json({
-        message: 'Review queue fetched',
-        applications,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
-
 // GET /applications/:id - get application by id (admins and reviewers)
 router.get('/:id', 
   auth,
