@@ -3,8 +3,8 @@ import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
 import Login from "../pages/auth/Login";
 import Signup from "../pages/auth/Signup";
-import AdminSignup from "../AdminSignup";
-import ReviewerSignup from "../ReviewerSignup";
+import AdminSignup from "../pages/auth/AdminSignup";
+import ReviewerSignup from "../pages/auth/ReviewerSignup";
 
 // hacker routes
 import Dashboard from "../pages/hacker/Dashboard";
@@ -15,14 +15,12 @@ import Info from "../pages/hacker/Info";
 import Submission from "../pages/hacker/Submission";
 import Teammates from "../pages/hacker/Teammates";
 
-// reviewer routes
-import ReviewerLayout from "../reviewer/layouts/ReviewerLayout";
+// portal layout + pages
+import PortalLayout from "../components/portal/PortalLayout";
 import ReviewerMainPage from "../reviewer/pages/ReviewerMainPage";
-import ReviewerApplicationDetail from "../pages/ReviewerApplicationDetail";
-
-// admin routes
+import ReviewerApplicationDetail from "../reviewer/pages/ReviewerApplicationDetail";
 import AdminApp from "../admin/AdminApp";
-import AdminApplicationDetail from "../pages/AdminApplicationDetail";
+import AdminApplicationDetail from "../admin/pages/AdminApplicationDetail";
 
 // shared
 import RequireRole from "../components/auth/RequireRole";
@@ -96,27 +94,35 @@ const routes = [
     ),
   },
 
-  // --- reviewer / admin routes ---
+  // --- admin routes (wrapped in shared PortalLayout) ---
   {
     element: (
       <RequireRole allowed={["admin"]}>
-        <ReviewerLayout />
+        <PortalLayout />
       </RequireRole>
     ),
-    children: [{ path: "/admin", element: <AdminApp /> }],
+    children: [{ path: "/admin/*", element: <AdminApp /> }],
   },
   {
     path: "/admin/application/:id",
     element: (
       <RequireRole allowed={["admin"]}>
-        <AdminApplicationDetail />
+        <PortalLayout />
       </RequireRole>
     ),
+    children: [
+      {
+        index: true,
+        element: <AdminApplicationDetail />,
+      },
+    ],
   },
+
+  // --- reviewer routes (wrapped in shared PortalLayout) ---
   {
     element: (
       <RequireRole allowed={["reviewer", "admin"]}>
-        <ReviewerLayout />
+        <PortalLayout />
       </RequireRole>
     ),
     children: [{ path: "/reviewer", element: <ReviewerMainPage /> }],
@@ -125,9 +131,15 @@ const routes = [
     path: "/reviewer/application/:id",
     element: (
       <RequireRole allowed={["reviewer", "admin"]}>
-        <ReviewerApplicationDetail />
+        <PortalLayout />
       </RequireRole>
     ),
+    children: [
+      {
+        index: true,
+        element: <ReviewerApplicationDetail />,
+      },
+    ],
   },
 
   // --- 404 catch-all ---

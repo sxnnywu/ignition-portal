@@ -1,21 +1,35 @@
 .portal-sidebar {
-  width: 240px;
-  min-width: 240px;
-  min-height: calc(100vh - 52px);
+  width: 266px;
+  min-width: 266px;
   background-color: #765C3A;
   display: flex;
   flex-direction: column;
-  padding: 16px 0;
+  padding: 26px 20px;
   font-family: 'Jua', sans-serif;
+  flex-shrink: 0;
+}
+
+.portal-sidebar-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 15px;
+  color: #FFFFFF;
+  padding: 0 0 9px;
+}
+
+.portal-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .portal-sidebar-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
+  gap: 8px;
+  padding: 0 16px;
+  height: 37px;
   color: #FFEFDA;
-  font-size: 0.95rem;
+  font-size: 15px;
   cursor: pointer;
   border: none;
   background: transparent;
@@ -23,6 +37,7 @@
   text-align: left;
   font-family: inherit;
   transition: background-color 0.15s ease;
+  border-radius: 16px;
 }
 
 .portal-sidebar-item:hover {
@@ -34,8 +49,13 @@
 }
 
 .portal-sidebar-item-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.portal-sidebar-item-icon-wrap {
+  display: inline-flex;
   flex-shrink: 0;
 }
 
@@ -45,10 +65,20 @@
 }
 
 .portal-sidebar-item-count {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 2px 8px;
-  font-size: 0.8rem;
-  min-width: 20px;
-  text-align: center;
+  background-color: #FFB44A;
+  border-radius: 24px;
+  font-size: 10px;
+  min-width: 26px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  padding: 0 7px;
+}
+
+.portal-sidebar-divider {
+  height: 1px;
+  background: rgba(255, 245, 235, 0.15);
+  margin: 20px 0;
 }

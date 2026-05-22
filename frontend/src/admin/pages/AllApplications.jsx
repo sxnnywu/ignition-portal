@@ -1,11 +1,13 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchApplications, updateApplicationStatus, exportCsv } from '../api/adminApi';
-import FilterTabs from '../components/FilterTabs';
-import StatusBadge from '../components/StatusBadge';
-import AvatarInitials from '../components/AvatarInitials';
-import Pagination from '../components/Pagination';
-import { SearchIcon, ExportIcon, ChevronDownIcon } from '../components/Icons';
+import FilterTabs from '../../components/shared/FilterTabs';
+import StatusBadge from '../../components/shared/StatusBadge';
+import AvatarInitials from '../../components/shared/AvatarInitials';
+import Pagination from '../../components/shared/Pagination';
+import { SearchIcon, ExportIcon, ChevronDownIcon } from '../../components/shared/Icons';
+import useCachedFetch from '../../hooks/useCachedFetch';
+import { CACHE_KEYS, invalidateCacheByPrefix } from '../../lib/cache';
 import './AllApplications.css';
 
 const STATUS_TABS = [
@@ -35,50 +37,43 @@ const STATUS_LABELS = {
 
 export default function AllApplications({ onDataChange }) {
   const navigate = useNavigate();
-  const [applications, setApplications] = useState([]);
-  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
-  const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [sort, setSort] = useState('submittedAt');
   const [order] = useState('desc');
+  const [page, setPage] = useState(1);
   const [changingStatus, setChangingStatus] = useState(null);
 
-  const loadData = useCallback(async (page = 1) => {
-    setLoading(true);
-    try {
-      const data = await fetchApplications({
-        page,
-        limit: 20,
-        status: statusFilter,
-        search,
-        sort,
-        order,
-      });
-      setApplications(data.applications || []);
-      setPagination(data.pagination || { page: 1, totalPages: 1 });
-    } catch {
-      setApplications([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [statusFilter, search, sort, order]);
+  const params = useMemo(
+    () => ({ page, limit: 20, status: statusFilter, search, sort, order }),
+    [page, statusFilter, search, sort, order],
+  );
 
-  useEffect(() => {
-    loadData(1);
-  }, [loadData]);
+  const cacheKey = CACHE_KEYS.adminApps(params);
+
+  const fetchFn = useCallback(
+    () => fetchApplications(params),
+    [params],
+  );
+
+  const { data, loading, refresh } = useCachedFetch(cacheKey, fetchFn);
+
+  const applications = data?.applications || [];
+  const pagination = data?.pagination || { page: 1, totalPages: 1 };
 
   function handleSearchSubmit(e) {
     e.preventDefault();
     setSearch(searchInput);
+    setPage(1);
   }
 
   async function handleStatusChange(appId, newStatus) {
     setChangingStatus(appId);
     try {
       await updateApplicationStatus(appId, newStatus);
-      await loadData(pagination.page);
+      invalidateCacheByPrefix('admin-apps:');
+      await refresh();
       onDataChange?.();
     } catch {
       // silent
@@ -95,8 +90,9 @@ export default function AllApplications({ onDataChange }) {
     }
   }
 
-  function shortId(id) {
-    return `#${String(id).slice(-4)}`;
+  function formatId(id) {
+    if (!id) return '--';
+    return id.length > 6 ? id.slice(-6) : id;
   }
 
   return (
@@ -121,7 +117,11 @@ export default function AllApplications({ onDataChange }) {
         </div>
       </div>
 
-      <FilterTabs tabs={STATUS_TABS} active={statusFilter} onChange={v => setStatusFilter(v)} />
+      <FilterTabs
+        tabs={STATUS_TABS}
+        active={statusFilter}
+        onChange={v => { setStatusFilter(v); setPage(1); }}
+      />
 
       <div className="all-apps-table-container">
         <div className="all-apps-table-header">
@@ -132,7 +132,7 @@ export default function AllApplications({ onDataChange }) {
               <select
                 className="all-apps-sort-select"
                 value={sort}
-                onChange={e => setSort(e.target.value)}
+                onChange={e => { setSort(e.target.value); setPage(1); }}
               >
                 {SORT_OPTIONS.map(o => (
                   <option key={o.value} value={o.value}>{o.label}</option>
@@ -163,7 +163,7 @@ export default function AllApplications({ onDataChange }) {
             ) : (
               applications.map(app => (
                 <tr key={app._id}>
-                  <td className="all-apps-cell-id">{shortId(app._id)}</td>
+                  <td className="all-apps-cell-id">{formatId(app._id)}</td>
                   <td>
                     <div className="all-apps-applicant">
                       <AvatarInitials name={app.user?.name || '?'} size={32} />
@@ -208,7 +208,7 @@ export default function AllApplications({ onDataChange }) {
       <Pagination
         page={pagination.page}
         totalPages={pagination.totalPages}
-        onPageChange={p => loadData(p)}
+        onPageChange={p => setPage(p)}
       />
     </div>
   );

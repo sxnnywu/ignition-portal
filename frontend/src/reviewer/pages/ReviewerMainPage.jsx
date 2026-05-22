@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PortalSidebar from '../../components/portal/PortalSidebar'
 import ApplicationTable from '../components/ApplicationTable'
@@ -8,6 +8,8 @@ import ClockIcon from '../../assets/icons/clock-icon.svg'
 import CheckMarkIcon from '../../assets/icons/check-mark-icon.svg'
 import { getToken, clearAuth } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
+import useCachedFetch from '../../hooks/useCachedFetch'
+import { CACHE_KEYS } from '../../lib/cache'
 
 const ROWS_PER_PAGE = 8
 
@@ -17,69 +19,57 @@ const FILTER_KEYS = {
   REVIEWED: 'reviewed',
 }
 
+async function fetchReviewerApps() {
+  const token = getToken()
+  const res = await fetch(apiUrl('/applications/reviewer'), {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (res.status === 401) {
+    clearAuth()
+    throw new Error('__AUTH_EXPIRED__')
+  }
+  if (!res.ok) throw new Error('Failed to load applications')
+  const data = await res.json()
+  return data.applications || []
+}
+
 export default function ReviewerMainPage() {
   const navigate = useNavigate()
-  const [applications, setApplications] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [activeFilter, setActiveFilter] = useState(FILTER_KEYS.ALL)
   const [searchQuery, setSearchQuery] = useState('')
 
-  useEffect(() => {
-    const token = getToken()
-    if (!token) {
-      navigate('/', { replace: true })
-      return
-    }
+  const {
+    data: applications,
+    loading,
+    error,
+  } = useCachedFetch(CACHE_KEYS.REVIEWER_APPS, fetchReviewerApps)
 
-    let cancelled = false
-    const fetchData = async () => {
-      try {
-        const res = await fetch(apiUrl('/applications/reviewer'), {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        if (cancelled) return
+  // Handle auth expiry from the fetch
+  if (error === '__AUTH_EXPIRED__') {
+    navigate('/', { replace: true })
+    return null
+  }
 
-        if (res.status === 401) {
-          clearAuth()
-          navigate('/', { replace: true })
-          return
-        }
-        if (!res.ok) {
-          throw new Error('Failed to load applications')
-        }
-
-        const data = await res.json()
-        setApplications(data.applications || [])
-      } catch (err) {
-        if (!cancelled) setError(err.message)
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    fetchData()
-    return () => { cancelled = true }
-  }, [navigate])
+  const appList = applications || []
 
   const counts = useMemo(() => {
     let all = 0, pending = 0, reviewed = 0
-    for (const app of applications) {
+    for (const app of appList) {
       all++
       if (app.reviewStatus === 'reviewed') reviewed++
       else pending++
     }
     return { all, pending, reviewed }
-  }, [applications])
+  }, [appList])
 
   const sidebarItems = [
     { key: FILTER_KEYS.ALL, label: 'All Applications', icon: ArticleIcon, count: counts.all },
     { key: FILTER_KEYS.PENDING, label: 'Pending Review', icon: ClockIcon, count: counts.pending },
-    { key: FILTER_KEYS.REVIEWED, label: 'My Reviews', icon: CheckMarkIcon, count: counts.reviewed },
+    { key: FILTER_KEYS.REVIEWED, label: 'Reviewed by me', icon: CheckMarkIcon, count: counts.reviewed },
   ]
 
   const filtered = useMemo(() => {
-    let list = applications
+    let list = appList
     if (activeFilter === FILTER_KEYS.PENDING) {
       list = list.filter((a) => a.reviewStatus === 'pending')
     } else if (activeFilter === FILTER_KEYS.REVIEWED) {
@@ -90,7 +80,7 @@ export default function ReviewerMainPage() {
       list = list.filter((a) => (a.userId?.name || '').toLowerCase().includes(q))
     }
     return list
-  }, [applications, activeFilter, searchQuery])
+  }, [appList, activeFilter, searchQuery])
 
   const handleActionClick = useCallback((app) => {
     navigate(`/reviewer/application/${app._id}`)
@@ -99,7 +89,7 @@ export default function ReviewerMainPage() {
   if (loading) {
     return (
       <div className="rv-main-page">
-        <PortalSidebar items={sidebarItems} activeKey={activeFilter} onSelect={setActiveFilter} />
+        <PortalSidebar title="My Queue" items={sidebarItems} activeKey={activeFilter} onSelect={setActiveFilter} />
         <div className="rv-main-content">
           <div className="rv-loading">Loading applications...</div>
         </div>
@@ -109,7 +99,7 @@ export default function ReviewerMainPage() {
 
   return (
     <div className="rv-main-page">
-      <PortalSidebar items={sidebarItems} activeKey={activeFilter} onSelect={setActiveFilter} />
+      <PortalSidebar title="My Queue" items={sidebarItems} activeKey={activeFilter} onSelect={setActiveFilter} />
 
       <div className="rv-main-content">
         <div className="rv-content-topbar">

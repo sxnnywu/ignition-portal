@@ -1,6 +1,8 @@
 // Minimal auth helpers backed by sessionStorage.
 // Kept intentionally tiny — no context/provider — and shared between Signup and Landing.
 
+import { invalidateCache } from './cache'
+
 export const getToken = () => sessionStorage.getItem('token')
 
 export const getUser = () => {
@@ -20,4 +22,6 @@ export const setAuth = (token, user) => {
 export const clearAuth = () => {
   sessionStorage.removeItem('token')
   sessionStorage.removeItem('user')
+  // Flush the data cache so another user's session starts clean
+  invalidateCache()
 }

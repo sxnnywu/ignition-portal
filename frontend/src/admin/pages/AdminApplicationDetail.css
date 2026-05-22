@@ -1,32 +1,28 @@
-.admin-detail {
-  width: 100vw;
-  min-height: 100vh;
+.app-detail {
+  flex: 1;
+  min-height: 0;
   background-color: #EDF7FF;
   display: flex;
   justify-content: center;
 }
 
-.admin-detail-content {
+.app-detail-content {
   max-width: 900px;
   width: 100%;
   padding: 2rem 2rem 4rem;
   box-sizing: border-box;
 }
 
-.admin-detail-header {
+.app-detail-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 0 1rem;
+  justify-content: flex-end;
+  padding: 1rem 0;
   border-bottom: 2px solid #d6eaf8;
   margin-bottom: 2rem;
 }
 
-.admin-detail-logo {
-  height: 2.5rem;
-}
-
-.admin-back-btn {
+.app-detail-back-btn {
   background: none;
   border: 2px solid #c9a66a;
   border-radius: 0.5rem;
@@ -38,42 +34,42 @@
   transition: background-color 0.15s ease;
 }
 
-.admin-back-btn:hover {
+.app-detail-back-btn:hover {
   background-color: #fff5eb;
 }
 
-.admin-detail-loading {
+.app-detail-loading {
   color: #888;
   margin-top: 3rem;
   text-align: center;
 }
 
-.admin-detail-body {
+.app-detail-body {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
-.admin-detail-meta {
+.app-detail-meta {
   display: flex;
   flex-direction: column;
   gap: 0.3rem;
 }
 
-.admin-detail-name {
+.app-detail-name {
   font-size: 1.8rem;
   font-weight: 800;
   color: #333;
   margin: 0;
 }
 
-.admin-detail-email {
+.app-detail-email {
   font-size: 0.95rem;
   color: #888;
   margin: 0;
 }
 
-.admin-detail-section {
+.app-detail-section {
   background: #FFF5EB;
   border-radius: 1rem;
   padding: 1.5rem 2rem;
@@ -82,7 +78,7 @@
   gap: 1rem;
 }
 
-.admin-detail-section-title {
+.app-detail-section-title {
   font-size: 1.1rem;
   font-weight: 700;
   color: #7B5CF5;
@@ -92,19 +88,56 @@
   gap: 1rem;
 }
 
-.admin-avg-score {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #c9a66a;
-}
-
-.admin-detail-empty {
+.app-detail-empty {
   color: #aaa;
   font-size: 0.9rem;
   margin: 0;
 }
 
-/* status section */
+.app-detail-error {
+  color: #e53e3e;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.app-detail-success {
+  color: #2d8a4e;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.app-detail-answer-row {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e8d8c4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.app-detail-answer-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.app-detail-answer-key {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #c9a66a;
+  margin: 0;
+}
+
+.app-detail-answer-value {
+  font-size: 0.95rem;
+  color: #333;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* admin-specific: status management */
 .admin-status-row {
   display: flex;
   align-items: center;
@@ -167,20 +200,13 @@
   cursor: not-allowed;
 }
 
-.admin-detail-error {
-  color: #e53e3e;
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-.admin-detail-success {
-  color: #2d8a4e;
-  font-size: 0.9rem;
+.admin-avg-score {
+  font-size: 0.85rem;
   font-weight: 600;
-  margin: 0;
+  color: #c9a66a;
 }
 
-/* reviewer score cards */
+/* admin-specific: reviewer score cards */
 .admin-review-card {
   border: 1px solid #e8d8c4;
   border-radius: 0.7rem;
@@ -232,35 +258,4 @@
 .admin-review-score-val {
   color: #5b21b6;
   font-weight: 700;
-}
-
-/* answer rows */
-.admin-answer-row {
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e8d8c4;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-.admin-answer-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.admin-answer-key {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #c9a66a;
-  margin: 0;
-}
-
-.admin-answer-value {
-  font-size: 0.95rem;
-  color: #333;
-  margin: 0;
-  white-space: pre-wrap;
-  word-break: break-word;
 }

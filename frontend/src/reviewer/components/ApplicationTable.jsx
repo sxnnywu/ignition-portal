@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import StatusBadge from '../../components/shared/StatusBadge'
 import './ApplicationTable.css'
 
 const SORT_OPTIONS = [
@@ -11,7 +12,7 @@ const SORT_OPTIONS = [
 ]
 
 function formatDate(dateStr) {
-  if (!dateStr) return '—'
+  if (!dateStr) return '--'
   const d = new Date(dateStr)
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   return `${months[d.getMonth()]}. ${d.getDate()}`
@@ -32,7 +33,7 @@ function getPageNumbers(current, total) {
 }
 
 function truncateId(id) {
-  if (!id) return '—'
+  if (!id) return '--'
   return id.length > 6 ? id.slice(-6) : id
 }
 
@@ -117,16 +118,14 @@ export default function ApplicationTable({
             pageData.map((app) => (
               <tr key={app._id}>
                 <td className="rv-table-cell-id">{truncateId(app._id)}</td>
-                <td className="rv-table-cell-applicant">{app.userId?.name || '—'}</td>
-                <td className="rv-table-cell-school">{app.answers?.school || '—'}</td>
+                <td className="rv-table-cell-applicant">{app.userId?.name || '--'}</td>
+                <td className="rv-table-cell-school">{app.answers?.school || '--'}</td>
                 <td className="rv-table-cell-submitted">{formatDate(app.submittedAt)}</td>
                 <td>
-                  <span className={`rv-status-badge rv-status-badge--${app.reviewStatus}`}>
-                    {app.reviewStatus === 'reviewed' ? 'Reviewed' : 'Pending'}
-                  </span>
+                  <StatusBadge status={app.reviewStatus} />
                 </td>
                 <td className="rv-table-cell-score">
-                  {app.yourScore != null ? app.yourScore : '—'}
+                  {app.yourScore != null ? app.yourScore : '--'}
                 </td>
                 <td>
                   <button

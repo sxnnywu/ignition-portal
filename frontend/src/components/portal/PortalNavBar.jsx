@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import './PortalNavBar.css'
 import IgnitionLogo from '../../assets/icons/ignition-logo.svg'
-import ProfileIcon from '../../assets/icons/profile-icon.svg'
+import AvatarInitials from '../shared/AvatarInitials'
 import { getUser } from '../../lib/auth'
 
 export default function PortalNavBar() {
@@ -40,7 +40,7 @@ export default function PortalNavBar() {
         )}
 
         <div className="portal-navbar-user">
-          <img src={ProfileIcon} alt="" className="portal-navbar-user-icon" />
+          <AvatarInitials name={user?.name || 'U'} size={36} />
           <span className="portal-navbar-username">{firstName}</span>
         </div>
       </div>
