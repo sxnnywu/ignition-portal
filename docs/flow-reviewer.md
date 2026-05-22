@@ -134,28 +134,50 @@ The pagination algorithm:
 
 ## 8. Reviewing an Application
 
-### Current State (Not Yet Implemented)
-The "Review" / "Update" button in each table row currently only logs to the console:
-```javascript
-console.log('Action clicked for application:', app._id)
+Clicking "Review" on a pending application navigates to `/reviewer/application/:id`.
+
+### Page Layout
+
+The detail page has a two-panel layout:
+- **Left panel** (scrollable): Application content in three cards (Personal Information, Education, Hackathon Experience)
+- **Right panel** (fixed 340px): Scoring rubric with sliders, comments, and submit button
+
+### Data Loading
+
+On mount, two requests fire in parallel:
+```
+GET /applications/:id          → application details (answers, user info)
+GET /applications/:id/review/me → existing review (if any, otherwise 404)
 ```
 
-### Future Flow (Backend Ready)
+If an existing review is found, the sliders and comments are pre-filled with saved values.
 
-The backend endpoints for reviewing are already implemented:
+### Scoring Rubric
+
+Four fixed scoring categories, each 0-25 via range sliders:
+
+| Category | Score Key | Max |
+|----------|-----------|-----|
+| Technical Skills | `technicalSkills` | 25 |
+| Communication Skills | `communicationSkills` | 25 |
+| Project Management | `projectManagement` | 25 |
+| Problem Solving | `problemSolving` | 25 |
+
+The total score (0-100) updates live as sliders are adjusted.
+
+### Submitting a New Review
 
 ```
-Click "Review →" on a pending application
+Reviewer adjusts scoring sliders (0-25 each)
   ↓
-Navigate to review detail page (TODO)
+Optionally adds comments in the textarea
   ↓
-Reviewer sees application details and scoring form
-  ↓
-Reviewer fills in scores: { creativity: 8, technical: 7, ... }
+Clicks "Save Review"
   ↓
 POST /applications/:id/review
 {
-  "scores": { "creativity": 8, "technical": 7, "impact": 9 }
+  "scores": { "technicalSkills": 20, "communicationSkills": 22, "projectManagement": 18, "problemSolving": 12 },
+  "comment": "Strong technical background..."
 }
   ↓
 Backend:
@@ -166,26 +188,38 @@ Backend:
   5. Updates application status to "under_review" if it was "submitted"
   ↓
 Returns { review: { _id, scores, totalScore, ... } }
+  ↓
+Frontend:
+  - Updates existingReview state (button changes to "Update Existing Review")
+  - Invalidates CACHE_KEYS.REVIEWER_APPS so the main page reflects new status
+  - Shows success message
 ```
 
-### Updating a Review
+### Updating an Existing Review
 
 ```
-Click "Update →" on a reviewed application
+Click "Update" on a reviewed application in the table
   ↓
-Navigate to review detail page (TODO)
+Navigate to /reviewer/application/:id
   ↓
-Load existing review: GET /applications/:id/review/me
+Existing review loaded: sliders and comments pre-filled
   ↓
-Reviewer modifies scores
+Reviewer adjusts scores and/or comments
+  ↓
+Clicks "Update Existing Review"
   ↓
 PUT /applications/:id/review
 {
-  "scores": { "creativity": 9, "technical": 8, "impact": 9 }
+  "scores": { "technicalSkills": 22, "communicationSkills": 23, "projectManagement": 20, "problemSolving": 15 },
+  "comment": "Updated assessment..."
 }
   ↓
 Backend recomputes totalScore and updates the review
 ```
+
+### Navigation Back
+
+Two "← Return to Pool" links (top of content area and bottom of rubric) navigate back to `/reviewer`.
 
 ## 9. What Reviewers Cannot Do
 
@@ -209,13 +243,24 @@ Login (POST /login)
     └── Pagination (client-side)
     │
     ▼
-Click "Review →"
+Click "Review" or "Update"
     │
-    ▼ (TODO: review detail page)
-    
+    ▼
+/reviewer/application/:id
+    │
+    ├── GET /applications/:id          ← load application details
+    ├── GET /applications/:id/review/me ← load existing review (if any)
+    │
+    ▼
+Reviewer scores with sliders + adds comments
+    │
+    ▼
 POST /applications/:id/review    ← new review
+  — or —
 PUT  /applications/:id/review    ← update existing
-GET  /applications/:id/review/me ← load existing
+    │
+    ▼
+Invalidate REVIEWER_APPS cache → return to /reviewer
 ```
 
 ## Admin Differences

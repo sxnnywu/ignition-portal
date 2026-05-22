@@ -1,93 +1,425 @@
-/* reviewer-specific detail page styles (shared app-detail-* styles imported from AdminApplicationDetail.css) */
+/* ================================================================== */
+/*  ReviewerApplicationDetail — two-panel layout                      */
+/*  Left: scrollable application content                              */
+/*  Right: fixed scoring rubric sidebar                               */
+/* ================================================================== */
 
-.reviewer-detail-status {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 0.25rem 0.7rem;
-  border-radius: 999px;
-  background: #fef3c7;
-  color: #92620a;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.reviewer-answer-row {
+.rev-detail {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 2rem;
-  padding-bottom: 1.2rem;
-  border-bottom: 1px solid #e8d8c4;
-}
-
-.reviewer-answer-row:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.reviewer-answer-left {
   flex: 1;
+  min-height: 0;
+}
+
+.rev-detail-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  font-family: 'Jua', sans-serif;
+  font-size: 1.1rem;
+  color: #765C3A;
+}
+
+/* ================================================================== */
+/*  LEFT — Application content                                        */
+/* ================================================================== */
+
+.rev-detail-content {
+  flex: 1;
+  padding: 32px 40px 60px;
+  overflow-y: auto;
+  background-color: #FFEFDA;
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 24px;
 }
 
-.reviewer-answer-right {
+/* Top bar: back button + heading */
+.rev-detail-topbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rev-detail-back {
+  background: none;
+  border: none;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #765C3A;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  width: fit-content;
+  transition: opacity 0.15s ease;
+}
+
+.rev-detail-back:hover {
+  opacity: 0.7;
+}
+
+.rev-detail-heading {
+  font-family: 'Jua', sans-serif;
+  font-size: 28px;
+  color: #765C3A;
+  margin: 0;
+}
+
+/* ================================================================== */
+/*  Cards (white sections)                                            */
+/* ================================================================== */
+
+.rev-card {
+  background: #FFFFFF;
+  border: 1px solid #A38C6F;
+  border-radius: 16px;
+  padding: 16px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rev-card-title {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #765C3A;
+  margin: 0;
+}
+
+.rev-card-divider {
+  height: 1px;
+  background-color: #A38C6F;
+  margin: 0;
+}
+
+.rev-card-empty {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+/* ================================================================== */
+/*  Field grid (2-column layout inside cards)                         */
+/* ================================================================== */
+
+.rev-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 32px;
+}
+
+.rev-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rev-field-label {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #765C3A;
+}
+
+.rev-field-value {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
+}
+
+/* ================================================================== */
+/*  Experience fields (can have long-text highlight boxes)             */
+/* ================================================================== */
+
+.rev-exp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rev-exp-field + .rev-exp-field {
+  margin-top: 8px;
+}
+
+.rev-longtext-box {
+  background: #FFF8F0;
+  border-radius: 16px;
+  padding: 14px 18px;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #000000;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ================================================================== */
+/*  RIGHT — Scoring Rubric panel                                      */
+/* ================================================================== */
+
+.rev-rubric {
+  width: 340px;
+  min-width: 340px;
+  background-color: #FFF8F0;
+  border-left: 1px solid #A38C6F;
+  padding: 32px 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.rev-rubric-title {
+  font-family: 'Jua', sans-serif;
+  font-size: 20px;
+  color: #765C3A;
+  margin: 0;
+}
+
+/* ---- Total Score display ---- */
+
+.rev-rubric-total {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.3rem;
-  min-width: 5rem;
+  gap: 0;
 }
 
-.reviewer-score-label {
-  font-size: 0.75rem;
+.rev-rubric-total-label {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
   font-weight: 700;
-  color: #888;
+  color: #765C3A;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
-.reviewer-score-input {
-  width: 4.5rem;
-  padding: 0.4rem 0.6rem;
-  border: 2px solid #c9a66a;
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  font-family: inherit;
-  text-align: center;
-  outline: none;
-  background: white;
-  color: #333;
+.rev-rubric-total-number {
+  font-family: 'Jua', sans-serif;
+  font-size: 64px;
+  color: #A172FF;
+  line-height: 1;
 }
 
-.reviewer-score-input:focus {
-  border-color: #7B5CF5;
+.rev-rubric-total-max {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #999;
 }
 
-.reviewer-detail-actions {
+/* ---- Sliders ---- */
+
+.rev-rubric-sliders {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 18px;
 }
 
-.reviewer-submit-btn {
-  background-color: #7B5CF5;
-  color: white;
-  border: none;
-  border-radius: 0.6rem;
-  padding: 0.7rem 2rem;
-  font-size: 1rem;
+.rev-slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rev-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.rev-slider-label {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 13px;
   font-weight: 700;
-  font-family: inherit;
+  color: #765C3A;
+}
+
+.rev-slider-value {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #A172FF;
+}
+
+.rev-slider-max {
+  font-weight: 400;
+  color: #999;
+}
+
+/* Custom range slider styling */
+.rev-slider-track-wrap {
+  position: relative;
+}
+
+.rev-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  /* Filled track via gradient */
+  background: linear-gradient(
+    to right,
+    #A172FF 0%,
+    #A172FF var(--pct, 0%),
+    #E0D6C8 var(--pct, 0%),
+    #E0D6C8 100%
+  );
+  transition: background 0.1s ease;
 }
 
-.reviewer-submit-btn:hover:not(:disabled) {
-  background-color: #6344d4;
+/* Webkit thumb */
+.rev-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #A172FF;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.1s ease;
 }
 
-.reviewer-submit-btn:disabled {
+.rev-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Firefox thumb */
+.rev-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #A172FF;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.rev-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #E0D6C8;
+}
+
+.rev-slider::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: #A172FF;
+}
+
+/* ---- Comments ---- */
+
+.rev-rubric-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rev-rubric-comment-label {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #765C3A;
+}
+
+.rev-rubric-textarea {
+  width: 100%;
+  border: 1px solid #A38C6F;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  color: #333;
+  background: #FFFFFF;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.rev-rubric-textarea::placeholder {
+  color: #999;
+}
+
+.rev-rubric-textarea:focus {
+  border-color: #A172FF;
+}
+
+/* ---- Error / success messages ---- */
+
+.rev-rubric-error {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  color: #c00;
+  margin: 0;
+}
+
+.rev-rubric-success {
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #487F3A;
+  margin: 0;
+}
+
+/* ---- Action buttons ---- */
+
+.rev-rubric-btn {
+  width: 100%;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Jua', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  /* Primary: dark brown bg */
+  background-color: #765C3A;
+  color: #FFFFFF;
+}
+
+.rev-rubric-btn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.rev-rubric-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Secondary variant: white bg with border */
+.rev-rubric-btn--secondary {
+  background-color: #FFFFFF;
+  color: #765C3A;
+  border: 1px solid #A38C6F;
+}
+
+/* Return to Pool link */
+.rev-rubric-return {
+  background: none;
+  border: none;
+  font-family: 'Satoshi Variable', 'Satoshi', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #765C3A;
+  cursor: pointer;
+  padding: 0;
+  text-align: center;
+  transition: opacity 0.15s ease;
+}
+
+.rev-rubric-return:hover {
+  opacity: 0.7;
 }

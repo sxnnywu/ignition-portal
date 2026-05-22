@@ -8,7 +8,9 @@
       "mcp__figma-desktop__get_screenshot",
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\youss\\\\Documents\\\\Coding Workspace\\\\Ignition-Hacks\\\\ignition-portal\\\\frontend\\\\src\" -Recurse -Filter \"*.jsx\")",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(Sort-Object)"
+      "Bash(Sort-Object)",
+      "mcp__figma-desktop__get_metadata",
+      "PowerShell(cd \"C:\\\\Users\\\\youss\\\\Documents\\\\Coding Workspace\\\\Ignition-Hacks\\\\ignition-portal\"; Get-ChildItem -Path . -Depth 1 -File | Where-Object { $_.Name -match '\\\\.md$' -or $_.Name -match 'README|CONTRIBUTING|CHANGELOG|CLAUDE|AGENTS' })"
     ]
   }
 }
