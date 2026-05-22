@@ -69,7 +69,8 @@ frontend/
     │
     ├── lib/
     │   ├── auth.js         ← Auth helpers: getToken, getUser, setAuth, clearAuth
-    │   └── api.js          ← API URL helper: apiUrl() adds optional base URL
+    │   ├── api.js          ← API URL helper: apiUrl() adds optional base URL
+    │   └── cache.js        ← Module-level TTL cache with invalidation helpers
     │
     ├── assets/
     │   ├── backgrounds/    ← Page background PNGs and SVGs
@@ -109,11 +110,20 @@ frontend/
     │   ├── hacker/
     │   │   ├── HkFormPage.jsx     ← Shared form page layout wrapper
     │   │   └── HkFormPage.css
-    │   └── portal/
-    │       ├── PortalNavBar.jsx   ← Shared navbar for reviewer/admin
-    │       ├── PortalNavBar.css
-    │       ├── PortalSidebar.jsx  ← Shared sidebar with filter items
-    │       └── PortalSidebar.css
+    │   ├── portal/
+    │   │   ├── PortalLayout.jsx   ← Shared layout wrapper (navbar + outlet)
+    │   │   ├── PortalLayout.css
+    │   │   ├── PortalNavBar.jsx   ← Shared navbar for reviewer/admin
+    │   │   ├── PortalNavBar.css
+    │   │   ├── PortalSidebar.jsx  ← Shared sidebar with filter items + children
+    │   │   └── PortalSidebar.css
+    │   └── shared/
+    │       ├── StatusBadge.jsx    ← Unified status badge for all portals
+    │       ├── StatusBadge.css
+    │       ├── AvatarInitials.jsx ← Initials avatar circle
+    │       ├── AvatarInitials.css
+    │       ├── FilterTabs.jsx     ← Horizontal filter tab bar
+    │       └── FilterTabs.css
     │
     ├── pages/
     │   ├── NotFound.jsx           ← 404 page
@@ -138,13 +148,26 @@ frontend/
     │       ├── Submission.jsx     ← Application submission page
     │       └── Submission.css
     │
+    ├── admin/
+    │   ├── AdminApp.jsx           ← Admin portal root (sidebar + page routing)
+    │   ├── AdminApp.css
+    │   ├── pages/
+    │   │   ├── AllApplications.jsx  ← Admin application table page
+    │   │   ├── AllApplications.css
+    │   │   ├── AdminApplicationDetail.jsx ← Admin single-application view
+    │   │   └── AdminApplicationDetail.css
+    │   └── components/
+    │       └── ...                ← Admin-specific sub-components
+    │
+    ├── hooks/
+    │   └── useCachedFetch.js      ← Hook for cache-first data fetching
+    │
     └── reviewer/
-        ├── layouts/
-        │   ├── ReviewerLayout.jsx ← Wraps navbar + outlet for reviewer routes
-        │   └── ReviewerLayout.css
         ├── pages/
         │   ├── ReviewerMainPage.jsx ← Main reviewer dashboard
-        │   └── ReviewerMainPage.css
+        │   ├── ReviewerMainPage.css
+        │   ├── ReviewerApplicationDetail.jsx ← Review detail page with scoring rubric
+        │   └── ReviewerApplicationDetail.css
         └── components/
             ├── ApplicationTable.jsx ← Sortable, paginated application table
             └── ApplicationTable.css
@@ -165,4 +188,5 @@ frontend/
 | `frontend/src/routes/routes.jsx` | All route definitions with role guards |
 | `frontend/src/lib/auth.js` | Token/user storage helpers (sessionStorage) |
 | `frontend/src/lib/api.js` | API URL construction helper |
+| `frontend/src/lib/cache.js` | Module-level TTL cache shared across pages |
 | `frontend/vite.config.js` | Vite plugins and dev server proxy configuration |

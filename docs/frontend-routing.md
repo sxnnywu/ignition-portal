@@ -34,7 +34,12 @@ The route configuration is defined in `frontend/src/routes/routes.jsx`.
 | `/experience` | Experience | Applicant only | `RequireRole(['applicant'])` |
 | `/teammates` | Teammates | Applicant only | `RequireRole(['applicant'])` |
 | `/submission/:id` | Submission | Applicant only | `RequireRole(['applicant'])` |
+| `/signup/reviewer` | ReviewerSignup | Public | — |
+| `/signup/admin` | AdminSignup | Public | — |
 | `/reviewer` | ReviewerMainPage | Reviewer/Admin | `RequireRole(['reviewer', 'admin'])` (on layout) |
+| `/reviewer/application/:id` | ReviewerApplicationDetail | Reviewer/Admin | `RequireRole(['reviewer', 'admin'])` (on layout) |
+| `/admin/*` | AdminApp | Admin only | `RequireRole(['admin'])` (on layout) |
+| `/admin/application/:id` | AdminApplicationDetail | Admin only | `RequireRole(['admin'])` (on layout) |
 | `/not-found` | NotFound | Public | — |
 | `*` (catch-all) | NotFound | Public | — |
 
@@ -55,28 +60,48 @@ This component wraps protected routes and enforces access control:
 2. User's role is not in the `allowed` array → `<Navigate to="/not-found" />`
 3. Role matches → render children
 
-## Reviewer Route Nesting
+## Portal Route Nesting
 
-The reviewer route uses a **layout route** pattern:
+Both reviewer and admin routes use the shared **PortalLayout** component with a **layout route** pattern:
 
 ```jsx
+// Reviewer main page
 {
   element: (
     <RequireRole allowed={['reviewer', 'admin']}>
-      <ReviewerLayout />
+      <PortalLayout />
     </RequireRole>
   ),
-  children: [
-    { path: "/reviewer", element: <ReviewerMainPage /> },
-  ],
+  children: [{ path: "/reviewer", element: <ReviewerMainPage /> }],
+}
+
+// Reviewer application detail
+{
+  path: "/reviewer/application/:id",
+  element: (
+    <RequireRole allowed={['reviewer', 'admin']}>
+      <PortalLayout />
+    </RequireRole>
+  ),
+  children: [{ index: true, element: <ReviewerApplicationDetail /> }],
+}
+
+// Admin routes (same pattern)
+{
+  element: (
+    <RequireRole allowed={['admin']}>
+      <PortalLayout />
+    </RequireRole>
+  ),
+  children: [{ path: "/admin/*", element: <AdminApp /> }],
 }
 ```
 
-`ReviewerLayout` renders:
-1. `PortalNavBar` — the top navigation bar
-2. `<Outlet />` — where child routes render (currently just `ReviewerMainPage`)
+`PortalLayout` renders:
+1. `PortalNavBar` — the shared top navigation bar
+2. `<Outlet />` — where child routes render (inside a flex-row body)
 
-The `RequireRole` guard wraps the entire layout, so all nested routes are protected.
+The `RequireRole` guard wraps the entire layout, so all nested routes are protected. Each child page is responsible for rendering its own sidebar (if needed) within the layout body.
 
 ## Login Redirect Logic
 

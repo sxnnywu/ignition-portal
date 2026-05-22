@@ -89,45 +89,93 @@ The profile icon has a circular `#FFEFDA` background with 4px padding and the ic
 **CSS:** `frontend/src/components/portal/PortalSidebar.css`
 
 ### Purpose
-A generic sidebar component used in the reviewer (and future admin) portal. Displays a list of filter/navigation items with icons and optional counts.
+A unified sidebar component shared across both the reviewer and admin portals. Displays an optional title, a list of filter/navigation items with icons and optional counts, and optional children content (used by the admin portal for stats sections).
 
 ### Props
 
-| Prop | Type | Description |
-|------|------|-------------|
-| `items` | Array | List of `{ key, label, icon, count }` objects |
-| `activeKey` | string | The currently selected item's key |
-| `onSelect` | function | Callback when an item is clicked, receives the key |
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `title` | string | No | Optional title displayed above the nav items (e.g., "My Queue", "Admin Panel") |
+| `items` | Array | Yes | List of `{ key, label, icon, count }` objects |
+| `activeKey` | string | Yes | The currently selected item's key |
+| `onSelect` | function | Yes | Callback when an item is clicked, receives the key |
+| `children` | ReactNode | No | Optional content rendered below a divider (used for admin stats) |
 
 ### Item Shape
 ```javascript
 {
   key: 'all',           // unique identifier
   label: 'All Applications',  // display text
-  icon: ArticleIcon,    // SVG import
+  icon: ArticleIcon,    // string (SVG URL) or React element
   count: 42             // optional badge number
 }
 ```
 
+The `icon` prop is flexible:
+- **String** (SVG URL) — rendered as an `<img>` tag (used by reviewer with SVG imports)
+- **React element** — rendered inside a `<span>` wrapper (used by admin with inline SVG components)
+
 ### Layout
 ```
-┌──────────────────────┐
+┌──────────────────────────┐
+│ My Queue                 │  ← optional title
 │ [📄] All Applications  42 │  ← active (dark bg)
 │ [🕐] Pending Review    28 │
-│ [✓]  My Reviews        14 │
-└──────────────────────┘
+│ [✓]  Reviewed by me    14 │
+│ ─────────────────────── │  ← optional divider (only if children)
+│ {children}               │  ← optional (e.g., admin stats boxes)
+└──────────────────────────┘
 ```
 
 ### Styling
-- Width: 240px
+- Width: `266px`
 - Background: `#765C3A` (dark brown, matches navbar)
 - Active item background: `#5D421F` (darker brown)
+- Item height: `37px`, border-radius: `16px`, gap: `5px`
 - Text: `#FFEFDA` (cream)
-- Count badge: semi-transparent white background
+- Count badge: `#FFB44A` (orange) background, `24px` border-radius, white text
+- Divider: `rgba(255, 245, 235, 0.15)`
 - Font: Jua
-- Icons: 20px, filtered to cream color
 
 ### CSS Prefix: `portal-sidebar-`
+
+---
+
+## StatusBadge
+
+**File:** `frontend/src/components/shared/StatusBadge.jsx`
+**CSS:** `frontend/src/components/shared/StatusBadge.css`
+
+### Purpose
+A unified status badge component used in both the reviewer and admin portals to display application statuses with consistent colors.
+
+### Props
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `status` | string | The status key (e.g., `'accepted'`, `'pending'`, `'reviewed'`) |
+
+### Status Colors
+
+| Status Key | Label | Background | Text Color |
+|-----------|-------|-----------|------------|
+| `accepted` | Accepted | `#A9FF94` | `#487F3A` |
+| `waitlisted` | Waitlisted | `#FFB44A` | `#755221` |
+| `rejected` | Rejected | `#FF8B8B` | `#6C3939` |
+| `under_review` | Reviewed | `#A172FF` | `#332452` |
+| `submitted` | Pending | `#AEFFFF` | `#567F7F` |
+| `reviewed` | Reviewed | `#A172FF` | `#332452` |
+| `pending` | Pending | `#AEFFFF` | `#567F7F` |
+
+Note: `reviewed`/`pending` are aliases for `under_review`/`submitted` — the reviewer API uses these simplified names while the admin API uses the full status names.
+
+### Styling
+- Height: `24px`, min-width: `75px`
+- Border-radius: `16px` (pill shape)
+- Font-size: `10px`, font-weight: `700`, uppercase
+- Font: Satoshi Variable
+
+### CSS Prefix: `status-badge-`
 
 ---
 

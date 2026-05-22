@@ -17,8 +17,11 @@ Every CSS class uses a **prefix** based on its component group to prevent collis
 | `hk-dash-` | Hacker dashboard | `hk-dash-card`, `hk-dash-title`, `hk-dash-cta-btn` |
 | `hk-landing-` | Hacker landing page | `hk-landing-content`, `hk-landing-bg`, `hk-landing-start-btn` |
 | `hk-sub-` | Hacker submission page | `hk-sub-card`, `hk-sub-title`, `hk-sub-submit-btn` |
-| `rv-` | Reviewer-specific components | `rv-main-page`, `rv-table`, `rv-status-badge`, `rv-pagination-btn` |
+| `rv-` | Reviewer main page & table | `rv-main-page`, `rv-table`, `rv-pagination-btn` |
+| `rev-` | Reviewer application detail page | `rev-detail`, `rev-card`, `rev-rubric`, `rev-slider`, `rev-field` |
+| `admin-` | Admin portal pages | `admin-app`, `admin-main`, `admin-stats-group` |
 | `portal-` | Shared portal components | `portal-navbar`, `portal-navbar-btn`, `portal-sidebar-item` |
+| `status-badge-` | Shared status badges | `status-badge`, `status-badge--accepted`, `status-badge--pending` |
 | `notfound-` | 404 page | `notfound-page`, `notfound-code`, `notfound-btn` |
 
 ## Fonts
@@ -56,21 +59,28 @@ Every CSS class uses a **prefix** based on its component group to prevent collis
 ### Accents
 | Color | Hex | Usage |
 |-------|-----|-------|
-| Orange | `#FFB44A` | Active portal button |
-| Purple | `#A172FF` | "Reviewed" status badge bg |
-| Cyan | `#AEFFFF` | "Pending" status badge bg |
-| Green | `#2bb673` | Dashboard check icon (submitted/accepted) |
+| Orange | `#FFB44A` | Active portal button, sidebar count badges, waitlisted badge bg |
+| Purple | `#A172FF` | Reviewed status badge bg, scoring rubric total score, slider fill |
+| Cyan | `#AEFFFF` | Pending status badge bg |
+| Green | `#A9FF94` | Accepted status badge bg |
+| Red | `#FF8B8B` | Rejected status badge bg |
+| Dashboard Green | `#2bb673` | Dashboard check icon (submitted/accepted) |
 
 ### Text
 | Color | Hex | Usage |
 |-------|-----|-------|
-| Dark | `#333` | Primary text, headings |
+| Brown | `#765C3A` | Primary headings, card titles, field labels, buttons |
+| Dark | `#333` | Body text, input values |
+| Black | `#000` | Field values in reviewer detail cards |
 | Medium | `#555` | Secondary text, table cells |
 | Light | `#666` | ID column, muted text |
-| Placeholder | `#999` | Input placeholders, pagination ellipsis |
+| Placeholder | `#999` | Input placeholders, pagination ellipsis, max score indicators |
 | Error | `#c00` | Error messages |
-| Badge Purple Text | `#332452` | "Reviewed" badge text |
-| Badge Cyan Text | `#567F7F` | "Pending" badge text |
+| Badge Purple Text | `#332452` | Reviewed badge text |
+| Badge Cyan Text | `#567F7F` | Pending badge text |
+| Badge Green Text | `#487F3A` | Accepted badge text |
+| Badge Orange Text | `#755221` | Waitlisted badge text |
+| Badge Red Text | `#6C3939` | Rejected badge text |
 
 ## Responsive Approach
 
@@ -86,9 +96,10 @@ This provides a responsive range: minimum of `0.7rem`, scales with viewport widt
 
 ### Fixed + Flex Layout
 The portal layout uses a combination:
-- **Sidebar**: Fixed width (`240px`)
+- **Sidebar**: Fixed width (`266px`)
 - **Content area**: `flex: 1` fills remaining space
 - **Navbar**: Full width, fixed height
+- **Reviewer detail rubric panel**: Fixed width (`340px`) right sidebar
 
 ## CSS File Organization
 
@@ -107,10 +118,15 @@ components/
     HkFormPage.jsx
     HkFormPage.css   ← shared form styles
   portal/
+    PortalLayout.jsx
+    PortalLayout.css ← shared layout wrapper
     PortalNavBar.jsx
     PortalNavBar.css
     PortalSidebar.jsx
     PortalSidebar.css
+  shared/
+    StatusBadge.jsx
+    StatusBadge.css  ← unified status badges
 reviewer/
   components/
     ApplicationTable.jsx
@@ -118,6 +134,16 @@ reviewer/
   pages/
     ReviewerMainPage.jsx
     ReviewerMainPage.css
+    ReviewerApplicationDetail.jsx
+    ReviewerApplicationDetail.css  ← two-panel detail + rubric
+admin/
+  AdminApp.jsx
+  AdminApp.css
+  pages/
+    AllApplications.jsx
+    AllApplications.css
+    AdminApplicationDetail.jsx
+    AdminApplicationDetail.css
 ```
 
 ## Global Styles
@@ -141,9 +167,12 @@ Minimal global styles:
 | Usage | Radius |
 |-------|--------|
 | Table wrapper, cards | `16px` |
-| Input fields, search | `10px` |
-| Buttons (general) | `8px` |
+| Sidebar items, filter tabs | `16px` |
+| Input fields, search, textarea | `10px` |
+| Rubric submit buttons | `8px` |
+| Avatar initials | `8px` |
 | Status badges | `16px` (pill) |
+| Sidebar count badges | `24px` (pill) |
 | Portal buttons | `1.5em` (pill) |
 | Pagination buttons | `6px` |
 | 404 "Go Home" button | `12px` |
