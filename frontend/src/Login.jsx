@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Login.css'
-import loginBg from './assets/backgrounds/login.png'
-import loginBtn from './assets/buttons/login-button.png'
+import logoImg from './assets/logo.svg'
+import iggyImg from './assets/backgrounds/landing-iggy.svg'
 
 function Login() {
   const navigate = useNavigate()
@@ -37,53 +37,62 @@ function Login() {
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleLogin()
+  }
+
   return (
     <div className="login">
-      <div className="login-content">
-        <img src={loginBg} alt="" className="login-bg" />
+      {/* Header */}
+      <div className="login-header">
+        <img src={logoImg} alt="Ignition Hacks Logo" className="login-logo" />
+        <span className="login-header-text">IGNITION HACKS V7</span>
+      </div>
 
-        <div className="login-form">
-          <div className="login-form-section">
-            <input
-              type="email"
-              placeholder="Email"
-              className="login-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+      {/* Iggy */}
+      <img src={iggyImg} alt="" className="login-iggy" />
 
-          <div className="login-form-section">
-            <input
-              type="password"
-              placeholder="Password"
-              className="login-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+      {/* Card */}
+      <div className="login-card">
+        <div className="login-card-header">
+          <p className="login-card-title">IGNITION HACKS</p>
+          <p className="login-card-subtitle">Join us for Ignition Hacks V7!</p>
+        </div>
+
+        <div className="login-form-body">
+          <div className="login-fields">
+            <div className="login-inputs-group">
+              <input
+                type="email"
+                placeholder="Email"
+                className="login-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="login-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+            <div className="login-links">
+              <button type="button" className="login-link" onClick={() => navigate('/signup')}>Sign up</button>
+              <button type="button" className="login-link" onClick={() => navigate('/forgot-password')}>Forgot password?</button>
+            </div>
           </div>
 
           {error && <p className="login-error">{error}</p>}
 
-          <div className="login-links">
-            <button
-              type="button"
-              className="login-link"
-              onClick={() => navigate('/signup')}
-            >
-              Sign up
-            </button>
-            <button
-              type="button"
-              className="login-link"
-              onClick={() => navigate('/forgot-password')}
-            >
-              Forgot Password?
-            </button>
-          </div>
-
-          <button className="login-button" onClick={handleLogin} disabled={isPending}>
-            <img src={loginBtn} alt="Log In" />
+          <button
+            className="login-submit-btn"
+            onClick={handleLogin}
+            disabled={isPending}
+          >
+            Log In
           </button>
         </div>
       </div>

@@ -9,6 +9,8 @@ import Info from './Info.jsx'
 import Education from './Education.jsx'
 import Experience from './Experience.jsx'
 import Teammates from './Teammates.jsx'
+import Questions from './Questions.jsx'
+import FinishApp from './FinishApp.jsx'
 import Submission from './pages/Submission'
 import ReviewerSignup from './ReviewerSignup.jsx'
 import AdminSignup from './AdminSignup.jsx'
@@ -33,6 +35,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/education" element={<Education />} />
         <Route path="/experience" element={<Experience />} />
         <Route path="/teammates" element={<Teammates />} />
+        <Route path="/questions" element={<Questions />} />
+        <Route path="/finish" element={<FinishApp />} />
         <Route path="/submission/:id" element={<Submission />} />
         <Route path="/reviewer/dashboard" element={
           <ProtectedRoute allowedRoles={['reviewer']}>
