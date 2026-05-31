@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Signup.css'
-import signupBg from '../../assets/backgrounds/sign-up-bg.png'
-import signupBtn from '../../assets/buttons/signup-button.png'
+import logoImg from '../../assets/logo.svg'
+import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
 import { setAuth } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
 
@@ -20,7 +20,7 @@ function Signup() {
   const [isPending, setIsPending] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
     setError(null)
 
     const trimmedFirst = firstName.trim()
@@ -60,80 +60,87 @@ function Signup() {
     }
   }
 
-  return (
-    <div className="auth-signup">
-      <div className="auth-signup-inner">
-        <img src={signupBg} alt="" className="auth-signup-bg" aria-hidden="true" />
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSubmit()
+  }
 
-        <form className="auth-signup-card" onSubmit={handleSubmit} noValidate>
-          <div className="auth-signup-field-row">
-            <input
-              type="text"
-              className="auth-signup-input"
-              placeholder="First name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              disabled={isPending}
-              autoComplete="given-name"
-            />
-            <input
-              type="text"
-              className="auth-signup-input"
-              placeholder="Last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              disabled={isPending}
-              autoComplete="family-name"
-            />
+  return (
+    <div className="signup">
+      <div className="signup-header">
+        <img src={logoImg} alt="Ignition Hacks Logo" className="signup-logo" />
+        <span className="signup-header-text">IGNITION HACKS V7</span>
+      </div>
+
+      <img src={iggyImg} alt="" className="signup-iggy" />
+
+      <div className="signup-card">
+        <div className="signup-card-header">
+          <p className="signup-card-title">IGNITION HACKS</p>
+          <p className="signup-card-subtitle">Join us for Ignition Hacks V7!</p>
+        </div>
+
+        <div className="signup-form-body">
+          <div className="signup-fields">
+            <div className="signup-inputs-group">
+              <div className="signup-name-row">
+                <input
+                  type="text"
+                  placeholder="First name"
+                  className="signup-input"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isPending}
+                  autoComplete="given-name"
+                />
+                <input
+                  type="text"
+                  placeholder="Last name"
+                  className="signup-input"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  disabled={isPending}
+                  autoComplete="family-name"
+                />
+              </div>
+              <input
+                type="email"
+                placeholder="Email"
+                className="signup-input signup-input--full"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isPending}
+                autoComplete="email"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="signup-input signup-input--full"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isPending}
+                autoComplete="new-password"
+              />
+            </div>
+            <div className="signup-login-link-row">
+              <span className="signup-login-text">Already have an account?&nbsp;</span>
+              <button type="button" className="signup-login-link" onClick={() => navigate('/login')} disabled={isPending}>Log in</button>
+            </div>
           </div>
 
-          <input
-            type="email"
-            className="auth-signup-input auth-signup-input-full"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isPending}
-            autoComplete="email"
-          />
-
-          <input
-            type="password"
-            className="auth-signup-input auth-signup-input-full"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isPending}
-            autoComplete="new-password"
-          />
-
-          <p className="auth-signup-login-hint">
-            Already have an account?{' '}
-            <button
-              type="button"
-              className="auth-signup-login-link"
-              onClick={() => navigate('/login')}
-              disabled={isPending}
-            >
-              Log in
-            </button>
-          </p>
-
-          {error && <p className="auth-signup-error">{error}</p>}
+          {error && <p className="signup-error">{error}</p>}
 
           <button
-            type="submit"
-            className="auth-signup-submit-btn"
+            className="signup-submit-btn"
+            onClick={handleSubmit}
             disabled={isPending}
-            aria-label={isPending ? 'Signing up...' : 'Sign up'}
           >
-            <img
-              src={signupBtn}
-              alt=""
-              style={isPending ? { opacity: 0.5 } : undefined}
-            />
+            {isPending ? 'Signing up...' : 'Sign up'}
           </button>
-        </form>
+        </div>
       </div>
     </div>
   )

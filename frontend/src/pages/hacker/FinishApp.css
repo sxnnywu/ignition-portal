@@ -1,4 +1,4 @@
-.login {
+.finishapp {
   position: relative;
   width: 100vw;
   height: 100vh;
@@ -7,7 +7,7 @@
 }
 
 /* ── Header ── */
-.login-header {
+.finishapp-header {
   position: absolute;
   left: 50%;
   top: 44px;
@@ -18,39 +18,28 @@
   z-index: 1;
 }
 
-.login-logo {
+.finishapp-logo {
   width: 15px;
   height: 22px;
 }
 
-.login-header-text {
+.finishapp-header-text {
   font-family: 'Jua', sans-serif;
   font-size: 22px;
   color: #000;
   white-space: nowrap;
 }
 
-/* ── Iggy ── */
-.login-iggy {
-  position: absolute;
-  left: 67%;
-  top: 85px;
-  width: 126px;
-  z-index: 0;
-}
-
 /* ── Card ── */
-.login-card {
+.finishapp-card {
   position: absolute;
   left: 50%;
-  top: calc(50% + 116px);
+  top: 50%;
   transform: translate(-50%, -50%);
   width: 776px;
-  height: 603px;
   background: #fff9f2;
   border: 1px solid #dcdcdc;
-  border-radius: 12px 12px 0 0;
-  border-bottom: none;
+  border-radius: 12px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
   padding: 61px 55px;
   display: flex;
@@ -60,116 +49,87 @@
   overflow: hidden;
 }
 
-/* ── Card title ── */
-.login-card-header {
+/* ── Text block ── */
+.finishapp-text {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 12px;
-  width: 100%;
 }
 
-.login-card-title {
+.finishapp-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.finishapp-all-done {
+  margin: 0;
+  font-family: 'Jua', sans-serif;
+  font-size: 36px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.finishapp-title {
   margin: 0;
   font-family: 'Jua', sans-serif;
   font-size: 48px;
   color: #a172ff;
-  text-align: center;
-  width: 100%;
 }
 
-.login-card-subtitle {
+.finishapp-subtitle {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
   font-size: 24px;
   color: rgba(0, 0, 0, 0.8);
-  text-align: center;
 }
 
-/* ── Form body ── */
-.login-form-body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 48px;
-  width: 100%;
-}
-
-/* fields + links */
-.login-fields {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-}
-
-.login-inputs-group {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  width: 100%;
-}
-
-.login-input {
-  width: 100%;
-  height: 56px;
-  padding: 14px 24px;
-  border: 1px solid #a38c6f;
-  border-radius: 16px;
-  background: transparent;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
-  font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
-  color: rgba(0, 0, 0, 0.8);
-  outline: none;
-  box-sizing: border-box;
-}
-
-.login-input::placeholder {
-  font-family: 'Jua', sans-serif;
-  font-size: 24px;
-  color: #765c3a;
-}
-
-.login-input:focus {
-  border-color: #765c3a;
-}
-
-/* Sign up / Forgot password */
-.login-links {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.login-link {
-  background: none;
-  border: none;
-  font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
-  color: rgba(0, 0, 0, 0.8);
-  cursor: pointer;
-  padding: 0;
-  transition: opacity 0.2s;
-}
-
-.login-link:hover {
-  opacity: 0.6;
-}
-
-/* Error */
-.login-error {
+/* ── Error ── */
+.finishapp-error {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
   font-size: 16px;
   color: #c0392b;
-  text-align: center;
 }
 
-/* Log In button */
-.login-submit-btn {
+/* ── Button row ── */
+.finishapp-btn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
+}
+
+.finishapp-outline-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 14px 24px;
+  border-radius: 16px;
+  border: 1px solid #a38c6f;
+  background: transparent;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  color: #765c3a;
+  font-family: 'Jua', sans-serif;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.finishapp-outline-btn:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.finishapp-outline-btn:active {
+  transform: scale(0.95);
+}
+
+.finishapp-filled-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
   height: 56px;
   padding: 14px 24px;
   border-radius: 16px;
@@ -181,21 +141,26 @@
   color: #fff;
   font-family: 'Jua', sans-serif;
   font-size: 24px;
-  text-align: center;
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
+  white-space: nowrap;
   box-sizing: border-box;
 }
 
-.login-submit-btn:hover {
+.finishapp-filled-btn:hover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
-.login-submit-btn:active {
-  transform: scale(0.98);
+.finishapp-filled-btn:active {
+  transform: scale(0.95);
 }
 
-.login-submit-btn:disabled {
+.finishapp-filled-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.finishapp-check-icon {
+  width: 24px;
+  height: 24px;
 }

@@ -14,6 +14,8 @@ import Landing from "../pages/hacker/Landing";
 import Info from "../pages/hacker/Info";
 import Submission from "../pages/hacker/Submission";
 import Teammates from "../pages/hacker/Teammates";
+import Questions from "../pages/hacker/Questions";
+import FinishApp from "../pages/hacker/FinishApp";
 
 // portal layout + pages
 import PortalLayout from "../components/portal/PortalLayout";
@@ -82,6 +84,22 @@ const routes = [
     element: (
       <RequireRole allowed={["applicant"]}>
         <Teammates />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/questions",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <Questions />
+      </RequireRole>
+    ),
+  },
+  {
+    path: "/finish",
+    element: (
+      <RequireRole allowed={["applicant"]}>
+        <FinishApp />
       </RequireRole>
     ),
   },
