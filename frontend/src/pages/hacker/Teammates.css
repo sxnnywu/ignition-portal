@@ -1,0 +1,289 @@
+.teammates {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background-color: #EDF7FF;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.teammates-header {
+  position: absolute;
+  left: 50%;
+  top: 44px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 1;
+}
+
+.teammates-logo {
+  width: 15px;
+  height: 22px;
+}
+
+.teammates-header-text {
+  font-family: 'Jua', sans-serif;
+  font-size: 22px;
+  color: #000;
+  white-space: nowrap;
+}
+
+/* ── Illustrations ── */
+.teammates-sun {
+  position: absolute;
+  left: 11%;
+  top: 14%;
+  width: 21.39%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.teammates-circle {
+  position: absolute;
+  left: 70%;
+  top: 15%;
+  width: 9.05%;
+  transform: rotate(1.51deg);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.teammates-cloud {
+  position: absolute;
+  left: 6.46%;
+  top: 14.11%;
+  width: 12.08%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.teammates-iggy {
+  position: absolute;
+  left: 80%;
+  top: 10.44%;
+  width: 8.77%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Card ── */
+.teammates-card {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 116px);
+  transform: translate(-50%, -50%);
+  width: 1190px;
+  height: 600px;
+  background: #fff;
+  border: 1px solid #dcdcdc;
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* ── Card body ── */
+.teammates-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.teammates-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.teammates-step-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.teammates-step {
+  font-family: 'Jua', sans-serif;
+  font-size: 36px;
+  color: rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+.teammates-saved {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.teammates-saved-text {
+  font-family: 'Jua', sans-serif;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.teammates-unsaved-text {
+  font-family: 'Jua', sans-serif;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.teammates-check-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.teammates-title {
+  margin: 0;
+  font-family: 'Jua', sans-serif;
+  font-size: 48px;
+  color: #a172ff;
+}
+
+.teammates-subtitle-block {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.teammates-subtitle {
+  margin: 0;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+/* ── Form ── */
+.teammates-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.teammates-field-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.teammates-input-name {
+  width: 233px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #c3c3c3;
+  border-radius: 8px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.7);
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.teammates-input-email {
+  width: 369px;
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #c3c3c3;
+  border-radius: 8px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 16px;
+  color: rgba(0, 0, 0, 0.7);
+  background: #fff;
+  outline: none;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.teammates-input-name::placeholder,
+.teammates-input-email::placeholder {
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.teammates-input-name:focus,
+.teammates-input-email:focus {
+  border-color: #999;
+}
+
+/* ── Navigation ── */
+.teammates-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.teammates-nav-right {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.teammates-outline-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 14px 24px;
+  border-radius: 16px;
+  border: 1px solid #a38c6f;
+  background: transparent;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  color: #765c3a;
+  font-family: 'Jua', sans-serif;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.teammates-outline-btn:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.teammates-outline-btn:active {
+  transform: scale(0.95);
+}
+
+.teammates-filled-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  padding: 14px 24px;
+  border-radius: 16px;
+  border: 1px solid #a38c6f;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.1) 100%),
+    linear-gradient(90deg, #765c3a 0%, #765c3a 100%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-family: 'Jua', sans-serif;
+  font-size: 24px;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.teammates-filled-btn:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+.teammates-filled-btn:active {
+  transform: scale(0.95);
+}
+
+.teammates-filled-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

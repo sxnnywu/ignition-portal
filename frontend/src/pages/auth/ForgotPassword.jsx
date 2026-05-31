@@ -1,91 +1,84 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './ForgotPassword.css'
-import resetBg from '../../assets/backgrounds/reset.png'
-import backBtn from '../../assets/buttons/login-back-button.png'
-import recoverBtn from '../../assets/buttons/recover-button.png'
+import logoImg from '../../assets/logo.svg'
+import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
 import { apiUrl } from '../../lib/api'
 
 function ForgotPassword() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
-  const [isSubmitted, setIsSubmitted] = useState(false)
-  const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isPending, setIsPending] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState(null)
 
   const handleRecover = async (e) => {
-    e.preventDefault()
-    setError('')
-    setIsLoading(true)
-
+    if (e) e.preventDefault()
+    if (!email.trim()) {
+      setError('Please enter your email address.')
+      return
+    }
+    setError(null)
+    setIsPending(true)
     try {
-      const response = await fetch(apiUrl('/forgot-password'), {
+      const res = await fetch(apiUrl('/forgot-password'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.message || 'Failed to send reset email')
-        return
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to send reset email')
       }
-
-      setEmail('')
-      setIsSubmitted(true)
+      setSubmitted(true)
     } catch (err) {
-      setError('Error sending reset email. Please try again.')
-      console.error(err)
+      setError(err.message)
     } finally {
-      setIsLoading(false)
+      setIsPending(false)
     }
   }
 
   return (
-    <div className="auth-forgot">
-      <div className="auth-forgot-content">
-        <img src={resetBg} alt="" className="auth-forgot-bg" />
+    <div className="forgotpw">
+      <div className="forgotpw-header">
+        <img src={logoImg} alt="Ignition Hacks Logo" className="forgotpw-logo" />
+        <span className="forgotpw-header-text">IGNITION HACKS V7</span>
+      </div>
 
-        <button className="auth-forgot-back-button" onClick={() => navigate('/login')}>
-          <img src={backBtn} alt="Back" />
-        </button>
+      <img src={iggyImg} alt="" className="forgotpw-iggy" />
 
-        <div className="auth-forgot-form">
-          <form onSubmit={handleRecover}>
-            <div className="auth-forgot-form-section">
+      <div className="forgotpw-card">
+        <div className="forgotpw-top">
+          <button className="forgotpw-back-btn" onClick={() => navigate('/login')}>Back</button>
+          <div className="forgotpw-title-group">
+            <p className="forgotpw-title">Reset your password</p>
+            <p className="forgotpw-subtitle">Enter your email to reset your password</p>
+          </div>
+        </div>
+
+        <div className="forgotpw-form">
+          {submitted ? (
+            <p className="forgotpw-success">Instructions have been sent to your email to reset your password.</p>
+          ) : (
+            <>
               <input
                 type="email"
                 placeholder="Email"
-                className="auth-forgot-input"
+                className="forgotpw-input"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={isLoading}
+                onKeyDown={(e) => e.key === 'Enter' && handleRecover()}
+                disabled={isPending}
               />
-            </div>
-
-            <button
-              type="submit"
-              className="auth-forgot-button"
-              disabled={isLoading}
-            >
-              <img src={recoverBtn} alt="Recover password" />
-            </button>
-          </form>
-
-          {error && (
-            <div className="auth-forgot-error">
-              <p className="auth-forgot-error-message">{error}</p>
-            </div>
-          )}
-
-          {isSubmitted && (
-            <div className="auth-forgot-success">
-              <p className="auth-forgot-success-message">
-                Instructions have been sent to your email to reset your password.
-              </p>
-            </div>
+              {error && <p className="forgotpw-error">{error}</p>}
+              <button
+                className="forgotpw-submit-btn"
+                onClick={handleRecover}
+                disabled={isPending}
+              >
+                Recover password
+              </button>
+            </>
           )}
         </div>
       </div>

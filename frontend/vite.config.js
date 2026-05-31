@@ -27,6 +27,7 @@ export default defineConfig({
       "/forgot-password": apiOnly,
       "/reset-password": apiOnly,
       "/login": apiOnly,
+      "/questions": apiOnly,
       "/api/admin": apiOnly,
     },
   },

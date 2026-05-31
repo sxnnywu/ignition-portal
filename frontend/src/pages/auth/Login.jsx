@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Login.css'
-import loginBg from '../../assets/backgrounds/login.png'
-import loginBtn from '../../assets/buttons/login-button.png'
+import logoImg from '../../assets/logo.svg'
+import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
 import { getToken, getUser, setAuth } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
 
@@ -25,11 +25,10 @@ function Login() {
   }, [navigate])
 
   const handleLogin = async (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
     setError(null)
 
     const trimmedEmail = email.trim()
-
     if (!trimmedEmail || !password) {
       setError('Email and password are required.')
       return
@@ -40,16 +39,12 @@ function Login() {
       const res = await fetch(apiUrl('/login'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: trimmedEmail,
-          password,
-        }),
+        body: JSON.stringify({ email: trimmedEmail, password }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
         throw new Error(data.message || 'Login failed. Please try again.')
       }
-
       setAuth(data.token, data.user)
       if (data.user?.role === 'reviewer' || data.user?.role === 'admin') {
         navigate('/reviewer', { replace: true })
@@ -63,65 +58,65 @@ function Login() {
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleLogin()
+  }
+
   return (
-    <div className="auth-login">
-      <div className="auth-login-content">
-        <img src={loginBg} alt="" className="auth-login-bg" aria-hidden="true" />
+    <div className="login">
+      <div className="login-header">
+        <img src={logoImg} alt="Ignition Hacks Logo" className="login-logo" />
+        <span className="login-header-text">IGNITION HACKS V7</span>
+      </div>
 
-        <form className="auth-login-form" onSubmit={handleLogin} noValidate>
-          <div className="auth-login-form-section">
-            <input
-              type="email"
-              placeholder="Email"
-              className="auth-login-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isPending}
-              autoComplete="email"
-            />
+      <img src={iggyImg} alt="" className="login-iggy" />
+
+      <div className="login-card">
+        <div className="login-card-header">
+          <p className="login-card-title">IGNITION HACKS</p>
+          <p className="login-card-subtitle">Join us for Ignition Hacks V7!</p>
+        </div>
+
+        <div className="login-form-body">
+          <div className="login-fields">
+            <div className="login-inputs-group">
+              <input
+                type="email"
+                placeholder="Email"
+                className="login-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isPending}
+                autoComplete="email"
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                className="login-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isPending}
+                autoComplete="current-password"
+              />
+            </div>
+            <div className="login-links">
+              <button type="button" className="login-link" onClick={() => navigate('/signup')} disabled={isPending}>Sign up</button>
+              <button type="button" className="login-link" onClick={() => navigate('/forgot-password')} disabled={isPending}>Forgot password?</button>
+            </div>
           </div>
 
-          <div className="auth-login-form-section">
-            <input
-              type="password"
-              placeholder="Password"
-              className="auth-login-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isPending}
-              autoComplete="current-password"
-            />
-          </div>
+          {error && <p className="login-error">{error}</p>}
 
-          <div className="auth-login-links">
-            <button
-              type="button"
-              className="auth-login-link"
-              onClick={() => navigate('/signup')}
-              disabled={isPending}
-            >
-              Sign up
-            </button>
-            <button
-              type="button"
-              className="auth-login-link"
-              onClick={() => navigate('/forgot-password')}
-              disabled={isPending}
-            >
-              Forgot Password?
-            </button>
-          </div>
-
-          {error && <p className="auth-login-error">{error}</p>}
-
-          <button type="submit" className="auth-login-button" disabled={isPending}>
-            <img
-              src={loginBtn}
-              alt={isPending ? 'Logging in...' : 'Log In'}
-              style={isPending ? { opacity: 0.5 } : undefined}
-            />
+          <button
+            className="login-submit-btn"
+            onClick={handleLogin}
+            disabled={isPending}
+          >
+            {isPending ? 'Logging in...' : 'Log In'}
           </button>
-        </form>
+        </div>
       </div>
     </div>
   )
