@@ -7,6 +7,36 @@ import { invalidateCache, invalidateCacheByPrefix, CACHE_KEYS } from '../../lib/
 
 const STATUS_OPTIONS = ['submitted', 'under_review', 'accepted', 'waitlisted', 'rejected']
 
+// field groupings for displaying the structured application
+const PERSONAL_FIELDS = [
+  { key: 'gender', label: 'Gender' },
+  { key: 'age', label: 'Age' },
+  { key: 'ethnicity', label: 'Ethnicity' },
+  { key: 'country', label: 'Country' },
+  { key: 'city', label: 'City' },
+  { key: 'state', label: 'State / Province' },
+]
+const EDUCATION_FIELDS = [
+  { key: 'institution', label: 'School' },
+  { key: 'level', label: 'Level of Study' },
+  { key: 'program', label: 'Program' },
+  { key: 'coop', label: 'Co-op Student' },
+]
+const EXPERIENCE_FIELDS = [
+  { key: 'attended2025', label: 'Attended IgnitionHacks 2025' },
+  { key: 'hackathonsAttended', label: 'Hackathons Attended' },
+]
+const RESPONSE_FIELDS = [
+  { key: 'admireDescribe', label: 'How would the person you admire most describe you?' },
+  { key: 'proudProject', label: 'Project or build most proud of' },
+  { key: 'motivation', label: 'Motivation & previous hackathon experience' },
+]
+
+const displayValue = (val) => {
+  if (val === undefined || val === null || val === '') return '--'
+  return String(val)
+}
+
 const STATUS_LABELS = {
   draft: 'Draft',
   submitted: 'Submitted',
@@ -103,7 +133,11 @@ function AdminApplicationDetail() {
     )
   }
 
-  const answers = application?.answers || {}
+  const personal = application?.personal || {}
+  const education = application?.education || {}
+  const experience = application?.experience || {}
+  const teammates = application?.teammates || []
+  const responses = application?.responses || {}
 
   const avgScore = reviews.length
     ? (reviews.reduce((sum, r) => sum + r.totalScore, 0) / reviews.length).toFixed(1)
@@ -181,16 +215,58 @@ function AdminApplicationDetail() {
           </div>
 
           <div className="app-detail-section">
-            <h2 className="app-detail-section-title">Application Answers</h2>
-            {Object.keys(answers).length === 0 ? (
-              <p className="app-detail-empty">No answers submitted.</p>
+            <h2 className="app-detail-section-title">Personal Information</h2>
+            {PERSONAL_FIELDS.map(({ key, label }) => (
+              <div key={key} className="app-detail-answer-row">
+                <p className="app-detail-answer-key">{label}</p>
+                <p className="app-detail-answer-value">{displayValue(personal[key])}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="app-detail-section">
+            <h2 className="app-detail-section-title">Education</h2>
+            {EDUCATION_FIELDS.map(({ key, label }) => (
+              <div key={key} className="app-detail-answer-row">
+                <p className="app-detail-answer-key">{label}</p>
+                <p className="app-detail-answer-value">{displayValue(education[key])}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="app-detail-section">
+            <h2 className="app-detail-section-title">Hackathon Experience</h2>
+            {EXPERIENCE_FIELDS.map(({ key, label }) => (
+              <div key={key} className="app-detail-answer-row">
+                <p className="app-detail-answer-key">{label}</p>
+                <p className="app-detail-answer-value">{displayValue(experience[key])}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="app-detail-section">
+            <h2 className="app-detail-section-title">Teammates</h2>
+            {teammates.length === 0 ? (
+              <p className="app-detail-empty">No teammates added.</p>
             ) : (
-              Object.entries(answers).map(([key, value]) => (
+              teammates.map((t, i) => (
+                <div key={t.userId || i} className="app-detail-answer-row">
+                  <p className="app-detail-answer-key">{t.name}</p>
+                  <p className="app-detail-answer-value">{t.email}</p>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="app-detail-section">
+            <h2 className="app-detail-section-title">Written Responses</h2>
+            {RESPONSE_FIELDS.every((f) => !responses[f.key]) ? (
+              <p className="app-detail-empty">No responses submitted.</p>
+            ) : (
+              RESPONSE_FIELDS.map(({ key, label }) => (
                 <div key={key} className="app-detail-answer-row">
-                  <p className="app-detail-answer-key">{key}</p>
-                  <p className="app-detail-answer-value">
-                    {typeof value === 'object' ? JSON.stringify(value) : String(value)}
-                  </p>
+                  <p className="app-detail-answer-key">{label}</p>
+                  <p className="app-detail-answer-value">{displayValue(responses[key])}</p>
                 </div>
               ))
             )}

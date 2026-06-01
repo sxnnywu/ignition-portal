@@ -57,7 +57,9 @@ router.get('/reviewer',
           _id: app._id,
           userId: app.userId,
           status: app.status,
-          answers: app.answers,
+          personal: app.personal,
+          education: app.education,
+          experience: app.experience,
           submittedAt: app.submittedAt,
           createdAt: app.createdAt,
           reviewStatus: review ? 'reviewed' : 'pending',
@@ -103,8 +105,53 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
+// GET /applications/teammate/:userId
+// look up a fellow applicant by their user id (used by the teammates step).
+// returns just enough to display a teammate: name (+ first/last) and email.
+router.get('/teammate/:userId', auth, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const requesterId = req.user.userId;
+
+    // validate id format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(404).json({ message: 'No user found with that ID' });
+    }
+
+    // a user cannot add themselves as a teammate
+    if (userId === requesterId) {
+      return res.status(400).json({ message: 'You cannot add yourself as a teammate' });
+    }
+
+    // teammates must be applicants
+    const user = await User.findById(userId);
+    if (!user || user.role !== 'applicant') {
+      return res.status(404).json({ message: 'No user found with that ID' });
+    }
+
+    // split the stored full name into first / last for display
+    const parts = user.name.trim().split(/\s+/);
+    const firstName = parts[0] || '';
+    const lastName = parts.slice(1).join(' ');
+
+    return res.status(200).json({
+      message: 'User found',
+      user: {
+        _id: user._id,
+        name: user.name,
+        firstName,
+        lastName,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // GET /applications/:id - get application by id (admins and reviewers)
-router.get('/:id', 
+router.get('/:id',
   auth,
   requireRole('admin', 'reviewer'),
   async (req, res) => {
@@ -134,50 +181,140 @@ router.get('/:id',
   }
 });
 
+// response character limits (kept in sync with the frontend + schema)
+const RESPONSE_LIMITS = {
+  admireDescribe: 100,
+  proudProject: 500,
+  motivation: 500,
+};
+
+// build a validated teammates array from the incoming payload.
+// accepts an array of user ids (strings) or objects with a `userId` field;
+// name/email are always re-derived from the database, never trusted from the client.
+async function buildTeammates(raw, ownerId) {
+  if (!Array.isArray(raw)) {
+    return { error: 'teammates must be an array' };
+  }
+  if (raw.length > 3) {
+    return { error: 'You can add at most 3 teammates' };
+  }
+
+  const seen = new Set();
+  const teammates = [];
+
+  for (const entry of raw) {
+    const id = typeof entry === 'string' ? entry : entry?.userId;
+
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return { error: `Invalid teammate ID: ${id}` };
+    }
+    if (id === ownerId) {
+      return { error: 'You cannot add yourself as a teammate' };
+    }
+    if (seen.has(id)) {
+      return { error: 'Duplicate teammate' };
+    }
+    seen.add(id);
+
+    const user = await User.findById(id);
+    if (!user || user.role !== 'applicant') {
+      return { error: `No user found with ID: ${id}` };
+    }
+
+    teammates.push({ userId: user._id, name: user.name, email: user.email });
+  }
+
+  return { teammates };
+}
+
 // POST /applications
-// start/update application
+// start/update application — accepts any subset of the structured slices
 router.post('/', auth, async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { answers, status } = req.body;
+    const { personal, education, experience, teammates, responses, status } = req.body;
 
-    let user = await User.findById(userId);
-
+    const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'user does not exist' });
     }
 
-    // find existing application for this user
+    // find existing application for this user (or start a new one)
     let app = await Application.findOne({ userId: user._id });
-
-    // create application
-    if (!app) {
-      app = await Application.create({
-        userId,
-        status: status || 'draft',
-        version: 1.0,
-        answers: answers || {},
-        submittedAt: status === 'submitted' ? new Date() : null,
-      });
-
-      // application created
-      return res.status(201).json({
-        message: 'Application started',
-        application: app,
-      });
+    const isNew = !app;
+    if (isNew) {
+      app = new Application({ userId: user._id, status: 'draft' });
+    } else {
+      // prevent reverting submitted application to draft
+      if (app.status === 'submitted' && status === 'draft') {
+        return res.status(400).json({ message: 'Cannot revert submitted application' });
+      }
+      app.version += 1;
     }
 
-    // prevent reverting submitted application to draft
-    if (app.status === 'submitted' && status === 'draft') {
-      return res.status(400).json({ message: 'Cannot revert submitted application' });
+    // --- apply + validate each provided slice ---
+
+    if (personal !== undefined) {
+      app.personal = {
+        gender: personal.gender ?? '',
+        age: personal.age === '' || personal.age == null ? null : Number(personal.age),
+        ethnicity: personal.ethnicity ?? '',
+        country: personal.country ?? '',
+        city: personal.city ?? '',
+        state: personal.state ?? '',
+      };
     }
 
+    if (education !== undefined) {
+      const level = education.level ?? '';
+      // program is only required for undergraduate / graduate applicants
+      const programRequired = level === 'undergraduate' || level === 'graduate';
+      if (programRequired && !(education.program ?? '').trim()) {
+        return res.status(400).json({
+          message: 'Program is required for undergraduate and graduate students',
+        });
+      }
+      app.education = {
+        institution: education.institution ?? '',
+        level,
+        program: education.program ?? '',
+        coop: education.coop ?? '',
+      };
+    }
 
-    // update application if already exists
-    app.version += 1;
+    if (experience !== undefined) {
+      const n = experience.hackathonsAttended;
+      app.experience = {
+        attended2025: experience.attended2025 ?? '',
+        hackathonsAttended: n === '' || n == null ? null : Number(n),
+      };
+    }
 
-    if (answers) {
-      app.answers = answers;
+    if (teammates !== undefined) {
+      const result = await buildTeammates(teammates, userId);
+      if (result.error) {
+        return res.status(400).json({ message: result.error });
+      }
+      app.teammates = result.teammates;
+    }
+
+    if (responses !== undefined) {
+      for (const [key, limit] of Object.entries(RESPONSE_LIMITS)) {
+        const val = responses[key] ?? '';
+        if (typeof val !== 'string') {
+          return res.status(400).json({ message: `Invalid response for "${key}"` });
+        }
+        if (val.length > limit) {
+          return res.status(400).json({
+            message: `Response "${key}" must be ${limit} characters or fewer`,
+          });
+        }
+      }
+      app.responses = {
+        admireDescribe: responses.admireDescribe ?? '',
+        proudProject: responses.proudProject ?? '',
+        motivation: responses.motivation ?? '',
+      };
     }
 
     if (status) {
@@ -189,11 +326,16 @@ router.post('/', auth, async (req, res) => {
 
     await app.save();
 
-    return res.status(200).json({
-      message: 'Application updated',
+    return res.status(isNew ? 201 : 200).json({
+      message: isNew ? 'Application started' : 'Application updated',
       application: app,
     });
   } catch (err) {
+    // surface schema validation errors as 400s with a clean message
+    if (err.name === 'ValidationError') {
+      const message = Object.values(err.errors)[0]?.message || 'Validation error';
+      return res.status(400).json({ message });
+    }
     console.error(err);
     return res.status(500).json({ message: 'Server error' });
   }

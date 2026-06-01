@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import './FinishApp.css'
 import logoImg from '../../assets/logo.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
+import UserIdBadge from '../../components/hacker/UserIdBadge'
 import { getToken } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
 
@@ -59,6 +60,7 @@ function FinishApp() {
   if (submitted) {
     return (
       <div className="finishapp">
+        <UserIdBadge />
         <div className="finishapp-header">
           <img src={logoImg} alt="Ignition Hacks Logo" className="finishapp-logo" />
           <span className="finishapp-header-text">IGNITION HACKS V7</span>
@@ -78,6 +80,7 @@ function FinishApp() {
 
   return (
     <div className="finishapp">
+      <UserIdBadge />
       <div className="finishapp-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="finishapp-logo" />
         <span className="finishapp-header-text">IGNITION HACKS V7</span>

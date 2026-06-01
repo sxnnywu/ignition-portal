@@ -17,24 +17,22 @@ const SCORING_CATEGORIES = [
 const MAX_PER_CATEGORY = 25
 
 /* ------------------------------------------------------------------ */
-/*  Application-answer field mappings (grouped into card sections)     */
+/*  Application field mappings (grouped into card sections)            */
 /* ------------------------------------------------------------------ */
 const PERSONAL_FIELDS = [
-  { key: 'firstName', label: 'First Name' },
-  { key: 'lastName', label: 'Last Name' },
   { key: 'gender', label: 'Gender' },
   { key: 'age', label: 'Age' },
   { key: 'ethnicity', label: 'Ethnicity' },
   { key: 'country', label: 'Country' },
   { key: 'city', label: 'City' },
-  { key: 'stateProvince', label: 'State / Province' },
+  { key: 'state', label: 'State / Province' },
 ]
 
 const EDUCATION_FIELDS = [
-  { key: 'educationalInstitution', label: 'School' },
-  { key: 'levelOfEducation', label: 'Level of Study' },
-  { key: 'programName', label: 'Program' },
-  { key: 'coopStudent', label: 'Co-op Student' },
+  { key: 'institution', label: 'School' },
+  { key: 'level', label: 'Level of Study' },
+  { key: 'program', label: 'Program' },
+  { key: 'coop', label: 'Co-op Student' },
 ]
 
 const EXPERIENCE_FIELDS = [
@@ -42,11 +40,11 @@ const EXPERIENCE_FIELDS = [
   { key: 'hackathonsAttended', label: 'Hackathons Attended' },
 ]
 
-const ALL_KNOWN_KEYS = new Set([
-  ...PERSONAL_FIELDS.map((f) => f.key),
-  ...EDUCATION_FIELDS.map((f) => f.key),
-  ...EXPERIENCE_FIELDS.map((f) => f.key),
-])
+const RESPONSE_FIELDS = [
+  { key: 'admireDescribe', label: 'How do you think the person you admire the most would describe you?' },
+  { key: 'proudProject', label: "What project or build are you most proud of?" },
+  { key: 'motivation', label: 'What motivates you to participate in hackathons?' },
+]
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                           */
@@ -246,16 +244,13 @@ export default function ReviewerApplicationDetail() {
     )
   }
 
-  const answers = application?.answers || {}
+  const personal = application?.personal || {}
+  const education = application?.education || {}
+  const experience = application?.experience || {}
+  const teammates = application?.teammates || []
+  const responses = application?.responses || {}
   const name = application?.userId?.name || 'Unknown Applicant'
   const email = application?.userId?.email || '--'
-
-  // Gather any answer keys that don't belong to known sections
-  const unknownKeys = Object.keys(answers).filter((k) => !ALL_KNOWN_KEYS.has(k))
-  const allExpFields = [
-    ...EXPERIENCE_FIELDS,
-    ...unknownKeys.map((k) => ({ key: k, label: k })),
-  ]
 
   return (
     <div className="rev-detail">
@@ -284,15 +279,15 @@ export default function ReviewerApplicationDetail() {
               <span className="rev-field-value">{email}</span>
             </div>
           </div>
-          <FieldGrid fields={PERSONAL_FIELDS} answers={answers} />
+          <FieldGrid fields={PERSONAL_FIELDS} answers={personal} />
         </div>
 
         {/* Education */}
         <div className="rev-card">
           <h2 className="rev-card-title">Education</h2>
           <div className="rev-card-divider" />
-          <FieldGrid fields={EDUCATION_FIELDS} answers={answers} />
-          {EDUCATION_FIELDS.every((f) => !answers[f.key]) && (
+          <FieldGrid fields={EDUCATION_FIELDS} answers={education} />
+          {EDUCATION_FIELDS.every((f) => !education[f.key]) && (
             <p className="rev-card-empty">No data submitted.</p>
           )}
         </div>
@@ -301,7 +296,41 @@ export default function ReviewerApplicationDetail() {
         <div className="rev-card">
           <h2 className="rev-card-title">Hackathon Experience</h2>
           <div className="rev-card-divider" />
-          <ExperienceFields fields={allExpFields} answers={answers} />
+          <ExperienceFields fields={EXPERIENCE_FIELDS} answers={experience} />
+        </div>
+
+        {/* Teammates */}
+        <div className="rev-card">
+          <h2 className="rev-card-title">Teammates</h2>
+          <div className="rev-card-divider" />
+          {teammates.length === 0 ? (
+            <p className="rev-card-empty">No teammates added.</p>
+          ) : (
+            <div className="rev-field-grid">
+              {teammates.map((t, i) => (
+                <div key={t.userId || i} className="rev-field">
+                  <span className="rev-field-label">{t.name}</span>
+                  <span className="rev-field-value">{t.email}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Written Responses */}
+        <div className="rev-card">
+          <h2 className="rev-card-title">Written Responses</h2>
+          <div className="rev-card-divider" />
+          {RESPONSE_FIELDS.every((f) => !responses[f.key]) ? (
+            <p className="rev-card-empty">No responses submitted.</p>
+          ) : (
+            RESPONSE_FIELDS.map((f) => (
+              <div key={f.key} className="rev-exp-field">
+                <span className="rev-field-label">{f.label}</span>
+                <div className="rev-longtext-box">{responses[f.key] || '--'}</div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

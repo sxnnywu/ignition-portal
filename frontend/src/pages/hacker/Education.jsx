@@ -7,10 +7,14 @@ import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
 import sunImg from '../../assets/backgrounds/info-sun.svg'
 import circleImg from '../../assets/backgrounds/info-circle.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
+import UserIdBadge from '../../components/hacker/UserIdBadge'
+import { getToken } from '../../lib/auth'
+import { apiUrl } from '../../lib/api'
 
 function Education() {
   const navigate = useNavigate()
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [form, setForm] = useState({
     institution: '', level: '', program: '', coop: ''
   })
@@ -20,10 +24,63 @@ function Education() {
     setSaved(false)
   }
 
-  const isComplete = form.institution.trim() && form.level && form.program.trim() && form.coop
+  // program is only required for undergraduate / graduate students
+  const programRequired = form.level === 'undergraduate' || form.level === 'graduate'
+
+  const isComplete =
+    form.institution.trim() &&
+    form.level &&
+    form.coop &&
+    (!programRequired || form.program.trim())
+
+  const saveEducation = async () => {
+    const token = getToken()
+    if (!token) {
+      alert('You must be logged in to save your application. Please log in and try again.')
+      return false
+    }
+    const response = await fetch(apiUrl('/applications'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ education: form, status: 'draft' }),
+    })
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}))
+      throw new Error(data.message || 'Failed to save education')
+    }
+    return true
+  }
+
+  const handleContinue = async () => {
+    setLoading(true)
+    try {
+      if (await saveEducation()) navigate('/experience')
+    } catch (error) {
+      console.error('Error saving education:', error)
+      alert(error.message || 'Error saving your data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveDraft = async () => {
+    setLoading(true)
+    try {
+      if (await saveEducation()) setSaved(true)
+    } catch (error) {
+      console.error('Error saving education:', error)
+      alert(error.message || 'Error saving your data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="education">
+      <UserIdBadge />
       <div className="education-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="education-logo" />
         <span className="education-header-text">IGNITION HACKS V7</span>
@@ -72,7 +129,7 @@ function Education() {
             </div>
 
             <div className="education-form-section">
-              <label className="education-section-label">Program *</label>
+              <label className="education-section-label">Program {programRequired ? '*' : '(optional)'}</label>
               <div className="education-field-row">
                 <input type="text" placeholder="Program name" className="education-input" value={form.program} onChange={set('program')} />
                 <select className="education-select" value={form.coop} onChange={set('coop')}>
@@ -88,8 +145,8 @@ function Education() {
         <div className="education-nav">
           <button className="education-outline-btn" onClick={() => navigate('/info')}>Back</button>
           <div className="education-nav-right">
-            <button className="education-filled-btn" onClick={() => navigate('/experience')} disabled={!isComplete}>Continue</button>
-            <button className="education-outline-btn" onClick={() => setSaved(true)}>Save Draft</button>
+            <button className="education-filled-btn" onClick={handleContinue} disabled={!isComplete || loading}>Continue</button>
+            <button className="education-outline-btn" onClick={handleSaveDraft} disabled={loading}>Save Draft</button>
           </div>
         </div>
       </div>

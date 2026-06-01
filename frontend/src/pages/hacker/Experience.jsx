@@ -7,6 +7,7 @@ import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
 import sunImg from '../../assets/backgrounds/info-sun.svg'
 import circleImg from '../../assets/backgrounds/info-circle.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
+import UserIdBadge from '../../components/hacker/UserIdBadge'
 import { getToken } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
 
@@ -35,7 +36,7 @@ function Experience() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          answers: { attended2025, hackathonsAttended },
+          experience: { attended2025, hackathonsAttended },
           status: 'draft',
         }),
       })
@@ -55,6 +56,7 @@ function Experience() {
 
   return (
     <div className="experience">
+      <UserIdBadge />
       <div className="experience-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="experience-logo" />
         <span className="experience-header-text">IGNITION HACKS V7</span>

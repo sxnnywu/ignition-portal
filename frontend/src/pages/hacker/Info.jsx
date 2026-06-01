@@ -8,14 +8,19 @@ import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
 import sunImg from '../../assets/backgrounds/info-sun.svg'
 import circleImg from '../../assets/backgrounds/info-circle.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
+import UserIdBadge from '../../components/hacker/UserIdBadge'
+import { getToken } from '../../lib/auth'
+import { apiUrl } from '../../lib/api'
 
 const allCountries = Country.getAllCountries()
 
 function Info() {
   const navigate = useNavigate()
   const [saved, setSaved] = useState(false)
+  const [loading, setLoading] = useState(false)
+  // first/last name are taken from the signed-in user, so they aren't collected here
   const [form, setForm] = useState({
-    firstName: '', lastName: '', gender: '', age: '', ethnicity: '',
+    gender: '', age: '', ethnicity: '',
     country: '', city: '', state: ''
   })
 
@@ -27,8 +32,6 @@ function Info() {
   const states = form.country ? State.getStatesOfCountry(form.country) : []
 
   const isComplete =
-    form.firstName.trim() &&
-    form.lastName.trim() &&
     form.gender &&
     form.age &&
     form.ethnicity &&
@@ -36,8 +39,51 @@ function Info() {
     form.city.trim() &&
     (states.length === 0 || form.state)
 
+  const savePersonal = async () => {
+    const token = getToken()
+    if (!token) {
+      alert('You must be logged in to save your application. Please log in and try again.')
+      return false
+    }
+    const response = await fetch(apiUrl('/applications'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ personal: form, status: 'draft' }),
+    })
+    if (!response.ok) throw new Error('Failed to save info')
+    return true
+  }
+
+  const handleContinue = async () => {
+    setLoading(true)
+    try {
+      if (await savePersonal()) navigate('/education')
+    } catch (error) {
+      console.error('Error saving info:', error)
+      alert('Error saving your data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleSaveDraft = async () => {
+    setLoading(true)
+    try {
+      if (await savePersonal()) setSaved(true)
+    } catch (error) {
+      console.error('Error saving info:', error)
+      alert('Error saving your data. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="info">
+      <UserIdBadge />
       <div className="info-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="info-logo" />
         <span className="info-header-text">IGNITION HACKS V7</span>
@@ -72,10 +118,6 @@ function Info() {
           <div className="info-form">
             <div className="info-form-section">
               <label className="info-section-label">Basics *</label>
-              <div className="info-field-row">
-                <input type="text" placeholder="First name" className="info-input" value={form.firstName} onChange={set('firstName')} />
-                <input type="text" placeholder="Last name" className="info-input" value={form.lastName} onChange={set('lastName')} />
-              </div>
               <div className="info-field-row">
                 <select className="info-select" value={form.gender} onChange={set('gender')}>
                   <option value="" disabled>Gender</option>
@@ -130,8 +172,8 @@ function Info() {
         <div className="info-nav">
           <button className="info-outline-btn" onClick={() => navigate('/')}>Back</button>
           <div className="info-nav-right">
-            <button className="info-filled-btn" onClick={() => navigate('/education')} disabled={!isComplete}>Continue</button>
-            <button className="info-outline-btn" onClick={() => setSaved(true)}>Save Draft</button>
+            <button className="info-filled-btn" onClick={handleContinue} disabled={!isComplete || loading}>Continue</button>
+            <button className="info-outline-btn" onClick={handleSaveDraft} disabled={loading}>Save Draft</button>
           </div>
         </div>
       </div>

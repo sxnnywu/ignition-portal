@@ -119,7 +119,7 @@ export default function ApplicationTable({
               <tr key={app._id}>
                 <td className="rv-table-cell-id">{truncateId(app._id)}</td>
                 <td className="rv-table-cell-applicant">{app.userId?.name || '--'}</td>
-                <td className="rv-table-cell-school">{app.answers?.school || '--'}</td>
+                <td className="rv-table-cell-school">{app.education?.institution || '--'}</td>
                 <td className="rv-table-cell-submitted">{formatDate(app.submittedAt)}</td>
                 <td>
                   <StatusBadge status={app.reviewStatus} />

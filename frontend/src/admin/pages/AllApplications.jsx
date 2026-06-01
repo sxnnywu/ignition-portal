@@ -170,7 +170,7 @@ export default function AllApplications({ onDataChange }) {
                       <span>{app.user?.name || 'Unknown'}</span>
                     </div>
                   </td>
-                  <td className="all-apps-cell-school">{app.answers?.institution || '--'}</td>
+                  <td className="all-apps-cell-school">{app.education?.institution || '--'}</td>
                   <td>
                     <div className="all-apps-quick-action">
                       <select

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Questions.css'
 import logoImg from '../../assets/logo.svg'
@@ -7,96 +7,89 @@ import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
 import sunImg from '../../assets/backgrounds/info-sun.svg'
 import circleImg from '../../assets/backgrounds/info-circle.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
+import UserIdBadge from '../../components/hacker/UserIdBadge'
 import { getToken } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
 
+// Fixed application questions, each with a hard character limit.
+const QUESTIONS = [
+  {
+    key: 'admireDescribe',
+    label: 'How do you think the person you admire the most would describe you?',
+    limit: 100,
+  },
+  {
+    key: 'proudProject',
+    label: "What project or build are you most proud of (doesn't have to be technical)?",
+    limit: 500,
+  },
+  {
+    key: 'motivation',
+    label:
+      'What motivates you to participate in hackathons? How would you describe your previous experience in hackathons (or group projects if this is your first hackathon)?',
+    limit: 500,
+  },
+]
+
 function Questions() {
   const navigate = useNavigate()
-  const [questions, setQuestions] = useState([])
-  const [answers, setAnswers] = useState({})
-  const [whyAttend, setWhyAttend] = useState('')
+  const [responses, setResponses] = useState({
+    admireDescribe: '',
+    proudProject: '',
+    motivation: '',
+  })
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const isComplete =
-    whyAttend.trim() !== '' &&
-    questions.filter(q => q.required).every(q => (answers[q.key] || '').trim() !== '')
+  const isComplete = QUESTIONS.every((q) => responses[q.key].trim() !== '')
 
-  const WORD_LIMIT = 500
-  const wordCount = whyAttend.trim() === '' ? 0 : whyAttend.trim().split(/\s+/).length
-
-  const handleWhyAttendChange = (e) => {
-    const value = e.target.value
-    const words = value.trim() === '' ? 0 : value.trim().split(/\s+/).length
-    if (words <= WORD_LIMIT) {
-      setWhyAttend(value)
-      setSaved(false)
-    }
-  }
-
-  useEffect(() => {
-    const token = getToken()
-    fetch(apiUrl('/questions'), {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.ok ? res.json() : Promise.reject())
-      .then((data) => {
-        const sorted = (data.questions || []).sort((a, b) => a.order - b.order)
-        setQuestions(sorted)
-        const initial = {}
-        sorted.forEach((q) => { initial[q.key] = '' })
-        setAnswers(initial)
-      })
-      .catch(() => {})
-  }, [])
-
-  const handleChange = (key, value) => {
-    setAnswers((prev) => ({ ...prev, [key]: value }))
+  const handleChange = (q, value) => {
+    // enforce the character limit as the user types
+    if (value.length > q.limit) return
+    setResponses((prev) => ({ ...prev, [q.key]: value }))
     setSaved(false)
   }
 
-  const handleSave = async () => {
+  const saveResponses = async () => {
     const token = getToken()
     if (!token) {
       alert('You must be logged in to save your application. Please log in and try again.')
-      return
+      return false
     }
+    const response = await fetch(apiUrl('/applications'), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ responses, status: 'draft' }),
+    })
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}))
+      throw new Error(data.message || 'Failed to save your answers')
+    }
+    return true
+  }
+
+  const handleSave = async () => {
+    setLoading(true)
     try {
-      const response = await fetch(apiUrl('/applications'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ answers: { ...answers, whyAttend }, status: 'draft' }),
-      })
-      if (response.ok) setSaved(true)
+      if (await saveResponses()) setSaved(true)
     } catch (error) {
       console.error('Error saving questions data:', error)
+      alert(error.message || 'Error saving your data. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleContinue = async () => {
-    const token = getToken()
-    if (!token) {
-      alert('You must be logged in to save your application. Please log in and try again.')
-      return
-    }
     setLoading(true)
     try {
-      const response = await fetch(apiUrl('/applications'), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ answers: { ...answers, whyAttend }, status: 'draft' }),
-      })
-      if (!response.ok) throw new Error('Failed to save questions data')
-      navigate('/finish')
+      if (await saveResponses()) navigate('/finish')
     } catch (error) {
       console.error('Error saving questions data:', error)
-      alert('Error saving your data. Please try again.')
+      alert(error.message || 'Error saving your data. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -104,6 +97,7 @@ function Questions() {
 
   return (
     <div className="questions">
+      <UserIdBadge />
       <div className="questions-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="questions-logo" />
         <span className="questions-header-text">IGNITION HACKS V7</span>
@@ -135,58 +129,26 @@ function Questions() {
           </div>
 
           <div className="questions-form">
-            <div className="questions-form-section">
-              <label className="questions-section-label">Why do you want to attend Ignition Hacks? *</label>
-              <textarea
-                className="questions-textarea"
-                placeholder="Your answer"
-                value={whyAttend}
-                onChange={handleWhyAttendChange}
-              />
-              <span className={`questions-word-count${wordCount >= WORD_LIMIT ? ' questions-word-count--limit' : ''}`}>
-                {wordCount} / {WORD_LIMIT} words
-              </span>
-            </div>
-          </div>
-
-          {questions.length > 0 && (
-            <div className="questions-form">
-              {questions.map((q) => (
+            {QUESTIONS.map((q) => {
+              const value = responses[q.key]
+              const atLimit = value.length >= q.limit
+              return (
                 <div className="questions-form-section" key={q.key}>
-                  <label className="questions-section-label">
-                    {q.label}{q.required ? ' *' : ''}
-                  </label>
-                  {q.type === 'text' && (
-                    <textarea
-                      className="questions-textarea"
-                      placeholder="Your answer"
-                      value={answers[q.key] || ''}
-                      onChange={(e) => handleChange(q.key, e.target.value)}
-                    />
-                  )}
-                  {q.type === 'multichoice' && (
-                    <select
-                      className="questions-select"
-                      value={answers[q.key] || ''}
-                      onChange={(e) => handleChange(q.key, e.target.value)}
-                    >
-                      <option value="" disabled>Select an option</option>
-                      {(q.options || []).map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  )}
-                  {q.type === 'file' && (
-                    <input
-                      type="file"
-                      className="questions-file"
-                      onChange={(e) => handleChange(q.key, e.target.files[0])}
-                    />
-                  )}
+                  <label className="questions-section-label">{q.label} *</label>
+                  <textarea
+                    className="questions-textarea"
+                    placeholder="Your answer"
+                    value={value}
+                    maxLength={q.limit}
+                    onChange={(e) => handleChange(q, e.target.value)}
+                  />
+                  <span className={`questions-word-count${atLimit ? ' questions-word-count--limit' : ''}`}>
+                    {value.length} / {q.limit} characters
+                  </span>
                 </div>
-              ))}
-            </div>
-          )}
+              )
+            })}
+          </div>
         </div>
 
         <div className="questions-nav">
@@ -199,7 +161,7 @@ function Questions() {
             >
               Continue
             </button>
-            <button className="questions-outline-btn" onClick={handleSave}>Save Draft</button>
+            <button className="questions-outline-btn" onClick={handleSave} disabled={loading}>Save Draft</button>
           </div>
         </div>
       </div>

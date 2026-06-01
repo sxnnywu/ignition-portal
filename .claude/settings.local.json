@@ -10,7 +10,10 @@
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(Sort-Object)",
       "mcp__figma-desktop__get_metadata",
-      "PowerShell(cd \"C:\\\\Users\\\\youss\\\\Documents\\\\Coding Workspace\\\\Ignition-Hacks\\\\ignition-portal\"; Get-ChildItem -Path . -Depth 1 -File | Where-Object { $_.Name -match '\\\\.md$' -or $_.Name -match 'README|CONTRIBUTING|CHANGELOG|CLAUDE|AGENTS' })"
+      "PowerShell(cd \"C:\\\\Users\\\\youss\\\\Documents\\\\Coding Workspace\\\\Ignition-Hacks\\\\ignition-portal\"; Get-ChildItem -Path . -Depth 1 -File | Where-Object { $_.Name -match '\\\\.md$' -or $_.Name -match 'README|CONTRIBUTING|CHANGELOG|CLAUDE|AGENTS' })",
+      "Bash(node --check src/models/Application.js)",
+      "Bash(node --check src/routes/applications.js)",
+      "Bash(node --check src/routes/admin.js)"
     ]
   }
 }
