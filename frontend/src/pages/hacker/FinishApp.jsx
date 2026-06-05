@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './FinishApp.css'
 import logoImg from '../../assets/logo.svg'
@@ -6,49 +6,34 @@ import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
 import UserIdBadge from '../../components/hacker/UserIdBadge'
 import { getToken } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
+import { useApplicationDraft } from '../../lib/applicationDraftContext'
 
 function FinishApp() {
   const navigate = useNavigate()
-  const [appId, setAppId] = useState(null)
+  const { saveDraft, status, setStatus } = useApplicationDraft()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    const token = getToken()
-    if (!token) return
-    fetch(apiUrl('/applications/me'), {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.ok ? res.json() : Promise.reject())
-      .then((data) => {
-        const apps = data.applications || []
-        if (apps.length > 0) setAppId(apps[0]._id)
-      })
-      .catch(() => {})
-  }, [])
-
   const handleSubmit = async () => {
-    if (!appId) {
-      setError('No application found. Please complete the previous steps first.')
-      return
-    }
-    const token = getToken()
-    if (!token) {
-      setError('You must be logged in to submit. Please log in and try again.')
-      return
-    }
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(apiUrl(`/applications/${appId}/submit`), {
+      // make sure the latest draft is saved (and the application exists) first
+      const id = await saveDraft()
+      if (!id) {
+        throw new Error('No application found. Please complete the previous steps first.')
+      }
+      const token = getToken()
+      const res = await fetch(apiUrl(`/applications/${id}/submit`), {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })
       if (!res.ok) {
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
         throw new Error(data.message || 'Something went wrong. Please try again.')
       }
+      setStatus('submitted')
       setSubmitted(true)
     } catch (err) {
       setError(err.message)
@@ -57,7 +42,8 @@ function FinishApp() {
     }
   }
 
-  if (submitted) {
+  // treat an already-submitted application as done
+  if (submitted || status !== 'draft') {
     return (
       <div className="finishapp">
         <UserIdBadge />

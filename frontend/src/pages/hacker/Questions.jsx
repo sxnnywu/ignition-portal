@@ -1,15 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
+import { useApplicationDraft } from '../../lib/applicationDraftContext'
 import './Questions.css'
+import './portal.css'
 import logoImg from '../../assets/logo.svg'
-import cloudImg from '../../assets/backgrounds/landing-cloud.svg'
-import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
-import sunImg from '../../assets/backgrounds/info-sun.svg'
-import circleImg from '../../assets/backgrounds/info-circle.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
 import UserIdBadge from '../../components/hacker/UserIdBadge'
-import { getToken } from '../../lib/auth'
-import { apiUrl } from '../../lib/api'
 
 // Fixed application questions, each with a hard character limit.
 const QUESTIONS = [
@@ -33,11 +30,9 @@ const QUESTIONS = [
 
 function Questions() {
   const navigate = useNavigate()
-  const [responses, setResponses] = useState({
-    admireDescribe: '',
-    proudProject: '',
-    motivation: '',
-  })
+  const stageRef = useHackerPortalScale()
+  const { draft, updateSlice, saveDraft } = useApplicationDraft()
+  const responses = draft.responses
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -46,35 +41,15 @@ function Questions() {
   const handleChange = (q, value) => {
     // enforce the character limit as the user types
     if (value.length > q.limit) return
-    setResponses((prev) => ({ ...prev, [q.key]: value }))
+    updateSlice('responses', { ...responses, [q.key]: value })
     setSaved(false)
-  }
-
-  const saveResponses = async () => {
-    const token = getToken()
-    if (!token) {
-      alert('You must be logged in to save your application. Please log in and try again.')
-      return false
-    }
-    const response = await fetch(apiUrl('/applications'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ responses, status: 'draft' }),
-    })
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}))
-      throw new Error(data.message || 'Failed to save your answers')
-    }
-    return true
   }
 
   const handleSave = async () => {
     setLoading(true)
     try {
-      if (await saveResponses()) setSaved(true)
+      await saveDraft()
+      setSaved(true)
     } catch (error) {
       console.error('Error saving questions data:', error)
       alert(error.message || 'Error saving your data. Please try again.')
@@ -86,7 +61,8 @@ function Questions() {
   const handleContinue = async () => {
     setLoading(true)
     try {
-      if (await saveResponses()) navigate('/finish')
+      await saveDraft()
+      navigate('/finish')
     } catch (error) {
       console.error('Error saving questions data:', error)
       alert(error.message || 'Error saving your data. Please try again.')
@@ -96,23 +72,19 @@ function Questions() {
   }
 
   return (
-    <div className="questions">
+    <div className="questions hp-page" ref={stageRef}>
       <UserIdBadge />
+      <div className="hp-stage">
       <div className="questions-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="questions-logo" />
         <span className="questions-header-text">IGNITION HACKS V7</span>
       </div>
 
-      <img src={sunImg} alt="" className="questions-sun" />
-      <img src={circleImg} alt="" className="questions-circle" />
-      <img src={cloudImg} alt="" className="questions-cloud" />
-      <img src={iggyImg} alt="" className="questions-iggy" />
-
-      <div className="questions-card">
+      <div className="questions-card hp-card">
         <div className="questions-card-body">
           <div className="questions-card-top">
             <div className="questions-step-row">
-              <span className="questions-step">Step 5</span>
+              <span className="questions-step">Step 4</span>
               {saved ? (
                 <div className="questions-saved">
                   <span className="questions-saved-text">Saved</span>
@@ -164,6 +136,7 @@ function Questions() {
             <button className="questions-outline-btn" onClick={handleSave} disabled={loading}>Save Draft</button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

@@ -227,6 +227,42 @@ async function buildTeammates(raw, ownerId) {
   return { teammates };
 }
 
+// returns a list of human-readable missing/invalid required fields for an
+// application. teammates are optional, so they are never required here.
+function getMissingFields(app) {
+  const missing = [];
+  const p = app.personal || {};
+  const e = app.education || {};
+  const x = app.experience || {};
+  const r = app.responses || {};
+
+  // personal
+  if (!p.gender) missing.push('Gender');
+  if (p.age == null) missing.push('Age');
+  if (!p.ethnicity) missing.push('Ethnicity');
+  if (!p.country) missing.push('Country');
+  if (!p.city) missing.push('City');
+
+  // education (program only required for undergraduate / graduate)
+  if (!e.institution) missing.push('Educational institution');
+  if (!e.level) missing.push('Level of education');
+  if (!e.coop) missing.push('Co-op status');
+  if ((e.level === 'undergraduate' || e.level === 'graduate') && !e.program) {
+    missing.push('Program');
+  }
+
+  // experience (0 hackathons attended is valid)
+  if (!x.attended2025) missing.push('Did you attend IgnitionHacks 2025?');
+  if (x.hackathonsAttended == null) missing.push('Number of hackathons attended');
+
+  // written responses
+  if (!(r.admireDescribe || '').trim()) missing.push('Question 1 (how others describe you)');
+  if (!(r.proudProject || '').trim()) missing.push('Question 2 (proudest project)');
+  if (!(r.motivation || '').trim()) missing.push('Question 3 (motivation)');
+
+  return missing;
+}
+
 // POST /applications
 // start/update application — accepts any subset of the structured slices
 router.post('/', auth, async (req, res) => {
@@ -266,17 +302,11 @@ router.post('/', auth, async (req, res) => {
     }
 
     if (education !== undefined) {
-      const level = education.level ?? '';
-      // program is only required for undergraduate / graduate applicants
-      const programRequired = level === 'undergraduate' || level === 'graduate';
-      if (programRequired && !(education.program ?? '').trim()) {
-        return res.status(400).json({
-          message: 'Program is required for undergraduate and graduate students',
-        });
-      }
+      // drafts may be partial; the "program required for undergrad/grad" rule
+      // is enforced on final submit (see getMissingFields), not on every save
       app.education = {
         institution: education.institution ?? '',
-        level,
+        level: education.level ?? '',
         program: education.program ?? '',
         coop: education.coop ?? '',
       };
@@ -374,6 +404,15 @@ router.post('/:id/submit',
       if (application.status !== 'draft') {
         return res.status(400).json({
           message: `Cannot submit application with status: ${application.status}`
+        });
+      }
+
+      // require every mandatory field to be filled in before submitting
+      const missing = getMissingFields(application);
+      if (missing.length > 0) {
+        return res.status(400).json({
+          message: `Please complete all required fields before submitting: ${missing.join(', ')}.`,
+          missing,
         });
       }
 
