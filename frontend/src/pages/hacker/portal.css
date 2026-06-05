@@ -1,0 +1,196 @@
+/*
+  Shared layout for the hacker application portal (steps 1-3).
+  Imported AFTER each page's own stylesheet so these rules win where they
+  overlap.
+
+  The background SVG is the page background, sized to the full width so the
+  mascots scale with the window and sit in a band at the top. The white area is
+  a SEPARATE element (not tied to the SVG's fixed shape): it starts just below
+  the mascot band and always fills down to the bottom, with small blue gutters
+  on the left/right that persist as the window narrows. Because the white
+  element is its own box, it can shrink with the window without ever leaving a
+  blank strip at the top. It also covers the SVG's baked-in white, so the
+  gutters show blue, not white. Content scrolls on the y-axis inside it, and
+  font sizes are relative to the white area (cqw via container-type).
+*/
+
+.hp-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #EDF7FF;
+  background-image: url('../../assets/backgrounds/hacker-application/hacker-application-background-with-white.svg');
+  background-repeat: no-repeat;
+  background-position: center -3vw;
+  background-size: 100% auto;
+}
+
+.hp-stage {
+  display: contents;
+}
+
+/* logo header sits in the blue band ON TOP of the white area */
+.hp-page [class$='-header'] {
+  position: absolute;
+  left: 50%;
+  top: 34px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  z-index: 3;
+}
+
+/* white area: starts below the mascots, fills to the bottom, side gutters stay */
+.hp-page .hp-card {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  top: 15.5vw;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  transform: none;
+  background: #fff;
+  border: none;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -2px 26px rgba(0, 0, 0, 0.05);
+  padding: clamp(22px, 3cqw, 48px) clamp(22px, 4cqw, 64px) clamp(18px, 2cqw, 32px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(14px, 1.6cqw, 22px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 2;
+  container-type: inline-size;
+}
+
+/* everything flows and scrolls together inside the white area.
+   `margin-top: auto` on the nav pushes the buttons to the bottom of the white
+   area when content is short (the spare space becomes margin, not scrollable
+   content, so no phantom scrollbar appears); when content overflows there's no
+   spare space, so the buttons sit just under the last input and scroll with it. */
+.hp-page [class$='-card-body'] {
+  overflow: visible;
+  flex: 0 0 auto;
+}
+.hp-page [class$='-nav'] {
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* font sizes relative to the WHITE AREA's width (1cqw = 1% of card width) */
+.hp-page [class$='-step'] {
+  font-size: clamp(20px, 3cqw, 36px);
+}
+.hp-page [class$='-title'] {
+  font-size: clamp(26px, 4.2cqw, 48px);
+}
+.hp-page [class$='-subtitle'] {
+  font-size: clamp(14px, 1.9cqw, 24px);
+}
+.hp-page [class$='-section-label'] {
+  font-size: clamp(14px, 1.7cqw, 22px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Narrow screens: stacked, scrollable, larger-text layout
+   ───────────────────────────────────────────────────────────────────────── */
+@media (max-width: 699px) {
+  .hp-page {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background-image: none;
+  }
+
+  /* header back into normal flow at the very top */
+  .hp-page [class$='-header'] {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    justify-content: center;
+    margin: 20px auto 4px;
+  }
+
+  .hp-page .hp-card {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    width: auto;
+    height: auto;
+    transform: none;
+    margin: 12px 16px 0;
+    padding: 28px 22px 32px;
+    background: #fff;
+    border: 1px solid #dcdcdc;
+    border-radius: 18px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    overflow: visible;
+    container-type: normal;
+  }
+
+  .hp-page [class$='-card-body'] {
+    overflow: visible;
+    flex: none;
+    gap: 28px;
+  }
+  .hp-page [class$='-form'] {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .hp-page [class$='-field-row'] {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .hp-page [class$='-form-row'] {
+    flex-direction: column;
+    gap: 28px;
+  }
+  .hp-page [class$='-input'],
+  .hp-page [class$='-select'],
+  .hp-page [class$='-input-id'],
+  .hp-page [class$='-textarea'] {
+    width: 100%;
+    max-width: none;
+  }
+
+  .hp-page [class$='-step'] {
+    font-size: 28px;
+  }
+  .hp-page [class$='-title'] {
+    font-size: 34px;
+    line-height: 1.1;
+  }
+  .hp-page [class$='-subtitle'] {
+    font-size: 18px;
+  }
+  .hp-page [class$='-section-label'] {
+    font-size: 20px;
+  }
+
+  .hp-page [class$='-nav'] {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 12px;
+    padding-top: 8px;
+  }
+  .hp-page [class$='-nav-right'] {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .hp-page [class$='-nav'] button {
+    width: 100%;
+  }
+}

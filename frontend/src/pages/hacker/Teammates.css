@@ -95,6 +95,10 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  padding-right: 4px;
 }
 
 .teammates-card-top {
@@ -317,6 +321,8 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  padding-top: 16px;
+  flex-shrink: 0;
 }
 
 .teammates-nav-right {

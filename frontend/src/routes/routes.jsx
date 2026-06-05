@@ -9,7 +9,6 @@ import ReviewerSignup from "../pages/auth/ReviewerSignup";
 // hacker routes
 import Dashboard from "../pages/hacker/Dashboard";
 import Education from "../pages/hacker/Education";
-import Experience from "../pages/hacker/Experience";
 import Landing from "../pages/hacker/Landing";
 import Info from "../pages/hacker/Info";
 import Submission from "../pages/hacker/Submission";
@@ -27,6 +26,7 @@ import AdminApplicationDetail from "../admin/pages/AdminApplicationDetail";
 // shared
 import RequireRole from "../components/auth/RequireRole";
 import NotFound from "../pages/NotFound";
+import { ApplicationDraftProvider } from "../lib/applicationDraft";
 
 const routes = [
   // --- public / auth ---
@@ -55,53 +55,20 @@ const routes = [
       </RequireRole>
     ),
   },
+  // application flow — all steps share one draft (loaded once, kept in memory)
   {
-    path: "/info",
     element: (
       <RequireRole allowed={["applicant"]}>
-        <Info />
+        <ApplicationDraftProvider />
       </RequireRole>
     ),
-  },
-  {
-    path: "/education",
-    element: (
-      <RequireRole allowed={["applicant"]}>
-        <Education />
-      </RequireRole>
-    ),
-  },
-  {
-    path: "/experience",
-    element: (
-      <RequireRole allowed={["applicant"]}>
-        <Experience />
-      </RequireRole>
-    ),
-  },
-  {
-    path: "/teammates",
-    element: (
-      <RequireRole allowed={["applicant"]}>
-        <Teammates />
-      </RequireRole>
-    ),
-  },
-  {
-    path: "/questions",
-    element: (
-      <RequireRole allowed={["applicant"]}>
-        <Questions />
-      </RequireRole>
-    ),
-  },
-  {
-    path: "/finish",
-    element: (
-      <RequireRole allowed={["applicant"]}>
-        <FinishApp />
-      </RequireRole>
-    ),
+    children: [
+      { path: "/info", element: <Info /> },
+      { path: "/education", element: <Education /> },
+      { path: "/teammates", element: <Teammates /> },
+      { path: "/questions", element: <Questions /> },
+      { path: "/finish", element: <FinishApp /> },
+    ],
   },
   {
     path: "/submission/:id",

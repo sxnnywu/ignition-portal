@@ -1,11 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
+import { useApplicationDraft } from '../../lib/applicationDraftContext'
 import './Teammates.css'
+import './portal.css'
 import logoImg from '../../assets/logo.svg'
-import cloudImg from '../../assets/backgrounds/landing-cloud.svg'
-import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
-import sunImg from '../../assets/backgrounds/info-sun.svg'
-import circleImg from '../../assets/backgrounds/info-circle.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
 import UserIdBadge from '../../components/hacker/UserIdBadge'
 import { getToken, getUser } from '../../lib/auth'
@@ -15,12 +14,38 @@ const MAX_TEAMMATES = 3
 
 const emptySlot = () => ({ id: '', loading: false, teammate: null, error: '' })
 
+// turn the saved/in-memory teammate list into editor slots
+const slotsFromTeammates = (teammates) =>
+  Array.isArray(teammates) && teammates.length > 0
+    ? teammates.map((t) => ({ id: t.userId, loading: false, teammate: { ...t }, error: '' }))
+    : [emptySlot()]
+
+const resolvedFromSlots = (slots) =>
+  slots
+    .filter((s) => s.teammate)
+    .map((s) => ({ userId: s.teammate.userId, name: s.teammate.name, email: s.teammate.email }))
+
 function Teammates() {
   const navigate = useNavigate()
+  const stageRef = useHackerPortalScale()
   const me = getUser()
-  const [slots, setSlots] = useState([emptySlot()])
+  const { draft, updateSlice, saveDraft } = useApplicationDraft()
+  // transient editor state (loading/error per row) lives locally; the resolved
+  // teammates are mirrored into the shared draft so they survive navigation
+  const [slots, setSlots] = useState(() => slotsFromTeammates(draft.teammates))
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(false)
+
+  // mirror resolved teammates into the shared draft whenever they change
+  // (skip the first run so seeding from the draft doesn't mark it dirty)
+  const firstSync = useRef(true)
+  useEffect(() => {
+    if (firstSync.current) {
+      firstSync.current = false
+      return
+    }
+    updateSlice('teammates', resolvedFromSlots(slots))
+  }, [slots, updateSlice])
 
   const updateSlot = (index, patch) => {
     setSlots((prev) => prev.map((s, i) => (i === index ? { ...s, ...patch } : s)))
@@ -90,34 +115,11 @@ function Teammates() {
     setSaved(false)
   }
 
-  const collectTeammates = () =>
-    slots.filter((s) => s.teammate).map((s) => ({ userId: s.teammate.userId }))
-
-  const saveTeammates = async () => {
-    const token = getToken()
-    if (!token) {
-      alert('You must be logged in to save your application. Please log in and try again.')
-      return false
-    }
-    const response = await fetch(apiUrl('/applications'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ teammates: collectTeammates(), status: 'draft' }),
-    })
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}))
-      throw new Error(data.message || 'Failed to save teammates')
-    }
-    return true
-  }
-
   const handleContinue = async () => {
     setLoading(true)
     try {
-      if (await saveTeammates()) navigate('/questions')
+      await saveDraft()
+      navigate('/questions')
     } catch (error) {
       console.error('Error saving teammates data:', error)
       alert(error.message || 'Error saving your data. Please try again.')
@@ -129,7 +131,8 @@ function Teammates() {
   const handleSaveDraft = async () => {
     setLoading(true)
     try {
-      if (await saveTeammates()) setSaved(true)
+      await saveDraft()
+      setSaved(true)
     } catch (error) {
       console.error('Error saving teammates data:', error)
       alert(error.message || 'Error saving your data. Please try again.')
@@ -142,23 +145,19 @@ function Teammates() {
   const canAddAnother = slots.length < MAX_TEAMMATES && lastSlot.teammate
 
   return (
-    <div className="teammates">
+    <div className="teammates hp-page" ref={stageRef}>
       <UserIdBadge />
+      <div className="hp-stage">
       <div className="teammates-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="teammates-logo" />
         <span className="teammates-header-text">IGNITION HACKS V7</span>
       </div>
 
-      <img src={sunImg} alt="" className="teammates-sun" />
-      <img src={circleImg} alt="" className="teammates-circle" />
-      <img src={cloudImg} alt="" className="teammates-cloud" />
-      <img src={iggyImg} alt="" className="teammates-iggy" />
-
-      <div className="teammates-card">
+      <div className="teammates-card hp-card">
         <div className="teammates-card-body">
           <div className="teammates-card-top">
             <div className="teammates-step-row">
-              <span className="teammates-step">Step 4</span>
+              <span className="teammates-step">Step 3</span>
               {saved ? (
                 <div className="teammates-saved">
                   <span className="teammates-saved-text">Saved</span>
@@ -228,7 +227,7 @@ function Teammates() {
         </div>
 
         <div className="teammates-nav">
-          <button className="teammates-outline-btn" onClick={() => navigate('/experience')}>Back</button>
+          <button className="teammates-outline-btn" onClick={() => navigate('/education')}>Back</button>
           <div className="teammates-nav-right">
             <button
               className="teammates-filled-btn"
@@ -240,6 +239,7 @@ function Teammates() {
             <button className="teammates-outline-btn" onClick={handleSaveDraft} disabled={loading}>Save Draft</button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

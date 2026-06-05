@@ -1,63 +1,47 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './Education.css'
+import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
+import { useApplicationDraft } from '../../lib/applicationDraftContext'
+import './Info.css'
+import './portal.css'
 import logoImg from '../../assets/logo.svg'
-import cloudImg from '../../assets/backgrounds/landing-cloud.svg'
-import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
-import sunImg from '../../assets/backgrounds/info-sun.svg'
-import circleImg from '../../assets/backgrounds/info-circle.svg'
 import checkCircleImg from '../../assets/backgrounds/info-check-circle.svg'
 import UserIdBadge from '../../components/hacker/UserIdBadge'
-import { getToken } from '../../lib/auth'
-import { apiUrl } from '../../lib/api'
 
+// Step 2 — education and hackathon experience, side by side.
 function Education() {
   const navigate = useNavigate()
+  const stageRef = useHackerPortalScale()
+  const { draft, updateSlice, saveDraft } = useApplicationDraft()
+  const education = draft.education
+  const experience = draft.experience
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({
-    institution: '', level: '', program: '', coop: ''
-  })
 
-  const set = field => e => {
-    setForm(prev => ({ ...prev, [field]: e.target.value }))
+  const setEducation = (field) => (e) => {
+    updateSlice('education', { ...education, [field]: e.target.value })
+    setSaved(false)
+  }
+  const setExperience = (field) => (e) => {
+    updateSlice('experience', { ...experience, [field]: e.target.value })
     setSaved(false)
   }
 
-  // program is only required for undergraduate / graduate students
-  const programRequired = form.level === 'undergraduate' || form.level === 'graduate'
+  const programRequired = education.level === 'undergraduate' || education.level === 'graduate'
 
   const isComplete =
-    form.institution.trim() &&
-    form.level &&
-    form.coop &&
-    (!programRequired || form.program.trim())
-
-  const saveEducation = async () => {
-    const token = getToken()
-    if (!token) {
-      alert('You must be logged in to save your application. Please log in and try again.')
-      return false
-    }
-    const response = await fetch(apiUrl('/applications'), {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ education: form, status: 'draft' }),
-    })
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}))
-      throw new Error(data.message || 'Failed to save education')
-    }
-    return true
-  }
+    education.institution.trim() &&
+    education.level &&
+    education.coop &&
+    (!programRequired || education.program.trim()) &&
+    experience.attended2025 &&
+    experience.hackathonsAttended
 
   const handleContinue = async () => {
     setLoading(true)
     try {
-      if (await saveEducation()) navigate('/experience')
+      await saveDraft()
+      navigate('/teammates')
     } catch (error) {
       console.error('Error saving education:', error)
       alert(error.message || 'Error saving your data. Please try again.')
@@ -69,7 +53,8 @@ function Education() {
   const handleSaveDraft = async () => {
     setLoading(true)
     try {
-      if (await saveEducation()) setSaved(true)
+      await saveDraft()
+      setSaved(true)
     } catch (error) {
       console.error('Error saving education:', error)
       alert(error.message || 'Error saving your data. Please try again.')
@@ -79,76 +64,93 @@ function Education() {
   }
 
   return (
-    <div className="education">
+    <div className="info hp-page" ref={stageRef}>
       <UserIdBadge />
-      <div className="education-header">
-        <img src={logoImg} alt="Ignition Hacks Logo" className="education-logo" />
-        <span className="education-header-text">IGNITION HACKS V7</span>
+      <div className="hp-stage">
+      <div className="info-header">
+        <img src={logoImg} alt="Ignition Hacks Logo" className="info-logo" />
+        <span className="info-header-text">IGNITION HACKS V7</span>
       </div>
 
-      <img src={sunImg} alt="" className="education-sun" />
-      <img src={circleImg} alt="" className="education-circle" />
-      <img src={cloudImg} alt="" className="education-cloud" />
-      <img src={iggyImg} alt="" className="education-iggy" />
-
-      <div className="education-card">
-        <div className="education-card-body">
-          <div className="education-card-top">
-            <div className="education-step-row">
-              <span className="education-step">Step 2</span>
+      <div className="info-card hp-card">
+        <div className="info-card-body">
+          <div className="info-card-top">
+            <div className="info-step-row">
+              <span className="info-step">Step 2</span>
               {saved ? (
-                <div className="education-saved">
-                  <span className="education-saved-text">Saved</span>
-                  <img src={checkCircleImg} alt="" className="education-check-icon" />
+                <div className="info-saved">
+                  <span className="info-saved-text">Saved</span>
+                  <img src={checkCircleImg} alt="" className="info-check-icon" />
                 </div>
               ) : (
-                <span className="education-unsaved-text">Unsaved</span>
+                <span className="info-unsaved-text">Unsaved</span>
               )}
             </div>
-            <p className="education-title">YOUR EDUCATION</p>
-            <div className="education-subtitle-block">
-              <p className="education-subtitle">Tell us about your academic background!</p>
-              <p className="education-required">Required*</p>
+            <p className="info-title">YOUR BACKGROUND</p>
+            <div className="info-subtitle-block">
+              <p className="info-subtitle">Tell us about your education and hackathon experience!</p>
+              <p className="info-required">Required*</p>
             </div>
           </div>
 
-          <div className="education-form">
-            <div className="education-form-section">
-              <label className="education-section-label">School *</label>
-              <div className="education-field-row">
-                <input type="text" placeholder="Educational institution" className="education-input" value={form.institution} onChange={set('institution')} />
-                <select className="education-select" value={form.level} onChange={set('level')}>
-                  <option value="" disabled>Level of education</option>
-                  <option value="high-school">High School</option>
-                  <option value="undergraduate">Undergraduate</option>
-                  <option value="graduate">Graduate</option>
-                  <option value="bootcamp">Bootcamp</option>
-                  <option value="other">Other</option>
-                </select>
+          <div className="info-form">
+            <div className="info-form-row">
+              {/* Education */}
+              <div className="info-form-section">
+                <label className="info-section-label">Education *</label>
+                <div className="info-field-row">
+                  <input type="text" placeholder="Educational institution" className="info-input" value={education.institution} onChange={setEducation('institution')} />
+                  <select className="info-select" value={education.level} onChange={setEducation('level')}>
+                    <option value="" disabled>Level of education</option>
+                    <option value="high-school">High School</option>
+                    <option value="undergraduate">Undergraduate</option>
+                    <option value="graduate">Graduate</option>
+                    <option value="bootcamp">Bootcamp</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div className="info-field-row">
+                  <input type="text" placeholder={programRequired ? 'Program name' : 'Program name (optional)'} className="info-input" value={education.program} onChange={setEducation('program')} />
+                  <select className="info-select" value={education.coop} onChange={setEducation('coop')}>
+                    <option value="" disabled>Co-op student?</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
               </div>
-            </div>
 
-            <div className="education-form-section">
-              <label className="education-section-label">Program {programRequired ? '*' : '(optional)'}</label>
-              <div className="education-field-row">
-                <input type="text" placeholder="Program name" className="education-input" value={form.program} onChange={set('program')} />
-                <select className="education-select" value={form.coop} onChange={set('coop')}>
-                  <option value="" disabled>Co-op student?</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
+              {/* Hackathon Experience */}
+              <div className="info-form-section">
+                <label className="info-section-label">Hackathon Experience *</label>
+                <div className="info-field-row">
+                  <select className="info-select" value={experience.attended2025} onChange={setExperience('attended2025')}>
+                    <option value="" disabled>Attended IgnitionHacks 2025?</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                  <select className="info-select" value={experience.hackathonsAttended} onChange={setExperience('hackathonsAttended')}>
+                    <option value="" disabled>Hackathons attended?</option>
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5 or more</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="education-nav">
-          <button className="education-outline-btn" onClick={() => navigate('/info')}>Back</button>
-          <div className="education-nav-right">
-            <button className="education-filled-btn" onClick={handleContinue} disabled={!isComplete || loading}>Continue</button>
-            <button className="education-outline-btn" onClick={handleSaveDraft} disabled={loading}>Save Draft</button>
+        <div className="info-nav">
+          <button className="info-outline-btn" onClick={() => navigate('/info')}>Back</button>
+          <div className="info-nav-right">
+            <button className="info-filled-btn" onClick={handleContinue} disabled={!isComplete || loading}>Continue</button>
+            <button className="info-outline-btn" onClick={handleSaveDraft} disabled={loading}>Save Draft</button>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

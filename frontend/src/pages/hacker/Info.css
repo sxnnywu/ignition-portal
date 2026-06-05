@@ -168,17 +168,28 @@
 }
 
 /* ── Form ── */
+/* Sections stack vertically inside the scrolling white area */
 .info-form {
   display: flex;
-  gap: 64px;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* a horizontal pairing of two sections (e.g. Basics | Location) */
+.info-form-row {
+  display: flex;
+  gap: 48px;
+}
+
+.info-form-row .info-form-section {
+  flex: 1;
+  min-width: 0;
 }
 
 .info-form-section {
-  flex: 1;
-  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .info-section-label {
@@ -194,7 +205,8 @@
 
 .info-input,
 .info-select {
-  width: 233px;
+  flex: 1 1 0;
+  min-width: 0;
   height: 48px;
   padding: 0 16px;
   border: 1px solid #c3c3c3;

@@ -164,3 +164,36 @@
   width: 24px;
   height: 24px;
 }
+
+/* Narrow screens: let the confirmation card flow and fit the width */
+@media (max-width: 699px) {
+  .finishapp {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .finishapp-card {
+    position: static;
+    transform: none;
+    width: auto;
+    margin: 96px 16px 40px;
+    padding: 32px 24px;
+    gap: 32px;
+  }
+
+  .finishapp-title {
+    font-size: 34px;
+    line-height: 1.1;
+  }
+
+  .finishapp-btn-row {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .finishapp-outline-btn,
+  .finishapp-filled-btn {
+    width: 100%;
+  }
+}
