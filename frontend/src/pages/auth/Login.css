@@ -1,78 +1,114 @@
+/*
+  Auth layout (Login, Forgot Password, Reset Password).
+
+  The background SVG (blue + decorations) is the page background. The #FFF9F2
+  sheet is its OWN element anchored to the bottom — it fills from just under the
+  mascot band all the way down to the bottom, so the cream itself fills the space
+  at any aspect ratio (no blue void on tall screens, no empty band on wide ones).
+  The content fills the sheet (title pinned to the top, button to the bottom) and
+  its sizes are relative to the sheet's width (cqw via container-type).
+
+  The "IGNITION HACKS V7" header sits outside the sheet, pinned to the top; only
+  its font scales (with the width-based design).
+*/
+
 .login {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 100vh;
-  background-color: #EDF7FF;
   overflow: hidden;
+  background-color: #EDF7FF;
+  /* shared geometry: the cream sheet width + where its top edge sits */
+  --cream-w: min(1080px, 90vw);
+  --cream-top: clamp(160px, 17vh, 260px);
 }
 
-/* ── Header ── */
+/* mascot is its own element, glued to the cream's top-right edge so it stays
+   attached no matter how the sheet resizes */
+.login-mascot {
+  position: absolute;
+  right: calc((100% - var(--cream-w)) / 2 + 2.5vw);
+  bottom: calc(100% - var(--cream-top) - 18px);
+  width: clamp(74px, 11.5vw, 156px);
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* passthrough wrapper */
+.login-stage {
+  display: contents;
+}
+
+/* ── Header: fixed at the top, font scales with the design ── */
 .login-header {
   position: absolute;
   left: 50%;
-  top: 44px;
+  top: 32px;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 14px;
-  z-index: 1;
+  gap: clamp(9px, 1vw, 14px);
+  z-index: 5;
 }
 
 .login-logo {
-  width: 15px;
-  height: 22px;
+  width: clamp(10px, 1.1vw, 15px);
+  height: clamp(15px, 1.6vw, 22px);
 }
 
 .login-header-text {
   font-family: 'Jua', sans-serif;
-  font-size: 22px;
+  font-size: clamp(13px, 1.7vw, 22px);
   color: #000;
   white-space: nowrap;
 }
 
-/* ── Iggy ── */
-.login-iggy {
-  position: absolute;
-  left: 67%;
-  top: 85px;
-  width: 126px;
-  z-index: 0;
-}
-
-/* ── Card ── */
+/* ── #FFF9F2 sheet: anchored to the bottom, fills to the top band ── */
 .login-card {
   position: absolute;
   left: 50%;
-  top: calc(50% + 116px);
-  transform: translate(-50%, -50%);
-  width: 776px;
-  height: 603px;
+  transform: translateX(-50%);
+  width: var(--cream-w);
+  top: var(--cream-top);
+  bottom: 0;
   background: #fff9f2;
-  border: 1px solid #dcdcdc;
-  border-radius: 12px 12px 0 0;
-  border-bottom: none;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
-  padding: 61px 55px;
+  border-radius: clamp(14px, 1.8vw, 24px) clamp(14px, 1.8vw, 24px) 0 0;
+  box-shadow: 0 -2px 26px rgba(0, 0, 0, 0.05);
+  padding: clamp(30px, 5cqw, 64px) clamp(24px, 5cqw, 72px) clamp(28px, 5cqw, 56px);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 48px;
-  box-sizing: border-box;
-  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(20px, 4cqw, 44px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 2;
+  container-type: inline-size;
 }
 
-/* ── Card title ── */
+/* On narrower widths the sheet is taller, so pull the title/content up to the
+   top instead of floating it in the vertical middle */
+@media (max-width: 860px) {
+  .login-card {
+    justify-content: flex-start;
+  }
+}
+
 .login-card-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: clamp(6px, 2cqw, 12px);
   width: 100%;
 }
 
 .login-card-title {
   margin: 0;
   font-family: 'Jua', sans-serif;
-  font-size: 48px;
+  font-size: clamp(28px, 6.2cqw, 58px);
   color: #a172ff;
   text-align: center;
   width: 100%;
@@ -81,45 +117,43 @@
 .login-card-subtitle {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
-  font-size: 24px;
+  font-size: clamp(15px, 2.9cqw, 26px);
   color: rgba(0, 0, 0, 0.8);
   text-align: center;
 }
 
-/* ── Form body ── */
+/* fills the space below the header; distributes fields (top) and button (bottom) */
 .login-form-body {
   display: flex;
-  flex: 1;
   flex-direction: column;
-  gap: 48px;
+  gap: clamp(22px, 5cqw, 44px);
   width: 100%;
 }
 
-/* fields + links */
 .login-fields {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: clamp(6px, 2cqw, 12px);
   width: 100%;
 }
 
 .login-inputs-group {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: clamp(10px, 3.5cqw, 22px);
   width: 100%;
 }
 
 .login-input {
   width: 100%;
-  height: 56px;
-  padding: 14px 24px;
+  height: clamp(46px, 7cqw, 66px);
+  padding: 0 clamp(16px, 3cqw, 26px);
   border: 1px solid #a38c6f;
-  border-radius: 16px;
+  border-radius: clamp(10px, 2cqw, 16px);
   background: transparent;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
   font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
+  font-size: clamp(16px, 2.6cqw, 22px);
   color: rgba(0, 0, 0, 0.8);
   outline: none;
   box-sizing: border-box;
@@ -127,7 +161,7 @@
 
 .login-input::placeholder {
   font-family: 'Jua', sans-serif;
-  font-size: 24px;
+  font-size: clamp(16px, 2.9cqw, 24px);
   color: #765c3a;
 }
 
@@ -135,7 +169,6 @@
   border-color: #765c3a;
 }
 
-/* Sign up / Forgot password */
 .login-links {
   display: flex;
   justify-content: space-between;
@@ -147,7 +180,7 @@
   background: none;
   border: none;
   font-family: 'Satoshi', sans-serif;
-  font-size: 20px;
+  font-size: clamp(13px, 2.2cqw, 19px);
   color: rgba(0, 0, 0, 0.8);
   cursor: pointer;
   padding: 0;
@@ -158,21 +191,19 @@
   opacity: 0.6;
 }
 
-/* Error */
 .login-error {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
-  font-size: 16px;
+  font-size: clamp(12px, 2.6cqw, 16px);
   color: #c0392b;
   text-align: center;
 }
 
-/* Log In button */
 .login-submit-btn {
   width: 100%;
-  height: 56px;
-  padding: 14px 24px;
-  border-radius: 16px;
+  height: clamp(46px, 7cqw, 66px);
+  padding: 0 clamp(16px, 3cqw, 26px);
+  border-radius: clamp(10px, 2cqw, 16px);
   border: 1px solid #a38c6f;
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.1) 100%),
@@ -180,7 +211,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
   color: #fff;
   font-family: 'Jua', sans-serif;
-  font-size: 24px;
+  font-size: clamp(16px, 2.9cqw, 26px);
   text-align: center;
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
