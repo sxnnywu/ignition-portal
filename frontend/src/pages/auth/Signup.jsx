@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './Signup.css'
 import logoImg from '../../assets/logo.svg'
-import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
+import mascotImg from '../../assets/backgrounds/hacker-application/login-mascot.svg'
 import { setAuth } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
+import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
 const PASSWORD_RULES =
@@ -12,6 +13,7 @@ const PASSWORD_RULES =
 
 function Signup() {
   const navigate = useNavigate()
+  const stageRef = useHackerPortalScale()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -65,14 +67,15 @@ function Signup() {
   }
 
   return (
-    <div className="signup">
+    <div className="signup" ref={stageRef}>
       <div className="signup-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="signup-logo" />
         <span className="signup-header-text">IGNITION HACKS V7</span>
       </div>
 
-      <img src={iggyImg} alt="" className="signup-iggy" />
+      <img src={mascotImg} alt="" className="signup-mascot" />
 
+      <div className="signup-stage">
       <div className="signup-card">
         <div className="signup-card-header">
           <p className="signup-card-title">IGNITION HACKS</p>
@@ -141,6 +144,7 @@ function Signup() {
             {isPending ? 'Signing up...' : 'Sign up'}
           </button>
         </div>
+      </div>
       </div>
     </div>
   )

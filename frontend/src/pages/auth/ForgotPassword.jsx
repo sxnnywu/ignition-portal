@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import './ForgotPassword.css'
+import './Login.css'
 import logoImg from '../../assets/logo.svg'
-import iggyImg from '../../assets/backgrounds/landing-iggy.svg'
+import mascotImg from '../../assets/backgrounds/hacker-application/login-mascot.svg'
 import { apiUrl } from '../../lib/api'
+import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 
 function ForgotPassword() {
   const navigate = useNavigate()
+  const stageRef = useHackerPortalScale()
   const [email, setEmail] = useState('')
   const [isPending, setIsPending] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -28,7 +30,7 @@ function ForgotPassword() {
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        throw new Error(data.message || 'Failed to send reset email')
+        throw new Error(data.message || 'Failed to send reset email.')
       }
       setSubmitted(true)
     } catch (err) {
@@ -38,49 +40,64 @@ function ForgotPassword() {
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleRecover()
+  }
+
   return (
-    <div className="forgotpw">
-      <div className="forgotpw-header">
-        <img src={logoImg} alt="Ignition Hacks Logo" className="forgotpw-logo" />
-        <span className="forgotpw-header-text">IGNITION HACKS V7</span>
+    <div className="login" ref={stageRef}>
+      <div className="login-header">
+        <img src={logoImg} alt="Ignition Hacks Logo" className="login-logo" />
+        <span className="login-header-text">IGNITION HACKS V7</span>
       </div>
 
-      <img src={iggyImg} alt="" className="forgotpw-iggy" />
+      <img src={mascotImg} alt="" className="login-mascot" />
 
-      <div className="forgotpw-card">
-        <div className="forgotpw-top">
-          <button className="forgotpw-back-btn" onClick={() => navigate('/login')}>Back</button>
-          <div className="forgotpw-title-group">
-            <p className="forgotpw-title">Reset your password</p>
-            <p className="forgotpw-subtitle">Enter your email to reset your password</p>
-          </div>
+      <div className="login-stage">
+      <div className="login-card">
+        <div className="login-card-header">
+          <p className="login-card-title">RESET PASSWORD</p>
+          <p className="login-card-subtitle">Enter your email to reset your password.</p>
         </div>
 
-        <div className="forgotpw-form">
+        <div className="login-form-body">
           {submitted ? (
-            <p className="forgotpw-success">Instructions have been sent to your email to reset your password.</p>
+            <p className="login-card-subtitle">
+              Instructions have been sent to your email to reset your password.
+            </p>
           ) : (
             <>
-              <input
-                type="email"
-                placeholder="Email"
-                className="forgotpw-input"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleRecover()}
-                disabled={isPending}
-              />
-              {error && <p className="forgotpw-error">{error}</p>}
+              <div className="login-fields">
+                <div className="login-inputs-group">
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    className="login-input"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={isPending}
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="login-links">
+                  <button type="button" className="login-link" onClick={() => navigate('/login')} disabled={isPending}>Back to log in</button>
+                </div>
+              </div>
+
+              {error && <p className="login-error">{error}</p>}
+
               <button
-                className="forgotpw-submit-btn"
+                className="login-submit-btn"
                 onClick={handleRecover}
                 disabled={isPending}
               >
-                Recover password
+                {isPending ? 'Sending…' : 'Recover password'}
               </button>
             </>
           )}
         </div>
+      </div>
       </div>
     </div>
   )

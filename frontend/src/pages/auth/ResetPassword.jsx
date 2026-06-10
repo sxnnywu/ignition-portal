@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import './ForgotPassword.css'
-import resetBg from '../../assets/backgrounds/reset.png'
-import backBtn from '../../assets/buttons/login-back-button.png'
-import recoverBtn from '../../assets/buttons/recover-button.png'
+import './Login.css'
+import logoImg from '../../assets/logo.svg'
+import mascotImg from '../../assets/backgrounds/hacker-application/login-mascot.svg'
 import { apiUrl } from '../../lib/api'
+import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 
 function ResetPassword() {
   const navigate = useNavigate()
+  const stageRef = useHackerPortalScale()
   const [searchParams] = useSearchParams()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -24,114 +25,110 @@ function ResetPassword() {
   }, [token])
 
   const handleReset = async (e) => {
-    e.preventDefault()
+    if (e) e.preventDefault()
     setError('')
 
     if (!password || !confirmPassword) {
       setError('Please fill in all fields.')
       return
     }
-
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
       return
     }
 
     setIsLoading(true)
-
     try {
       const response = await fetch(apiUrl('/reset-password'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token, password }),
       })
-
-      const data = await response.json()
-
+      const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        setError(data.message || 'Failed to reset password')
+        setError(data.message || 'Failed to reset password.')
         return
       }
-
       setPassword('')
       setConfirmPassword('')
       setIsSubmitted(true)
-
-      setTimeout(() => {
-        navigate('/login')
-      }, 2000)
+      setTimeout(() => navigate('/login'), 2000)
     } catch (err) {
-      setError('Error resetting password. Please try again.')
       console.error(err)
+      setError('Error resetting password. Please try again.')
     } finally {
       setIsLoading(false)
     }
   }
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleReset()
+  }
+
   return (
-    <div className="auth-forgot">
-      <div className="auth-forgot-content">
-        <img src={resetBg} alt="" className="auth-forgot-bg" />
+    <div className="login" ref={stageRef}>
+      <div className="login-header">
+        <img src={logoImg} alt="Ignition Hacks Logo" className="login-logo" />
+        <span className="login-header-text">IGNITION HACKS V7</span>
+      </div>
 
-        <button className="auth-forgot-back-button" onClick={() => navigate('/login')}>
-          <img src={backBtn} alt="Back" />
-        </button>
+      <img src={mascotImg} alt="" className="login-mascot" />
 
-        <div className="auth-forgot-form">
-          {!isSubmitted && !token ? (
-            <div className="auth-forgot-error">
-              <p className="auth-forgot-error-message">
-                Invalid or expired reset link. Please request a new one.
-              </p>
-            </div>
-          ) : isSubmitted ? (
-            <div className="auth-forgot-success">
-              <p className="auth-forgot-success-message">
-                Password reset successful! Redirecting to login...
-              </p>
-            </div>
+      <div className="login-stage">
+      <div className="login-card">
+        <div className="login-card-header">
+          <p className="login-card-title">RESET PASSWORD</p>
+          <p className="login-card-subtitle">Choose a new password for your account.</p>
+        </div>
+
+        <div className="login-form-body">
+          {isSubmitted ? (
+            <p className="login-card-subtitle">Password reset successful! Redirecting to login…</p>
           ) : (
-            <form onSubmit={handleReset}>
-              <div className="auth-forgot-form-section">
-                <input
-                  type="password"
-                  placeholder="New Password"
-                  className="auth-forgot-input"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
+            <>
+              <div className="login-fields">
+                <div className="login-inputs-group">
+                  <input
+                    type="password"
+                    placeholder="New password"
+                    className="login-input"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={isLoading || !token}
+                    autoComplete="new-password"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm password"
+                    className="login-input"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    disabled={isLoading || !token}
+                    autoComplete="new-password"
+                  />
+                </div>
+                <div className="login-links">
+                  <button type="button" className="login-link" onClick={() => navigate('/login')} disabled={isLoading}>Back to log in</button>
+                </div>
               </div>
 
-              <div className="auth-forgot-form-section">
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="auth-forgot-input"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  disabled={isLoading}
-                />
-              </div>
+              {error && <p className="login-error">{error}</p>}
 
               <button
-                type="submit"
-                className="auth-forgot-button"
-                disabled={isLoading}
+                className="login-submit-btn"
+                onClick={handleReset}
+                disabled={isLoading || !token}
               >
-                <img src={recoverBtn} alt="Reset password" />
+                {isLoading ? 'Resetting…' : 'Reset Password'}
               </button>
-            </form>
+            </>
           )}
 
-          {error && (
-            <div className="auth-forgot-error">
-              <p className="auth-forgot-error-message">{error}</p>
-            </div>
-          )}
+          {isSubmitted && error && <p className="login-error">{error}</p>}
         </div>
+      </div>
       </div>
     </div>
   )
