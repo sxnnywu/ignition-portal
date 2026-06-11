@@ -5,7 +5,6 @@ import logoImg from '../../assets/logo.svg'
 import mascotImg from '../../assets/backgrounds/hacker-application/login-mascot.svg'
 import { setAuth } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
-import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
 const PASSWORD_RULES =
@@ -13,7 +12,6 @@ const PASSWORD_RULES =
 
 function Signup() {
   const navigate = useNavigate()
-  const stageRef = useHackerPortalScale()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -67,7 +65,7 @@ function Signup() {
   }
 
   return (
-    <div className="signup" ref={stageRef}>
+    <div className="signup">
       <div className="signup-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="signup-logo" />
         <span className="signup-header-text">IGNITION HACKS V7</span>

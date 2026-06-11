@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 import { useApplicationDraft } from '../../lib/applicationDraftContext'
 import './Teammates.css'
 import './portal.css'
@@ -27,7 +26,6 @@ const resolvedFromSlots = (slots) =>
 
 function Teammates() {
   const navigate = useNavigate()
-  const stageRef = useHackerPortalScale()
   const me = getUser()
   const { draft, updateSlice, saveDraft } = useApplicationDraft()
   // transient editor state (loading/error per row) lives locally; the resolved
@@ -145,7 +143,7 @@ function Teammates() {
   const canAddAnother = slots.length < MAX_TEAMMATES && lastSlot.teammate
 
   return (
-    <div className="teammates hp-page" ref={stageRef}>
+    <div className="teammates hp-page">
       <UserIdBadge />
       <div className="hp-stage">
       <div className="teammates-header">

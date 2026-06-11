@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 import { useApplicationDraft } from '../../lib/applicationDraftContext'
 import './Info.css'
 import './portal.css'
@@ -11,7 +10,6 @@ import UserIdBadge from '../../components/hacker/UserIdBadge'
 // Step 2 — education and hackathon experience, side by side.
 function Education() {
   const navigate = useNavigate()
-  const stageRef = useHackerPortalScale()
   const { draft, updateSlice, saveDraft } = useApplicationDraft()
   const education = draft.education
   const experience = draft.experience
@@ -64,7 +62,7 @@ function Education() {
   }
 
   return (
-    <div className="info hp-page" ref={stageRef}>
+    <div className="info hp-page">
       <UserIdBadge />
       <div className="hp-stage">
       <div className="info-header">

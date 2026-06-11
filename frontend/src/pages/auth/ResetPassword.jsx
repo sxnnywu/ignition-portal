@@ -4,11 +4,9 @@ import './Login.css'
 import logoImg from '../../assets/logo.svg'
 import mascotImg from '../../assets/backgrounds/hacker-application/login-mascot.svg'
 import { apiUrl } from '../../lib/api'
-import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 
 function ResetPassword() {
   const navigate = useNavigate()
-  const stageRef = useHackerPortalScale()
   const [searchParams] = useSearchParams()
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -66,7 +64,7 @@ function ResetPassword() {
   }
 
   return (
-    <div className="login" ref={stageRef}>
+    <div className="login">
       <div className="login-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="login-logo" />
         <span className="login-header-text">IGNITION HACKS V7</span>

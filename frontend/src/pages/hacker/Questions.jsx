@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 import { useApplicationDraft } from '../../lib/applicationDraftContext'
 import './Questions.css'
 import './portal.css'
@@ -30,7 +29,6 @@ const QUESTIONS = [
 
 function Questions() {
   const navigate = useNavigate()
-  const stageRef = useHackerPortalScale()
   const { draft, updateSlice, saveDraft } = useApplicationDraft()
   const responses = draft.responses
   const [saved, setSaved] = useState(false)
@@ -72,7 +70,7 @@ function Questions() {
   }
 
   return (
-    <div className="questions hp-page" ref={stageRef}>
+    <div className="questions hp-page">
       <UserIdBadge />
       <div className="hp-stage">
       <div className="questions-header">

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Country, State } from 'country-state-city'
-import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 import { useApplicationDraft } from '../../lib/applicationDraftContext'
 import './Info.css'
 import './portal.css'
@@ -14,7 +13,6 @@ const allCountries = Country.getAllCountries()
 // Step 1 — basic personal info (basics + location).
 function Info() {
   const navigate = useNavigate()
-  const stageRef = useHackerPortalScale()
   const { draft, updateSlice, saveDraft } = useApplicationDraft()
   const personal = draft.personal
   const [saved, setSaved] = useState(false)
@@ -62,7 +60,7 @@ function Info() {
   }
 
   return (
-    <div className="info hp-page" ref={stageRef}>
+    <div className="info hp-page">
       <UserIdBadge />
       <div className="hp-stage">
       <div className="info-header">

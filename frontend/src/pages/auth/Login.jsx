@@ -5,11 +5,9 @@ import logoImg from '../../assets/logo.svg'
 import mascotImg from '../../assets/backgrounds/hacker-application/login-mascot.svg'
 import { getToken, getUser, setAuth } from '../../lib/auth'
 import { apiUrl } from '../../lib/api'
-import { useHackerPortalScale } from '../../lib/useHackerPortalScale'
 
 function Login() {
   const navigate = useNavigate()
-  const stageRef = useHackerPortalScale()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(null)
@@ -65,7 +63,7 @@ function Login() {
   }
 
   return (
-    <div className="login" ref={stageRef}>
+    <div className="login">
       <div className="login-header">
         <img src={logoImg} alt="Ignition Hacks Logo" className="login-logo" />
         <span className="login-header-text">IGNITION HACKS V7</span>

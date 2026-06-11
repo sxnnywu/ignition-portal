@@ -11,7 +11,6 @@ import Dashboard from "../pages/hacker/Dashboard";
 import Education from "../pages/hacker/Education";
 import Landing from "../pages/hacker/Landing";
 import Info from "../pages/hacker/Info";
-import Submission from "../pages/hacker/Submission";
 import Teammates from "../pages/hacker/Teammates";
 import Questions from "../pages/hacker/Questions";
 import FinishApp from "../pages/hacker/FinishApp";
@@ -70,15 +69,6 @@ const routes = [
       { path: "/finish", element: <FinishApp /> },
     ],
   },
-  {
-    path: "/submission/:id",
-    element: (
-      <RequireRole allowed={["applicant"]}>
-        <Submission />
-      </RequireRole>
-    ),
-  },
-
   // --- admin routes (wrapped in shared PortalLayout) ---
   {
     element: (
