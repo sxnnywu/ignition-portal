@@ -497,11 +497,20 @@ router.post('/:id/review',
     try {
       const { id } = req.params;
       const reviewerId = req.user.userId;
-      const { scores } = req.body;
+      const { scores, comment } = req.body;
 
       // no score or invalid data type
       if (!scores || typeof scores !== 'object') {
         return res.status(400).json({ message: 'scores object is required' });
+      }
+
+      // optional reviewer comment
+      if (comment !== undefined && typeof comment !== 'string') {
+        return res.status(400).json({ message: 'comment must be a string' });
+      }
+      const cleanComment = (comment || '').trim();
+      if (cleanComment.length > 2000) {
+        return res.status(400).json({ message: 'comment must be 2000 characters or fewer' });
       }
 
       // validate application id format
@@ -567,6 +576,7 @@ router.post('/:id/review',
         reviewerId: reviewer._id,
         scores,
         totalScore,
+        comment: cleanComment,
       });
 
       // move application into under_review if it isn't already
@@ -597,12 +607,21 @@ router.put('/:id/review',
 
     try {
       const { id } = req.params;
-      const { scores } = req.body;
+      const { scores, comment } = req.body;
       const reviewerId = req.user.userId;
 
       // no score or invalid data type
       if (!scores || typeof scores !== 'object') {
         return res.status(400).json({ message: 'scores object is required' });
+      }
+
+      // optional reviewer comment
+      if (comment !== undefined && typeof comment !== 'string') {
+        return res.status(400).json({ message: 'comment must be a string' });
+      }
+      const cleanComment = (comment || '').trim();
+      if (cleanComment.length > 2000) {
+        return res.status(400).json({ message: 'comment must be 2000 characters or fewer' });
       }
 
       // validate application id format
@@ -646,6 +665,9 @@ router.put('/:id/review',
       // update review fields
       review.scores = scores;
       review.totalScore = totalScore;
+      if (comment !== undefined) {
+        review.comment = cleanComment;
+      }
 
       // save updated review
       await review.save();

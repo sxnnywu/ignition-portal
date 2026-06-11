@@ -209,6 +209,12 @@ function AdminApplicationDetail() {
                       </div>
                     ))}
                   </div>
+                  {review.comment && (
+                    <div className="admin-review-comment">
+                      <span className="admin-review-comment-label">Comment</span>
+                      <p className="admin-review-comment-text">{review.comment}</p>
+                    </div>
+                  )}
                 </div>
               ))
             )}

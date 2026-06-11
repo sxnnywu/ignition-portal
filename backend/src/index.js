@@ -4,7 +4,6 @@
 import express from 'express';
 import cors from 'cors';
 import connectDB from './config/db.js';
-import testRoutes from './routes/test.js';
 import signupRoutes from './routes/signup.js';
 import applicationsRoutes from './routes/applications.js';
 import adminRoutes from './routes/admin.js';
@@ -30,7 +29,6 @@ app.use(cors({
 app.use(express.json());
 
 // mount routes
-app.use('/api/test', testRoutes);
 app.use('/applications', applicationsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/', signupRoutes);
