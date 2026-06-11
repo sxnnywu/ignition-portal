@@ -259,3 +259,27 @@
   color: #5b21b6;
   font-weight: 700;
 }
+
+.admin-review-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  border-top: 1px solid #e8d8c4;
+  padding-top: 0.6rem;
+}
+
+.admin-review-comment-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #8a7a66;
+}
+
+.admin-review-comment-text {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #3a2f22;
+  white-space: pre-wrap;
+}

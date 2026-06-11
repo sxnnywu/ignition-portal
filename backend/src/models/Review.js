@@ -24,6 +24,12 @@ const reviewSchema = mongoose.Schema({
         type: Number,
         required: true,
     },
+    comment: {
+        type: String,
+        default: "",
+        trim: true,
+        maxlength: 2000,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
