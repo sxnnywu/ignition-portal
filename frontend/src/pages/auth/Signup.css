@@ -73,22 +73,19 @@
   background: #fff9f2;
   border-radius: max(14px, 1.8cqmin) max(14px, 1.8cqmin) 0 0;
   box-shadow: 0 -2px 26px rgba(0, 0, 0, 0.05);
-  padding: max(28px, 3.6cqmin) max(24px, 4.5cqmin) max(26px, 3.6cqmin);
+  padding: max(110px, 16cqmin) max(24px, 4.5cqmin) max(26px, 3.6cqmin);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: max(16px, 3cqmin);
+  /* anchor content to the top so the header stays high regardless of
+     viewport width (esp. tall phones, where centering pushed it down);
+     gap sets the header→inputs spacing */
+  gap: max(76px, 13cqmin);
   overflow: hidden;
   z-index: 2;
   container-type: size;
-}
-
-@media (max-width: 860px) {
-  .signup-card {
-    justify-content: flex-start;
-  }
 }
 
 .signup-card-header {
@@ -248,9 +245,22 @@
   cursor: not-allowed;
 }
 
+@media (max-width: 860px) {
+  .signup-card {
+    padding-top: max(135px, 16cqmin);
+  }
+}
+
 /* Narrow widths → stack the first/last name inputs vertically so they don't squeeze */
 @media (max-width: 520px) {
   .signup-name-row {
     flex-direction: column;
+  }
+
+  /* once stacked, drop flex sizing so the explicit height applies and these
+     match the full-width email/password inputs instead of collapsing smaller */
+  .signup-name-row .signup-input {
+    flex: none;
+    width: 100%;
   }
 }

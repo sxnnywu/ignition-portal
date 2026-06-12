@@ -89,23 +89,19 @@
   background: #fff9f2;
   border-radius: max(14px, 1.8cqmin) max(14px, 1.8cqmin) 0 0;
   box-shadow: 0 -2px 26px rgba(0, 0, 0, 0.05);
-  padding: max(30px, 4cqmin) max(24px, 4.5cqmin) max(28px, 4cqmin);
+  padding: max(120px, 17cqmin) max(24px, 4.5cqmin) max(28px, 4cqmin);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: max(20px, 3.5cqmin);
+  /* anchor content to the top so the header stays high regardless of
+     viewport width (esp. tall phones, where centering pushed it down);
+     gap sets the header→inputs spacing */
+  gap: max(86px, 15cqmin);
   overflow: hidden;
   z-index: 2;
   container-type: size;
-}
-
-/* Narrow widths → sheet is taller than wide; pull content to the top */
-@media (max-width: 860px) {
-  .login-card {
-    justify-content: flex-start;
-  }
 }
 
 .login-card-header {
@@ -245,4 +241,10 @@
 .login-submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+@media (max-width: 860px) {
+  .login-card {
+    padding-top: max(150px, 17cqmin);
+  }
 }
