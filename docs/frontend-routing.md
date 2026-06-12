@@ -31,9 +31,9 @@ The route configuration is defined in `frontend/src/routes/routes.jsx`.
 | `/dashboard` | Dashboard | Applicant only | `RequireRole(['applicant'])` |
 | `/info` | Info | Applicant only | `RequireRole(['applicant'])` |
 | `/education` | Education | Applicant only | `RequireRole(['applicant'])` |
-| `/experience` | Experience | Applicant only | `RequireRole(['applicant'])` |
 | `/teammates` | Teammates | Applicant only | `RequireRole(['applicant'])` |
-| `/submission/:id` | Submission | Applicant only | `RequireRole(['applicant'])` |
+| `/questions` | Questions | Applicant only | `RequireRole(['applicant'])` |
+| `/finish` | FinishApp | Applicant only | `RequireRole(['applicant'])` |
 | `/signup/reviewer` | ReviewerSignup | Public | — |
 | `/signup/admin` | AdminSignup | Public | — |
 | `/reviewer` | ReviewerMainPage | Reviewer/Admin | `RequireRole(['reviewer', 'admin'])` (on layout) |

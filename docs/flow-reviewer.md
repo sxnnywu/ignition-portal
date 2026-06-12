@@ -146,7 +146,7 @@ The detail page has a two-panel layout:
 
 On mount, two requests fire in parallel:
 ```
-GET /applications/:id          → application details (answers, user info)
+GET /applications/:id          → application details (structured slices, user info)
 GET /applications/:id/review/me → existing review (if any, otherwise 404)
 ```
 

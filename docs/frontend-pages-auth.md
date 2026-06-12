@@ -9,7 +9,12 @@ These pages handle user authentication. They are publicly accessible (no login r
 **Route:** `/` and `/login`
 
 ### Layout
-A full-viewport page with a background PNG (`login.png`) overlaid with absolutely positioned form fields. The background image is styled to fill the viewport using container query units.
+A full-viewport page with a full-bleed **SVG background**
+(`assets/backgrounds/hacker-application/...`); the cream `#FFF9F2` sheet
+(`.login-stage` / `.login-card`) is the content container and a mascot stays
+attached to it. Content scales responsively (`clamp()` / container queries) — no
+absolutely-positioned overlay on a fixed-size raster. `Login.css` is shared by
+Login, Forgot Password, and Reset Password.
 
 ### Behavior
 1. On mount, checks if a token exists in sessionStorage
@@ -25,7 +30,7 @@ A full-viewport page with a background PNG (`login.png`) overlaid with absolutel
 - "Sign up" button → navigates to `/signup`
 - "Forgot Password?" button → navigates to `/forgot-password`
 
-### CSS Prefix: `auth-login-`
+### CSS Prefix: `login-`
 
 ---
 
@@ -36,26 +41,30 @@ A full-viewport page with a background PNG (`login.png`) overlaid with absolutel
 **Route:** `/signup`
 
 ### Layout
-Background PNG (`sign-up-bg.png`) with overlaid form card.
+Same decoupled SVG-background + cream content-sheet approach as Login, with its
+own `Signup.css` (`signup-` prefix) and `signup-mascot`.
 
 ### Form Fields
-- First name (text)
-- Last name (text)
+- Name (text)
 - Email (email)
 - Password (password)
 
 ### Behavior
 1. Client-side validates all fields are filled
 2. Client-side checks password strength: 8+ chars, uppercase, lowercase, number
-3. Concatenates first and last name: `"${firstName} ${lastName}"`
-4. Sends `POST /signup` with `{ name, email, password }`
-5. Backend validates name (no numbers), formats it, creates user
-6. On success, stores auth and navigates to `/dashboard`
+3. Sends `POST /signup` with `{ name, email, password }`
+4. Backend validates the name (letters/spaces only), formats it, creates the user
+5. On success, stores auth and navigates to `/dashboard`
 
 ### Links
 - "Already have an account? Log in" → navigates to `/login`
 
-### CSS Prefix: `auth-signup-`
+### CSS Prefix: `signup-`
+
+> There are also **ReviewerSignup** (`/signup/reviewer`) and **AdminSignup**
+> (`/signup/admin`) pages with the same layout, plus a `secret` field. They post
+> to `POST /signup/reviewer` / `POST /signup/admin`, which require the matching
+> server-side signup secret.
 
 ---
 
@@ -66,7 +75,8 @@ Background PNG (`sign-up-bg.png`) with overlaid form card.
 **Route:** `/forgot-password`
 
 ### Layout
-Background PNG (`reset.png`) with a single email input field and a recover button. A back button in the upper area navigates to `/login`.
+Shares Login's SVG-background layout and `Login.css`. A single email input and a
+recover button; a "Back to log in" link navigates to `/login`.
 
 ### Behavior
 1. User enters their email
@@ -75,18 +85,18 @@ Background PNG (`reset.png`) with a single email input field and a recover butto
 4. On error, shows the error message
 5. The backend sends an email with a reset link
 
-### CSS Prefix: `auth-forgot-`
+### CSS Prefix: `login-` (shares `Login.css`)
 
 ---
 
 ## Reset Password
 
 **File:** `frontend/src/pages/auth/ResetPassword.jsx`
-**CSS:** Reuses `ForgotPassword.css` (shares `auth-forgot-` classes)
+**CSS:** Reuses `Login.css` (shares `login-` classes)
 **Route:** `/reset-password`
 
 ### Layout
-Same background as Forgot Password. Shows either:
+Same SVG-background layout as Login / Forgot Password. Shows either:
 - **Error state** (no token in URL): "Invalid or expired reset link" message
 - **Form state**: New Password + Confirm Password fields
 - **Success state**: "Password reset successful! Redirecting to login..."

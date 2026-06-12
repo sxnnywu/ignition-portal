@@ -1,48 +1,44 @@
 # Shared Components
 
-## HkFormPage
+## ApplicationDraftProvider
 
-**File:** `frontend/src/components/hacker/HkFormPage.jsx`
-**CSS:** `frontend/src/components/hacker/HkFormPage.css`
+**File:** `frontend/src/lib/applicationDraft.jsx`
+**Context/hook:** `frontend/src/lib/applicationDraftContext.js`
 
 ### Purpose
-A reusable layout wrapper for the multi-step hacker application form pages (Info, Education, Experience, Teammates). Eliminates ~400 lines of duplicated layout CSS.
-
-### Props
-
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `backgroundSrc` | string | Yes | Path to the background PNG image |
-| `backTo` | string | Yes | Route to navigate to when Back is clicked |
-| `onContinue` | function | Yes | Callback when Continue is clicked |
-| `continueDisabled` | boolean | No | Disables the Continue button (e.g., during loading) |
-| `formClassName` | string | No | Additional CSS class for the form container |
-| `children` | ReactNode | Yes | The form fields to render inside the overlay |
-
-### Layout Structure
-```
-.hk-page                       ← full viewport container
-  └── .hk-page-content         ← relative container for positioning
-        ├── img.hk-page-bg     ← background PNG, fills container
-        ├── .hk-form            ← absolutely positioned form overlay
-        │     └── {children}    ← form fields from the page
-        ├── button.hk-back-btn  ← back button (bottom-left area)
-        └── button.hk-continue-btn ← continue button (bottom-right area)
-```
+A layout-route provider that backs the whole multi-step application form. It is
+mounted as the parent route of `/info`, `/education`, `/teammates`,
+`/questions`, and `/finish` (see `routes.jsx`), so the five steps share one
+in-memory draft.
 
 ### How It Works
-The background PNG contains the visual design (labels, decorations) created in Figma. The form fields are absolutely positioned on top using container query units (`cqw`) so they align perfectly with the design at any viewport size.
+- On mount it loads the user's existing application **once** (`GET
+  /applications/me`) and gates rendering behind a loading state so steps never
+  flash empty.
+- It holds the draft (`personal`, `education`, `experience`, `teammates`,
+  `responses`) in React state and exposes it through the `useApplicationDraft`
+  hook, so navigating between steps keeps values without re-fetching.
+- Steps persist to the backend via `POST /applications` (structured slices) on
+  save, and the draft is autosaved when leaving a step — data is never lost by
+  navigating away without an explicit "Save Draft".
 
-### CSS Classes Available to Children
+### Why a provider instead of per-page state
+Each step page used to fetch/save independently and overwrite sibling data. The
+provider makes the draft the single source of truth on the client, mirroring the
+structured slices on the server, and enables cross-device persistence (the draft
+is reloaded from the backend on any device).
 
-| Class | Purpose |
-|-------|---------|
-| `.hk-form-section` | Groups related form fields with spacing |
-| `.hk-section-label` | Label text above a group of fields |
-| `.hk-field-row` | Horizontal row of inputs/selects |
-| `.hk-input` | Styled text input |
-| `.hk-select` | Styled dropdown select |
-| `.hk-form--vertical` | Optional modifier for vertical layout (used by Teammates) |
+---
+
+## UserIdBadge
+
+**File:** `frontend/src/components/hacker/UserIdBadge.jsx`
+**CSS:** `frontend/src/components/hacker/UserIdBadge.css`
+
+### Purpose
+Shows the signed-in applicant their **User ID** (their Mongo `_id`) in the
+top-right of the application form pages. The id is what teammates enter to add
+each other in the Teammates step, so it needs to be easy to find and copy.
 
 ---
 

@@ -18,3 +18,7 @@ const connectDB = async () => {
 
 // export the connectDB function
 export default connectDB;
+
+// re-export the shared mongoose instance so other entry points (e.g. the test
+// suite) connect and register models on the exact same instance the app uses
+export { mongoose };

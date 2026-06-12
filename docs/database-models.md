@@ -31,17 +31,64 @@ Stores all user accounts — applicants, reviewers, and admins.
 **File:** `backend/src/models/Application.js`
 **Collection:** `applications`
 
-Stores hackathon applications. Each user can have one application.
+Stores hackathon applications. Each user can have at most one application. The
+form responses are stored in **structured, validated sub-documents** (not a
+free-form object). The applicant's first/last name are intentionally **not**
+stored here — they come from the linked `User.name`.
 
 | Field | Type | Required | Default | Description |
 |-------|------|----------|---------|-------------|
 | `userId` | ObjectId (ref: User) | Yes | — | The applicant who owns this application |
 | `status` | String (enum) | No | `"draft"` | Application lifecycle state |
 | `version` | Number | No | `1` | Incremented each time the application is updated |
-| `answers` | Object | No | `{}` | Free-form object storing all form responses |
-| `submittedAt` | Date | No | `Date.now` | When the application was submitted |
+| `personal` | Object | — | see below | Step 1 — basic info |
+| `education` | Object | — | see below | Step 2 — education |
+| `experience` | Object | — | see below | Step 3 — hackathon experience |
+| `teammates` | Array | — | `[]` | Step 4 — up to 3 teammates (team of 4 incl. applicant) |
+| `responses` | Object | — | see below | Step 5 — written responses |
+| `submittedAt` | Date | No | `null` | When the application was submitted |
 | `createdAt` | Date | Auto | — | Mongoose timestamp |
 | `updatedAt` | Date | Auto | — | Mongoose timestamp |
+
+**`personal`**
+| Field | Type | Notes |
+|-------|------|-------|
+| `gender` | String | default `''` |
+| `age` | Number | default `null` |
+| `ethnicity` | String | default `''` |
+| `country` | String | default `''` |
+| `city` | String | default `''` |
+| `state` | String | default `''` |
+
+**`education`**
+| Field | Type | Notes |
+|-------|------|-------|
+| `institution` | String | default `''` |
+| `level` | String (enum) | `''`, `high-school`, `undergraduate`, `graduate`, `bootcamp`, `other` |
+| `program` | String | required on submit **only** for `undergraduate`/`graduate` |
+| `coop` | String (enum) | `''`, `yes`, `no` |
+
+**`experience`**
+| Field | Type | Notes |
+|-------|------|-------|
+| `attended2025` | String (enum) | `''`, `yes`, `no` |
+| `hackathonsAttended` | Number | `min: 0`, `max: 5`, default `null` (0 is a valid answer) |
+
+**`teammates`** — array of sub-documents, **max 3** (schema validator). Each
+teammate is added by user-id lookup; `name`/`email` are re-derived from the
+referenced `User` server-side and never trusted from the client:
+| Field | Type | Notes |
+|-------|------|-------|
+| `userId` | ObjectId (ref: User) | required |
+| `name` | String | copied from the referenced user |
+| `email` | String | copied from the referenced user |
+
+**`responses`** — exactly three written answers, each character-capped:
+| Field | Type | Max length |
+|-------|------|-----------|
+| `admireDescribe` | String | 100 |
+| `proudProject` | String | 500 |
+| `motivation` | String | 500 |
 
 **Status lifecycle:**
 ```
@@ -55,11 +102,13 @@ draft → submitted → under_review → accepted / waitlisted / rejected
 - `waitlisted` — Admin has waitlisted the applicant
 - `rejected` — Admin has rejected the applicant
 
-**The `answers` object** is schema-less. It stores whatever the frontend sends. Currently used keys include:
-- `attended2025` — Whether the applicant attended IgnitionHacks 2025
-- `hackathonsAttended` — Number of previous hackathons
-- `teammates` — Array of `{ name, email }` objects
-- `school` — Educational institution name (used in reviewer table)
+**Submit-time completeness:** drafts may be partial, but `POST
+/applications/:id/submit` requires every mandatory field (see
+`getMissingFields` in `routes/applications.js`). `program` is required only for
+undergraduate/graduate; `hackathonsAttended: 0` counts as answered; teammates
+are always optional.
+
+**Indexes:** `userId` (one application per applicant); a compound `{ status: 1, submittedAt: -1 }` index backs the admin list (filter by status, sort by submitted date). The `status` prefix of that compound also serves status-only queries (reviewer pool, stats, CSV export).
 
 ---
 
@@ -76,12 +125,13 @@ Stores individual reviewer scores for an application. Each reviewer can submit o
 | `reviewerId` | ObjectId (ref: User) | Yes | — | The reviewer who submitted this review |
 | `scores` | Map of Number | Yes | — | Key-value pairs of question keys to numeric scores |
 | `totalScore` | Number | Yes | — | Sum of all individual scores |
+| `comment` | String | No | `""` | Free-text reviewer comment (trimmed, max 2000 chars) |
 | `createdAt` | Date | No | `Date.now` | When the review was created |
 | `updatedAt` | Date | No | `Date.now` | When the review was last updated |
 
 **Pre-save hook:** `updatedAt` is automatically set to `Date.now()` on every save.
 
-**Uniqueness:** There is no database-level unique index on `(applicationId, reviewerId)`, but the application code checks for duplicates before creating a review.
+**Indexes:** `reviewerId` (per-reviewer queues / `appsReviewed` count). A **unique** compound index on `(applicationId, reviewerId)` enforces one review per reviewer per application at the database level, backing the existing duplicate check in the review route. Its `applicationId` prefix also serves "all reviews for an application" reads.
 
 ---
 

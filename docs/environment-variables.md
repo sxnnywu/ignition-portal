@@ -1,6 +1,6 @@
 # Environment Variables
 
-All environment variables are defined in `backend/.env` and loaded by the `dotenv` package at server startup.
+All backend environment variables are defined in `backend/.env` and loaded by the `dotenv` package at server startup. Copy [`backend/.env.example`](../backend/.env.example) to `backend/.env` to get started — it lists every variable the backend reads. The frontend's optional variable lives in `frontend/.env`, templated by [`frontend/.env.example`](../frontend/.env.example).
 
 ## Required Variables
 
@@ -29,7 +29,9 @@ In production, use a long random string (32+ characters).
 CORS_ORIGIN=http://localhost:5173,http://localhost:3000
 ```
 
-If empty or unset, CORS allows all origins (`origin: true`).
+If empty or unset, CORS allows all origins (`origin: true`) — see `src/app.js`. This fallback is for local development only.
+
+**Production:** always set `CORS_ORIGIN` to the real deployed frontend origin (a specific `https://…` value). Never leave it empty and never use `*` in production.
 
 ### `REVIEWER_SIGNUP_SECRET`
 **Secret passphrase required to create a reviewer account.** Passed in the `secret` field of `POST /signup/reviewer`. Prevents unauthorized users from creating reviewer accounts.

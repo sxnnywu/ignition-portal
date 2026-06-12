@@ -60,144 +60,70 @@ A promotional/welcome page with a "Start Application" button.
 
 ---
 
-## Info (Step 1 of Application)
+## The Application Form (Steps 1–5)
 
-**File:** `frontend/src/pages/hacker/Info.jsx`
-**Route:** `/info`
+The five step pages (`/info`, `/education`, `/teammates`, `/questions`,
+`/finish`) are nested routes under `ApplicationDraftProvider`
+(`frontend/src/lib/applicationDraft.jsx`). The provider loads the user's draft
+**once** (`GET /applications/me`), gates rendering behind a loading state, and
+keeps the draft in memory so values survive navigation between steps and across
+devices. Each step reads/writes the shared draft via the `useApplicationDraft`
+hook; the draft is saved to the backend (`POST /applications`, structured
+slices) on save and autosaved when leaving a step. The applicant's name is **not**
+collected — it comes from `User.name`.
 
-### Purpose
-First page of the multi-step application form. Collects personal information.
+### Step 1 — Info (`/info`)
 
-### Form Fields
+**File:** `frontend/src/pages/hacker/Info.jsx` → the `personal` slice.
 
-**Basics section:**
-- First name (text input)
-- Last name (text input)
-- Gender (select: Male, Female, Non-binary, Other, Prefer not to say)
-- Age (text input)
-- Ethnicity (select: Asian, Black, Hispanic/Latino, White, Indigenous, Middle Eastern, Pacific Islander, Multiracial, Other, Prefer not to say)
+- Basics: Gender, Age, Ethnicity
+- Location: Country, City, State/Province
 
-**Location section:**
-- Country (text input)
-- City (text input)
-- State/Province (text input)
+**Navigation:** Back → `/dashboard` | Continue → `/education`
 
-### Navigation
-- Back button → `/` (login)
-- Continue button → `/education`
+### Step 2 — Education (`/education`)
 
-### Uses: `HkFormPage` wrapper with `info.png` background
+**File:** `frontend/src/pages/hacker/Education.jsx` → the `education` and
+`experience` slices, shown side by side.
 
----
+- Education: Institution, Level of education (High School / Undergraduate /
+  Graduate / Bootcamp / Other), Program (rendered **only** for
+  undergraduate/graduate), Co-op status
+- Hackathon experience: Attended IgnitionHacks 2025?, Number of hackathons
+  attended (0–5)
 
-## Education (Step 2 of Application)
+**Navigation:** Back → `/info` | Continue → `/teammates`
 
-**File:** `frontend/src/pages/hacker/Education.jsx`
-**Route:** `/education`
+### Step 3 — Teammates (`/teammates`)
 
-### Purpose
-Second step of the application. Collects educational background.
+**File:** `frontend/src/pages/hacker/Teammates.jsx` → the `teammates` slice
+(optional, max 3).
 
-### Form Fields
+Teammates are added by **user-id lookup**: the applicant enters a teammate's
+User ID and clicks "Get", which calls `GET /applications/teammate/:userId`. The
+returned name/email are displayed (and stored server-side from the looked-up
+user). The max-of-3 rule is enforced on the backend as well as the UI.
 
-**School section:**
-- Educational institution (text input)
-- Level of education (select: High School, Undergraduate, Graduate, Bootcamp, Other)
+**Navigation:** Back → `/education` | Continue → `/questions`
 
-**Program section:**
-- Program name (text input)
-- Co-op student? (select: Yes, No)
+### Step 4 — Questions (`/questions`)
 
-### Navigation
-- Back button → `/info`
-- Continue button → `/experience`
+**File:** `frontend/src/pages/hacker/Questions.jsx` → the `responses` slice.
 
-### Uses: `HkFormPage` wrapper with `education.png` background
+Three character-limited free-text questions:
+- `admireDescribe` (≤100 chars), `proudProject` (≤500), `motivation` (≤500)
 
----
+Character counters are shown; the limits match the schema and backend.
 
-## Experience (Step 3 of Application)
+**Navigation:** Back → `/teammates` | Continue → `/finish`
 
-**File:** `frontend/src/pages/hacker/Experience.jsx`
-**Route:** `/experience`
+### Step 5 — Finish (`/finish`)
 
-### Purpose
-Third step of the application. Collects hackathon experience.
+**File:** `frontend/src/pages/hacker/FinishApp.jsx`.
 
-### Form Fields
-- Did you attend IgnitionHacks 2025? (select: Yes, No)
-- How many hackathons have you attended? (select: 0, 1, 2, 3, 4, 5 or more)
+Review-and-submit step. On submit, sends `POST /applications/:id/submit`. The
+backend runs completeness validation and returns a `missing` list if any required
+field is empty; the page surfaces that to the applicant. On success, the
+applicant is taken to their submitted dashboard view.
 
-### Data Saving
-Unlike Info and Education, this page **saves data to the backend** when "Continue" is clicked:
-1. Gets the auth token
-2. Sends `POST /applications` with `{ answers: { attended2025, hackathonsAttended }, status: "draft" }`
-3. On success, navigates to `/teammates`
-4. On error, shows an alert
-
-### Navigation
-- Back button → `/education`
-- Continue button → saves data, then `/teammates`
-
-### Uses: `HkFormPage` wrapper with `experience.png` background
-
----
-
-## Teammates (Step 4 of Application)
-
-**File:** `frontend/src/pages/hacker/Teammates.jsx`
-**Route:** `/teammates`
-
-### Purpose
-Fourth step of the application. Collects teammate information (up to 3 teammates).
-
-### Form Fields
-Three teammate slots, each with:
-- Full name (text input)
-- Email address (email input)
-
-### State Management
-Uses a `teammates` state array of 3 objects: `[{ name: '', email: '' }, ...]`
-
-The `handleTeammateChange(index, field, value)` function immutably updates a single teammate entry.
-
-### Data Saving
-On continue:
-1. Gets the auth token
-2. Sends `POST /applications` with `{ answers: { teammates }, status: "draft" }`
-3. On success, navigates to `/info` (loops back — this may be a placeholder)
-4. On error, shows an alert
-
-### Navigation
-- Back button → `/experience`
-- Continue button → saves data, then `/info`
-
-### Uses: `HkFormPage` wrapper with `teammates.png` background and `hk-form--vertical` class
-
----
-
-## Submission
-
-**File:** `frontend/src/pages/hacker/Submission.jsx`
-**CSS:** `frontend/src/pages/hacker/Submission.css`
-**Route:** `/submission/:id`
-
-### Purpose
-The final confirmation and submission page. Shows a "Ready to Submit?" prompt.
-
-### URL Parameters
-- `:id` — The application ID to submit
-
-### Behavior
-1. Displays the header image and a card with "Ready to Submit?" text
-2. On clicking "Submit":
-   - Sends `POST /applications/:id/submit` with auth token
-   - On success, shows "Application Submitted" confirmation
-   - On error, displays the error message
-3. The back button navigates to the previous page (browser history)
-
-### Two Views
-- **Pre-submission**: Shows the submit prompt with Back and Submit buttons
-- **Post-submission**: Shows "All done! APPLICATION SUBMITTED" success message
-
-### CSS Prefix: `hk-sub-`
+**Navigation:** Back → `/questions` | Submit → `/dashboard`

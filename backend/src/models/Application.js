@@ -121,6 +121,14 @@ const ApplicationSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// --- indexes ---
+// one application per applicant; speeds GET /applications/me and the
+// findOne({ userId }) lookup in POST /applications
+ApplicationSchema.index({ userId: 1 });
+// the admin list filters by status and sorts by submittedAt (desc); the status
+// prefix of this compound also serves status-only reads (reviewer pool, stats, CSV)
+ApplicationSchema.index({ status: 1, submittedAt: -1 });
+
 // create application model
 const Application = mongoose.model('Application', ApplicationSchema);
 

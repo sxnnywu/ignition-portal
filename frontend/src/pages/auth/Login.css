@@ -115,7 +115,7 @@
 .login-card-title {
   margin: 0;
   font-family: 'Jua', sans-serif;
-  font-size: max(28px, 5.8cqmin);
+  font-size: max(36px, 7.4cqmin);
   color: #a172ff;
   text-align: center;
   width: 100%;
@@ -125,7 +125,7 @@
 .login-card-subtitle {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
-  font-size: max(15px, 2.6cqmin);
+  font-size: max(19px, 3.3cqmin);
   color: rgba(0, 0, 0, 0.8);
   text-align: center;
   line-height: 1.3;

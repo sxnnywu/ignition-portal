@@ -1,37 +1,17 @@
 // backend/src/index.js
 
 // imports
-import express from 'express';
-import cors from 'cors';
 import connectDB from './config/db.js';
-import signupRoutes from './routes/signup.js';
-import applicationsRoutes from './routes/applications.js';
-import adminRoutes from './routes/admin.js';
+import { createApp } from './app.js';
 import dotenv from 'dotenv';
 
 // load environment variables
 dotenv.config();
 
-// initialize express app and connect to database
-const app = express();
+// connect to the database, then build and start the server
 await connectDB();
 
-const allowedOrigins = (process.env.CORS_ORIGIN || '')
-  .split(',')
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-
-app.use(cors({
-  origin: allowedOrigins.length === 0 ? true : allowedOrigins,
-}));
-
-// middleware to parse JSON requests
-app.use(express.json());
-
-// mount routes
-app.use('/applications', applicationsRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/', signupRoutes);
+const app = createApp();
 
 // start server
 const PORT = process.env.PORT || 8000;

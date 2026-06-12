@@ -46,6 +46,15 @@ reviewSchema.pre("save", function (next) {
     next();
 });
 
+// --- indexes ---
+// a reviewer's own queue / per-reviewer lookups (GET /applications/reviewer,
+// the appsReviewed count in /admin/users)
+reviewSchema.index({ reviewerId: 1 });
+// one review per (application, reviewer): a unique DB backstop behind the code
+// check in POST /applications/:id/review. The applicationId prefix also serves
+// "all reviews for an application" reads (GET /:id/reviews, the admin $lookups).
+reviewSchema.index({ applicationId: 1, reviewerId: 1 }, { unique: true });
+
 // create review model
 const Review = mongoose.model("Review", reviewSchema);
 

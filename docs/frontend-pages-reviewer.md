@@ -122,7 +122,7 @@ A reusable table component for displaying applications.
 |--------|------------|-------|
 | ID | Last 6 characters of `app._id` | Gray, monospace feel |
 | Applicant | `app.userId?.name` | Bold |
-| School | `app.answers?.school` | Normal |
+| School | `app.education?.institution` | Normal |
 | Submitted | `app.submittedAt` formatted as "Mon. DD" | Normal |
 | Status | `app.reviewStatus` as badge | Colored badge |
 | Your Score | `app.yourScore` or "—" | Bold |
@@ -221,7 +221,7 @@ The detailed review page where reviewers read an applicant's full submission and
 ### Data Fetching
 
 On mount, fetches two endpoints in parallel:
-1. `GET /applications/:id` — the full application (answers, userId.name, userId.email)
+1. `GET /applications/:id` — the full application (structured slices, userId.name, userId.email)
 2. `GET /applications/:id/review/me` — the reviewer's existing review (if any)
 
 If an existing review is found:
@@ -235,17 +235,17 @@ Three white cards with `border: 1px solid #A38C6F`, `border-radius: 16px`:
 
 **Personal Information**
 - Name and email from `application.userId`
-- Additional fields from `application.answers`: firstName, lastName, gender, age, ethnicity, country, city, stateProvince
+- Fields from `application.personal`: gender, age, ethnicity, country, city, state
 - Two-column grid layout
 
 **Education**
-- Fields: educationalInstitution, levelOfEducation, programName, coopStudent
+- Fields from `application.education`: institution, level, program, coop
 - Two-column grid layout
 
-**Hackathon Experience**
-- Fields: attended2025, hackathonsAttended
-- Plus any unrecognized answer keys (catch-all)
-- Long text values (>120 chars) render in highlight boxes (`#FFF8F0` bg, 16px border-radius)
+**Hackathon Experience & Responses**
+- `application.experience`: attended2025, hackathonsAttended
+- `application.responses`: admireDescribe, proudProject, motivation
+- Long text values render in highlight boxes (`#FFF8F0` bg, 16px border-radius)
 
 ### Scoring Rubric (Right Panel)
 

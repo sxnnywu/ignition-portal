@@ -93,97 +93,90 @@ GET /applications/me (with Bearer token)
 
 ## 3. Multi-Step Application Form
 
-The application form is a 4-step wizard:
+The application form is a 5-step wizard. All steps are nested under
+`ApplicationDraftProvider`, which loads the user's draft **once** (`GET
+/applications/me`) and keeps it in memory, so data survives navigation between
+steps and across devices:
 
 ```
-/info → /education → /experience → /teammates
+/info → /education → /teammates → /questions → /finish
 ```
+
+The applicant's first/last name are **not** collected here — they come from the
+`User.name` set at signup. Every step writes into the shared draft, which is
+persisted to the backend via `POST /applications` (structured slices). The draft
+is also autosaved when leaving a step, so nothing is lost without an explicit
+"Save Draft" click.
 
 ### Step 1: Info (/info)
 
-Collects personal information:
-- Basics: First name, Last name, Gender, Age, Ethnicity
+Personal info → the `personal` slice:
+- Basics: Gender, Age, Ethnicity
 - Location: Country, City, State/Province
 
-**Navigation:** Back → `/` (login) | Continue → `/education`
-
-**Data persistence:** Currently does NOT save to backend. Form data is lost on navigation.
+**Navigation:** Back → `/dashboard` | Continue → `/education`
 
 ### Step 2: Education (/education)
 
-Collects educational background:
-- School: Institution name, Level of education
-- Program: Program name, Co-op student status
+Education + hackathon experience side by side → the `education` and `experience`
+slices:
+- Education: Institution, Level of education, Program (shown only for
+  undergraduate/graduate), Co-op status
+- Experience: Attended IgnitionHacks 2025?, Number of hackathons attended (0–5)
 
-**Navigation:** Back → `/info` | Continue → `/experience`
+**Navigation:** Back → `/info` | Continue → `/teammates`
 
-**Data persistence:** Currently does NOT save to backend.
+### Step 3: Teammates (/teammates)
 
-### Step 3: Experience (/experience)
+Optional teammates (max 3) → the `teammates` slice. Teammates are added by
+**user-id lookup** (`GET /applications/teammate/:userId`) and a "Get" button;
+their name/email are derived server-side from the looked-up user, never typed in.
 
-Collects hackathon experience:
-- Attended IgnitionHacks 2025?
-- Number of hackathons attended
+**Navigation:** Back → `/education` | Continue → `/questions`
 
-**Navigation:** Back → `/education` | Continue → `/teammates`
+### Step 4: Questions (/questions)
 
-**Data persistence:** YES — on continue, sends `POST /applications`:
+Exactly three written responses → the `responses` slice, each character-capped:
+- `admireDescribe` (≤100), `proudProject` (≤500), `motivation` (≤500)
+
+**Navigation:** Back → `/teammates` | Continue → `/finish`
+
+### Step 5: Finish (/finish)
+
+Review-and-submit step. Sends `POST /applications/:id/submit`, which runs
+server-side completeness validation before accepting.
+
+**Data persistence (every step):** `POST /applications` with any subset of the
+structured slices:
 ```json
 {
-  "answers": {
-    "attended2025": "yes",
-    "hackathonsAttended": "3"
-  },
+  "personal":   { "gender": "female", "age": 20, "country": "Canada", "city": "Toronto", "state": "Ontario", "ethnicity": "..." },
+  "education":  { "institution": "UofT", "level": "undergraduate", "program": "CS", "coop": "yes" },
+  "experience": { "attended2025": "no", "hackathonsAttended": 2 },
+  "teammates":  ["<userId1>"],
+  "responses":  { "admireDescribe": "...", "proudProject": "...", "motivation": "..." },
   "status": "draft"
 }
 ```
-
-This either creates a new application (201) or updates the existing one (200).
-
-### Step 4: Teammates (/teammates)
-
-Collects teammate information (up to 3):
-- Teammate 1: Full name, Email
-- Teammate 2: Full name, Email
-- Teammate 3: Full name, Email
-
-**Navigation:** Back → `/experience` | Continue → `/info`
-
-**Data persistence:** YES — on continue, sends `POST /applications`:
-```json
-{
-  "answers": {
-    "teammates": [
-      { "name": "Alice", "email": "alice@example.com" },
-      { "name": "", "email": "" },
-      { "name": "", "email": "" }
-    ]
-  },
-  "status": "draft"
-}
-```
-
-**Note:** Continue currently navigates back to `/info`. The submission flow requires navigating to `/submission/:id` manually or through a future implementation.
+This creates a new application (201) or updates the existing one (200).
 
 ## 4. Application Submission
 
 ```
-User navigates to /submission/:applicationId
+User reaches /finish
   ↓
-Shows "Ready to Submit?" confirmation
-  ↓
-User clicks "Submit"
+Reviews their answers, clicks "Submit"
   ↓
 POST /applications/:id/submit (with Bearer token)
   ↓
 Backend validates:
-  - Application exists
-  - Current user owns it
+  - Application exists & current user owns it
   - Status is "draft"
+  - Every required field is filled (getMissingFields) — else 400 with a `missing` list
   ↓
 Backend sets status = "submitted", submittedAt = now
   ↓
-Frontend shows "APPLICATION SUBMITTED" success view
+Frontend shows the submitted view
   ↓
 User can return to /dashboard to see submitted status
 ```
@@ -208,28 +201,27 @@ Signup/Login
 Dashboard (GET /applications/me)
     │
     ├── No application → "Start Application"
-    │                          │
-    ▼                          ▼
-/info ←──────────────── /teammates
-    │                          ▲
-    ▼                          │
-/education                     │
-    │                          │
-    ▼                          │
-/experience ──────────────────→┘
     │
-    │  POST /applications (saves answers)
     ▼
-/submission/:id
-    │
-    │  POST /applications/:id/submit
-    ▼
-Dashboard (shows "submitted" status)
+/info → /education → /teammates → /questions → /finish
+    │                                              │
+    │   (shared draft, POST /applications          │
+    │    persists each step's slices)              │
+    │                                              ▼
+    │                            POST /applications/:id/submit
+    │                                              │
+    ▼                                              ▼
+            Dashboard (shows "submitted" status)
 ```
 
 ## Important Notes
 
-1. **Info and Education pages don't save data** — they have form fields but no save logic. Only Experience and Teammates POST to the backend.
-2. **The answers object is overwritten, not merged** — each POST replaces the entire `answers` field. This means saving teammates overwrites any experience data.
-3. **No form validation on steps** — fields are not required in the frontend forms. Users can skip fields and still proceed.
+1. **Every step persists** — all five steps write into one shared draft
+   (`ApplicationDraftProvider`) that is saved to the backend; the draft is also
+   autosaved on leave, so navigating away does not lose data.
+2. **Structured slices, not a blob** — each `POST /applications` updates only the
+   slices it includes (`personal`, `education`, …); it does not wipe the others.
+3. **Validation is enforced on submit** — drafts may be partial, but
+   `/finish` → `POST /applications/:id/submit` rejects incomplete applications
+   with a list of missing fields. The frontend also validates per field.
 4. **No file upload yet** — the File model exists in the backend but there's no upload UI or endpoint.

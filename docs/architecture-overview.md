@@ -8,6 +8,7 @@ Ignition Portal is a monorepo containing two standalone applications that commun
 ignition-portal/
 ├── backend/    ← Express.js REST API  (Node 18+, port 8000)
 ├── frontend/   ← React 19 SPA        (Vite 7, port 5173)
+├── tests/      ← End-to-end API tests (Vitest + supertest + in-memory MongoDB)
 └── docs/       ← This documentation
 ```
 
@@ -39,6 +40,8 @@ In development, the Vite dev server intercepts API paths (configured in `vite.co
 | JWT (jsonwebtoken) | 9.0 | Authentication tokens |
 | bcryptjs | 3.0 | Password hashing |
 | nodemailer | 8.0 | Password reset emails |
+| helmet | 8.2 | Security HTTP headers |
+| express-rate-limit | 8.5 | Auth-route rate limiting |
 | dotenv | 17.2 | Environment variable loading |
 | nodemon | 3.1 | Dev auto-restart |
 
@@ -73,20 +76,48 @@ Role enforcement happens at two levels:
 
 ### 3. CSS Class Prefixing
 To prevent class name collisions across the growing codebase, every component group uses a unique prefix:
-- `auth-login-`, `auth-signup-`, `auth-forgot-` — authentication pages
-- `hk-` — shared hacker form elements (HkFormPage)
+- `login-` — login, forgot & reset password (shared `Login.css`)
+- `signup-` — signup pages
+- `hp-` — hacker application form (shared step layout)
 - `hk-dash-` — hacker dashboard
 - `hk-landing-` — hacker landing page
-- `hk-sub-` — hacker submission page
-- `rv-` — reviewer-specific components
+- `rv-` / `rev-` — reviewer main page & application detail
+- `admin-` — admin portal pages
 - `portal-` — shared portal components (navbar, sidebar)
 - `notfound-` — 404 page
 
-### 4. Background PNG Overlay Pattern
-The hacker application form pages (Info, Education, Experience, Teammates) use a unique layout pattern: a full-screen background PNG image with absolutely positioned form fields overlaid on top using container query units (`cqw`) for responsive sizing. This allows designers to create pixel-perfect layouts in Figma that translate directly to the web.
+### 4. Decoupled SVG Background + Content Container
+The hacker application form and the auth pages render a full-bleed SVG
+illustration as the page background, with the cream `#FFF9F2` sheet acting as the
+actual content container. Text and inputs live inside that container and scale
+responsively (`clamp()`, container queries) rather than being absolutely
+positioned over a fixed-size raster. This keeps the layout professional across
+all viewport widths and heights instead of relying on one pixel-perfect image.
 
-### 5. Vite Dev Proxy
+### 5. Testable Backend Entry Point
+The backend is split into `app.js` (builds and exports the configured Express
+app, with **no** database connection or `listen` side effects) and `index.js`
+(loads env, connects to MongoDB, then starts the server). This lets the
+`tests/` suite import the real app and exercise it over HTTP against an
+in-memory MongoDB — see [Testing](./testing.md).
+
+### 6. Vite Dev Proxy
 Instead of configuring CORS for every endpoint or using a full `VITE_API_BASE_URL`, the project uses Vite's built-in proxy. The frontend makes relative API calls (`/applications/reviewer`) and Vite forwards them to `localhost:8000`. This simplifies development and avoids CORS issues.
+
+## Security Hardening
+
+The Express app is assembled by `createApp()` in `backend/src/app.js` (imported by both `index.js` in production and the test suite). It applies, in order:
+
+- **helmet** — sets security headers (e.g. `X-Content-Type-Options: nosniff`, HSTS) and removes the `X-Powered-By` fingerprint. `crossOriginResourcePolicy` is set to `cross-origin` because the API is consumed by a separately-hosted frontend.
+- **CORS** — driven by `CORS_ORIGIN`. **In production this must list the real frontend origin(s);** never `*`. The allow-all fallback (`origin: true`) applies only when `CORS_ORIGIN` is unset, which should be local development only.
+- **Rate limiting** (`backend/src/middleware/rateLimit.js`, applied per-route in `routes/signup.js`) on the abuse-prone auth endpoints, keyed by client IP over a 15-minute window:
+  - `POST /login` — 10 attempts (brute-force defence)
+  - `POST /signup`, `/signup/reviewer`, `/signup/admin` — 5 attempts (spam defence)
+  - `POST /forgot-password` — 5 attempts (spam + email-flood defence)
+
+  Over-limit requests get `429` with a JSON `message`. The limiter honours `DISABLE_RATE_LIMIT=true` so the test suite isn't throttled. Behind a reverse proxy in production, set `app.set('trust proxy', …)` so the real client IP is used.
+
+There are no debug/test endpoints in the deployed app (the old `/api/test` route and `test.js` have been removed).
 
 ## Communication Between Frontend and Backend
 

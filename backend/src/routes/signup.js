@@ -7,6 +7,7 @@ import User from "../models/User.js";
 import express from "express";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
+import { loginLimiter, signupLimiter, forgotPasswordLimiter } from "../middleware/rateLimit.js";
 
 // create router
 const router = express.Router();
@@ -44,7 +45,7 @@ function isStrongPassword(password) {
 }
 
 // signup route
-router.post("/signup", async (req, res) => {
+router.post("/signup", signupLimiter, async (req, res) => {
 
   try {
     const { name, email, password } = req.body;
@@ -114,7 +115,7 @@ router.post("/signup", async (req, res) => {
 });
 
 // reviewer signup route
-router.post("/signup/reviewer", async (req, res) => {
+router.post("/signup/reviewer", signupLimiter, async (req, res) => {
 
   try {
     const { name, email, password, secret } = req.body;
@@ -189,7 +190,7 @@ router.post("/signup/reviewer", async (req, res) => {
 });
 
 // admin signup route
-router.post("/signup/admin", async (req, res) => {
+router.post("/signup/admin", signupLimiter, async (req, res) => {
 
   try {
     const { name, email, password, secret } = req.body;
@@ -264,7 +265,7 @@ router.post("/signup/admin", async (req, res) => {
 });
 
 // login route
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -318,7 +319,7 @@ function getEmailTransporter() {
 }
 
 // forgot password route
-router.post("/forgot-password", async (req, res) => {
+router.post("/forgot-password", forgotPasswordLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 

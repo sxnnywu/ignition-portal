@@ -12,11 +12,12 @@ Welcome to the Ignition Portal documentation. This portal is the web application
 | [Authentication & Authorization](./authentication.md) | Login/signup flow, JWT tokens, session storage, middleware, and role-based access |
 | [Database Models](./database-models.md) | Every Mongoose model (User, Application, Review, etc.) with field-by-field documentation |
 | [API Reference](./api-reference.md) | Every backend endpoint — method, path, auth requirements, request/response shapes |
+| [Testing](./testing.md) | The end-to-end API test suite — how to run it and what it covers |
 | [Frontend Routing & Guards](./frontend-routing.md) | React Router setup, role-based route guards, and the 404 page |
 | [Frontend Pages — Auth](./frontend-pages-auth.md) | Login, Signup, Forgot Password, and Reset Password pages |
-| [Frontend Pages — Hacker](./frontend-pages-hacker.md) | Dashboard, Landing, Info, Education, Experience, Teammates, and Submission pages |
+| [Frontend Pages — Hacker](./frontend-pages-hacker.md) | Dashboard, Landing, and the multi-step application form (Info, Education, Teammates, Questions, Finish) |
 | [Frontend Pages — Reviewer](./frontend-pages-reviewer.md) | Reviewer main page, application table, sidebar filtering, and sorting |
-| [Shared Components](./shared-components.md) | Reusable components: HkFormPage, PortalNavBar, PortalSidebar, RequireRole |
+| [Shared Components](./shared-components.md) | Reusable components: ApplicationDraftProvider, UserIdBadge, PortalNavBar, PortalSidebar, RequireRole |
 | [CSS Architecture](./css-architecture.md) | Naming conventions, prefix strategy, fonts, color palette, and responsive approach |
 | [Application Flow — Applicant](./flow-applicant.md) | Step-by-step walkthrough of the full applicant journey |
 | [Application Flow — Reviewer](./flow-reviewer.md) | Step-by-step walkthrough of the full reviewer journey |

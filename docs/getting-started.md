@@ -98,6 +98,20 @@ npm run build
 
 Output goes to `frontend/dist/`.
 
+## Running the Tests
+
+The backend has an end-to-end API test suite in the top-level `tests/` folder. It
+uses an in-memory MongoDB, so no database or running server is needed.
+
+```bash
+cd tests
+npm install   # first run only (downloads a mongod binary)
+npm test
+```
+
+See [Testing](./testing.md) for details and coverage. Frontend changes are
+validated with `npm run lint` and `npm run build` inside `frontend/`.
+
 ## Creating Test Accounts
 
 ### Applicant (regular user)

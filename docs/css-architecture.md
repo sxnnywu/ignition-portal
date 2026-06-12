@@ -10,13 +10,11 @@ Every CSS class uses a **prefix** based on its component group to prevent collis
 
 | Prefix | Scope | Example Classes |
 |--------|-------|----------------|
-| `auth-login-` | Login page | `auth-login-form`, `auth-login-input`, `auth-login-error` |
-| `auth-signup-` | Signup page | `auth-signup-card`, `auth-signup-input`, `auth-signup-error` |
-| `auth-forgot-` | Forgot/Reset password | `auth-forgot-form`, `auth-forgot-input`, `auth-forgot-back-button` |
-| `hk-` | Shared hacker form elements | `hk-page`, `hk-form`, `hk-input`, `hk-select`, `hk-back-btn` |
+| `login-` | Login, Forgot & Reset password (shared `Login.css`) | `login-card`, `login-input`, `login-mascot`, `login-submit-btn` |
+| `signup-` | Signup pages | `signup-card`, `signup-input`, `signup-mascot`, `signup-stage` |
+| `hp-` | Hacker application form (shared step layout: SVG bg + cream content sheet) | `hp-page`, `hp-stage`, `hp-card` |
 | `hk-dash-` | Hacker dashboard | `hk-dash-card`, `hk-dash-title`, `hk-dash-cta-btn` |
 | `hk-landing-` | Hacker landing page | `hk-landing-content`, `hk-landing-bg`, `hk-landing-start-btn` |
-| `hk-sub-` | Hacker submission page | `hk-sub-card`, `hk-sub-title`, `hk-sub-submit-btn` |
 | `rv-` | Reviewer main page & table | `rv-main-page`, `rv-table`, `rv-pagination-btn` |
 | `rev-` | Reviewer application detail page | `rev-detail`, `rev-card`, `rev-rubric`, `rev-slider`, `rev-field` |
 | `admin-` | Admin portal pages | `admin-app`, `admin-main`, `admin-stats-group` |
@@ -84,8 +82,13 @@ Every CSS class uses a **prefix** based on its component group to prevent collis
 
 ## Responsive Approach
 
-### Container Query Units
-The hacker form pages (Info, Education, Experience, Teammates) use `cqw` (container query width) units for sizing and positioning. This allows form fields to scale proportionally with the background image.
+### Decoupled SVG Background + Responsive Content Sheet
+The hacker form pages (Info, Education, Teammates, Questions, Finish) and the auth
+pages render a full-bleed SVG illustration as the background, with the cream
+`#FFF9F2` sheet (`.hp-stage` / `.login-stage` etc.) as the actual content
+container. Content inside scales with `clamp()` and container queries rather than
+being absolutely positioned over a fixed-size raster — so the layout holds across
+all viewport widths and heights instead of cropping or leaving blank gaps.
 
 ### Clamp-Based Sizing
 The reviewer components use CSS `clamp()` for font sizes:
@@ -113,10 +116,11 @@ pages/
   hacker/
     Dashboard.jsx
     Dashboard.css    ← dashboard-specific styles
+    portal.css       ← shared hacker form layout (.hp-page / .hp-stage / .hp-card)
 components/
   hacker/
-    HkFormPage.jsx
-    HkFormPage.css   ← shared form styles
+    UserIdBadge.jsx
+    UserIdBadge.css  ← "Your User ID" badge
   portal/
     PortalLayout.jsx
     PortalLayout.css ← shared layout wrapper
