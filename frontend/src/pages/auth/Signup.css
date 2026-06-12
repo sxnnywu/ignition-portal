@@ -14,15 +14,20 @@
   min-height: 100dvh;
   overflow-x: hidden;
   background-color: #EDF7FF;
-  --cream-w: min(1080px, 92vw);
-  --cream-top: clamp(150px, 17vh, 260px);
+  /* See Login.css for the rationale behind these formulas — they keep the
+     sheet at ~56% of the viewport even when the viewport is unusually large
+     (e.g. browser zoomed out far), so interior text scales correctly. */
+  --cream-w: min(92vw, max(1080px, 56vw));
+  --cream-top: max(150px, 17vh);
 }
 
+/* See Login.css for why mascot/header are sized against --cream-w / --cream-top
+   instead of vw / vh — keeps them at the same ratio to the box at every zoom. */
 .signup-mascot {
   position: absolute;
-  right: calc((100% - var(--cream-w)) / 2 + 2.5vw);
-  bottom: calc(100% - var(--cream-top) - 18px);
-  width: clamp(74px, 11.5vw, 156px);
+  right: calc((100% - var(--cream-w)) / 2 + var(--cream-w) * 0.045);
+  bottom: calc(100% - var(--cream-top) - var(--cream-w) * 0.0167);
+  width: max(74px, calc(var(--cream-w) * 0.144));
   height: auto;
   z-index: 1;
   pointer-events: none;
@@ -33,26 +38,26 @@
   display: contents;
 }
 
-/* ── Header: pinned to the top, viewport-scaled ── */
+/* ── Header: pinned to the top, sized against the cream sheet's geometry ── */
 .signup-header {
   position: absolute;
   left: 50%;
-  top: clamp(18px, 3.2vh, 40px);
+  top: max(18px, calc(var(--cream-top) * 0.19));
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: clamp(9px, 1vw, 14px);
+  gap: max(9px, calc(var(--cream-w) * 0.013));
   z-index: 5;
 }
 
 .signup-logo {
-  width: clamp(10px, 1.1vw, 15px);
-  height: clamp(15px, 1.6vw, 22px);
+  width: max(10px, calc(var(--cream-w) * 0.014));
+  height: max(15px, calc(var(--cream-w) * 0.02));
 }
 
 .signup-header-text {
   font-family: 'Jua', sans-serif;
-  font-size: clamp(13px, 1.7vw, 22px);
+  font-size: max(13px, calc(var(--cream-w) * 0.0204));
   color: #000;
   white-space: nowrap;
 }

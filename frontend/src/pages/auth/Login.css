@@ -21,17 +21,27 @@
   min-height: 100dvh;
   overflow-x: hidden;
   background-color: #EDF7FF;
-  /* shared geometry: cream sheet width + where its top edge sits */
-  --cream-w: min(1080px, 92vw);
-  --cream-top: clamp(150px, 17vh, 260px);
+  /* shared geometry: cream sheet width + where its top edge sits.
+     --cream-w: at typical viewports the sheet caps at 1080px (so it doesn't
+     stretch absurdly wide on big monitors at normal zoom). But when the CSS
+     viewport is unusually large — e.g. browser zoomed out to 25%, which
+     inflates vw to several thousand px — the `56vw` floor takes over so the
+     sheet keeps occupying ~56% of the viewport instead of shrinking to a
+     1080px island. Same idea for --cream-top: no upper cap, so the top band
+     grows with vh and the sheet stays correctly proportioned at any zoom. */
+  --cream-w: min(92vw, max(1080px, 56vw));
+  --cream-top: max(150px, 17vh);
 }
 
-/* mascot — glued to the cream's top-right edge so it stays attached as the sheet resizes */
+/* mascot — glued to the cream's top-right edge so it stays attached as the sheet resizes.
+   Sized as a ratio of --cream-w so it holds the same proportion to the box at any zoom
+   level (otherwise vw-based sizing hits its 156px cap at low zoom and looks tiny next
+   to the now-much-wider cream sheet). */
 .login-mascot {
   position: absolute;
-  right: calc((100% - var(--cream-w)) / 2 + 2.5vw);
-  bottom: calc(100% - var(--cream-top) - 18px);
-  width: clamp(74px, 11.5vw, 156px);
+  right: calc((100% - var(--cream-w)) / 2 + var(--cream-w) * 0.045);
+  bottom: calc(100% - var(--cream-top) - var(--cream-w) * 0.0167);
+  width: max(74px, calc(var(--cream-w) * 0.144));
   height: auto;
   z-index: 1;
   pointer-events: none;
@@ -43,26 +53,27 @@
   display: contents;
 }
 
-/* ── Header: pinned to the top, viewport-scaled ── */
+/* ── Header: pinned to the top, sized as a ratio of the cream sheet so it stays
+       proportional at every zoom level (same reason as the mascot above). ── */
 .login-header {
   position: absolute;
   left: 50%;
-  top: clamp(18px, 3.2vh, 40px);
+  top: max(18px, calc(var(--cream-top) * 0.19));
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: clamp(9px, 1vw, 14px);
+  gap: max(9px, calc(var(--cream-w) * 0.013));
   z-index: 5;
 }
 
 .login-logo {
-  width: clamp(10px, 1.1vw, 15px);
-  height: clamp(15px, 1.6vw, 22px);
+  width: max(10px, calc(var(--cream-w) * 0.014));
+  height: max(15px, calc(var(--cream-w) * 0.02));
 }
 
 .login-header-text {
   font-family: 'Jua', sans-serif;
-  font-size: clamp(13px, 1.7vw, 22px);
+  font-size: max(13px, calc(var(--cream-w) * 0.0204));
   color: #000;
   white-space: nowrap;
 }
