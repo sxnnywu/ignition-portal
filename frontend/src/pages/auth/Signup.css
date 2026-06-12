@@ -1,17 +1,21 @@
 /*
-  Signup layout — same decoupled approach as Login (see Login.css). The #FFF9F2
-  sheet is anchored to the bottom and fills the space; the content fills the
-  sheet and scales (cqw via container-type).
+  Signup layout — same proportional-scaling approach as Login (see Login.css).
+  Everything inside the cream sheet uses `max(minPx, Xcqmin)`: the floor keeps
+  it legible on tiny phones, and `cqmin` (via `container-type: size`) makes the
+  composition track whichever of the sheet's dimensions is the binding one — so
+  high browser zoom (which shrinks the sheet vertically) scales the interior
+  down instead of overflowing.
 */
 
 .signup {
   position: relative;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
   background-color: #EDF7FF;
-  --cream-w: min(1080px, 90vw);
-  --cream-top: clamp(160px, 17vh, 260px);
+  --cream-w: min(1080px, 92vw);
+  --cream-top: clamp(150px, 17vh, 260px);
 }
 
 .signup-mascot {
@@ -29,11 +33,11 @@
   display: contents;
 }
 
-/* ── Header: fixed at the top, font scales with the design ── */
+/* ── Header: pinned to the top, viewport-scaled ── */
 .signup-header {
   position: absolute;
   left: 50%;
-  top: 32px;
+  top: clamp(18px, 3.2vh, 40px);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -62,23 +66,20 @@
   top: var(--cream-top);
   bottom: 0;
   background: #fff9f2;
-  border-radius: clamp(14px, 1.8vw, 24px) clamp(14px, 1.8vw, 24px) 0 0;
+  border-radius: max(14px, 1.8cqmin) max(14px, 1.8cqmin) 0 0;
   box-shadow: 0 -2px 26px rgba(0, 0, 0, 0.05);
-  padding: clamp(28px, 4.5cqw, 60px) clamp(24px, 5cqw, 72px) clamp(26px, 4.5cqw, 52px);
+  padding: max(28px, 3.6cqmin) max(24px, 4.5cqmin) max(26px, 3.6cqmin);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: clamp(16px, 3.6cqw, 38px);
-  overflow-y: auto;
-  overflow-x: hidden;
+  gap: max(16px, 3cqmin);
+  overflow: hidden;
   z-index: 2;
-  container-type: inline-size;
+  container-type: size;
 }
 
-/* On narrower widths the sheet is taller, so pull the title/content up to the
-   top instead of floating it in the vertical middle */
 @media (max-width: 860px) {
   .signup-card {
     justify-content: flex-start;
@@ -89,65 +90,67 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(6px, 2cqw, 12px);
+  gap: max(6px, 1.8cqmin);
   width: 100%;
 }
 
 .signup-card-title {
   margin: 0;
   font-family: 'Jua', sans-serif;
-  font-size: clamp(28px, 6.2cqw, 58px);
+  font-size: max(28px, 5.8cqmin);
   color: #a172ff;
   text-align: center;
   width: 100%;
+  line-height: 1.1;
 }
 
 .signup-card-subtitle {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
-  font-size: clamp(15px, 2.9cqw, 26px);
+  font-size: max(15px, 2.6cqmin);
   color: rgba(0, 0, 0, 0.8);
   text-align: center;
+  line-height: 1.3;
 }
 
 .signup-form-body {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 4.5cqw, 38px);
+  gap: max(20px, 3.6cqmin);
   width: 100%;
 }
 
 .signup-fields {
   display: flex;
   flex-direction: column;
-  gap: clamp(6px, 2cqw, 12px);
+  gap: max(6px, 1.8cqmin);
   width: 100%;
 }
 
 .signup-inputs-group {
   display: flex;
   flex-direction: column;
-  gap: clamp(10px, 3.2cqw, 20px);
+  gap: max(10px, 2.6cqmin);
   width: 100%;
 }
 
 .signup-name-row {
   display: flex;
-  gap: clamp(10px, 2.4cqw, 16px);
+  gap: max(10px, 2.2cqmin);
   width: 100%;
 }
 
 .signup-input {
-  height: clamp(46px, 7cqw, 66px);
+  height: max(46px, 6cqmin);
   flex: 1;
   min-width: 0;
-  padding: 0 clamp(16px, 3cqw, 26px);
+  padding: 0 max(16px, 2.6cqmin);
   border: 1px solid #a38c6f;
-  border-radius: clamp(10px, 2cqw, 16px);
+  border-radius: max(10px, 1.8cqmin);
   background: transparent;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
   font-family: 'Satoshi', sans-serif;
-  font-size: clamp(16px, 2.6cqw, 22px);
+  font-size: max(16px, 2.4cqmin);
   color: rgba(0, 0, 0, 0.8);
   outline: none;
   box-sizing: border-box;
@@ -160,7 +163,7 @@
 
 .signup-input::placeholder {
   font-family: 'Jua', sans-serif;
-  font-size: clamp(16px, 2.9cqw, 24px);
+  font-size: max(16px, 2.6cqmin);
   color: #765c3a;
 }
 
@@ -173,11 +176,13 @@
   justify-content: center;
   align-items: center;
   width: 100%;
+  flex-wrap: wrap;
+  gap: max(2px, 0.4cqmin);
 }
 
 .signup-login-text {
   font-family: 'Satoshi', sans-serif;
-  font-size: clamp(13px, 2.2cqw, 19px);
+  font-size: max(13px, 2cqmin);
   color: rgba(0, 0, 0, 0.8);
 }
 
@@ -185,7 +190,7 @@
   background: none;
   border: none;
   font-family: 'Satoshi', sans-serif;
-  font-size: clamp(13px, 2.2cqw, 19px);
+  font-size: max(13px, 2cqmin);
   color: rgba(0, 0, 0, 0.8);
   cursor: pointer;
   padding: 0;
@@ -200,16 +205,17 @@
 .signup-error {
   margin: 0;
   font-family: 'Satoshi', sans-serif;
-  font-size: clamp(12px, 2.6cqw, 16px);
+  font-size: max(12px, 2cqmin);
   color: #c0392b;
   text-align: center;
+  line-height: 1.3;
 }
 
 .signup-submit-btn {
   width: 100%;
-  height: clamp(46px, 7cqw, 66px);
-  padding: 0 clamp(16px, 3cqw, 26px);
-  border-radius: clamp(10px, 2cqw, 16px);
+  height: max(46px, 6cqmin);
+  padding: 0 max(16px, 2.6cqmin);
+  border-radius: max(10px, 1.8cqmin);
   border: 1px solid #a38c6f;
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.1) 100%),
@@ -217,7 +223,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
   color: #fff;
   font-family: 'Jua', sans-serif;
-  font-size: clamp(16px, 2.9cqw, 26px);
+  font-size: max(16px, 2.6cqmin);
   text-align: center;
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
@@ -235,4 +241,11 @@
 .signup-submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Narrow widths → stack the first/last name inputs vertically so they don't squeeze */
+@media (max-width: 520px) {
+  .signup-name-row {
+    flex-direction: column;
+  }
 }
