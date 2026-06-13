@@ -103,6 +103,68 @@ Both reviewer and admin routes use the shared **PortalLayout** component with a 
 
 The `RequireRole` guard wraps the entire layout, so all nested routes are protected. Each child page is responsible for rendering its own sidebar (if needed) within the layout body.
 
+## The application-flow layout route (shared draft)
+
+The five application steps are **not** five independent routes — they are children
+of a single **pathless layout route** whose element is the
+`ApplicationDraftProvider`:
+
+```jsx
+{
+  element: (
+    <RequireRole allowed={["applicant"]}>
+      <ApplicationDraftProvider />   // loads the draft once, renders <Outlet/>
+    </RequireRole>
+  ),
+  children: [
+    { path: "/info",      element: <Info /> },
+    { path: "/education", element: <Education /> },
+    { path: "/teammates", element: <Teammates /> },
+    { path: "/questions", element: <Questions /> },
+    { path: "/finish",    element: <FinishApp /> },
+  ],
+}
+```
+
+Because the provider sits **above** all five steps in the route tree, it mounts
+once and stays mounted as the user moves between steps. It fetches the existing
+draft from `GET /applications/me` a single time, holds it in memory, gates
+rendering until it's loaded, and autosaves — so moving `/info → /education → …`
+never refetches or loses unsaved edits, and a reload restores the draft
+(cross-device). The steps read/write it via `useApplicationDraft()`. See
+[Shared Components](./shared-components.md).
+
+## Index routes for detail pages
+
+The reviewer/admin **detail** pages use the layout-route + `index: true` pattern so
+the `:id` param route renders inside `PortalLayout`:
+
+```jsx
+{
+  path: "/reviewer/application/:id",
+  element: (<RequireRole allowed={["reviewer","admin"]}><PortalLayout /></RequireRole>),
+  children: [{ index: true, element: <ReviewerApplicationDetail /> }],
+}
+```
+
+`ReviewerApplicationDetail` / `AdminApplicationDetail` read the id with
+`useParams()`.
+
+## Admin internal routing
+
+`/admin/*` renders `AdminApp`, which does its **own** internal routing/section
+switching (All Applications, User Management, etc.) inside the portal layout —
+rather than declaring each admin page as a top-level route. `/admin/application/:id`
+is the one admin detail route declared explicitly (for deep-linking).
+
+## Guards are UX-only
+
+`RequireRole` is a **client-side** convenience: it improves the experience by
+redirecting, but it is **not** a security boundary. Anyone can edit
+`sessionStorage` or call the API directly, so the **backend** `auth` +
+`requireRole` middleware is what actually enforces access. Never rely on the
+frontend guard for protection — see [Security](./security.md).
+
 ## Login Redirect Logic
 
 When a user logs in or visits the login page while already authenticated, the redirect depends on their role:

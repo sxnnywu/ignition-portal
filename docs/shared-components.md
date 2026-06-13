@@ -22,6 +22,29 @@ in-memory draft.
   save, and the draft is autosaved when leaving a step — data is never lost by
   navigating away without an explicit "Save Draft".
 
+### Draft context API
+
+`useApplicationDraft()` (from `applicationDraftContext.js`) must be called inside
+the provider and returns:
+
+| Value | Type | Description |
+|-------|------|-------------|
+| `draft` | object | In-memory draft: `personal`, `education`, `experience`, `teammates[]`, `responses`. Numeric fields (`age`, `hackathonsAttended`) are held as **strings** for input friendliness; the backend coerces them. |
+| `updateSlice(name, value)` | fn | Replace one slice in memory and mark the draft dirty. |
+| `saveDraft()` | async fn | `POST /applications` with the whole draft (`status: 'draft'`); returns the new/updated application `_id`; clears the dirty flag. |
+| `appId` | string \| null | The application's `_id` once created/loaded. |
+| `status` | string | Current application status. |
+| `setStatus(s)` | fn | Update the cached status locally (e.g. after submit). |
+
+Implementation notes:
+- The provider mirrors the latest draft in a `useRef` so the save helpers and the
+  leave-the-flow autosave read fresh state without being recreated on every keystroke.
+- Leaving the flow with unsaved edits fires a single autosave via
+  `fetch(..., { keepalive: true })`, so it completes even as the page unmounts.
+- The loading gate only appears when a token exists (i.e. there's a draft to fetch).
+- Teammates are sent to the server as `{ userId }` only — the server re-derives
+  name/email.
+
 ### Why a provider instead of per-page state
 Each step page used to fetch/save independently and overwrite sibling data. The
 provider makes the draft the single source of truth on the client, mirroring the
@@ -237,3 +260,80 @@ The button destination depends on the user's role:
 - Not logged in → `/login`
 
 ### CSS Prefix: `notfound-`
+
+---
+
+## PortalLayout
+
+**File:** `frontend/src/components/portal/PortalLayout.jsx`
+
+The shared shell for the reviewer and admin portals. Renders `<PortalNavBar />`
+then a `.portal-layout-body` containing `<Outlet />` (where the nested route
+renders). It is used as the `element` of the portal layout routes — the
+`RequireRole` guard wraps it, so every nested portal page is protected. Each page
+renders its own `PortalSidebar` inside the body as needed.
+
+```jsx
+<div className="portal-layout">
+  <PortalNavBar />
+  <div className="portal-layout-body"><Outlet /></div>
+</div>
+```
+
+---
+
+## Other shared UI primitives
+
+In `frontend/src/components/shared/` (used across the reviewer + admin portals):
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| `AvatarInitials` | `AvatarInitials.jsx` | Circular avatar showing a user's initials |
+| `FilterTabs` | `FilterTabs.jsx` | Horizontal tab bar for filtering a list by status |
+| `Pagination` | `Pagination.jsx` | Page controls for paginated tables |
+| `ConfirmModal` | `ConfirmModal.jsx` | Generic confirm/cancel dialog (e.g. delete user) |
+| `Icons` | `Icons.jsx` | Inline SVG icon set used by the portals |
+
+Admin-specific: `frontend/src/admin/components/AddUserModal.jsx` — modal form to
+create a user (name/email/role/password → `POST /api/admin/users`).
+
+(These are presentational; see each file for exact props. Keep their CSS prefixes
+consistent with the existing convention — [CSS Architecture](./css-architecture.md).)
+
+---
+
+## Data layer: caching
+
+The reviewer/admin portals fetch through a small **module-level TTL cache** so
+navigating between portal pages doesn't re-hit the API constantly.
+
+### `lib/cache.js`
+
+A plain `Map` at module scope (persists across component mount/unmount, not React
+state). API:
+
+| Function | Description |
+|----------|-------------|
+| `getCached(key)` | Returns cached data, or `null` if missing/expired (expired entries are deleted). |
+| `setCache(key, data, ttlMs = 60000)` | Store with a TTL (default 60 s). |
+| `invalidateCache(key)` | Drop one key; pass nothing/`null` to flush everything. |
+| `invalidateCacheByPrefix(prefix)` | Drop every key starting with `prefix` (e.g. all pages of a list). |
+| `CACHE_KEYS` | Canonical keys: `REVIEWER_APPS`, `ADMIN_STATS`, and parameterised `adminApps(params)` / `adminUsers(params)`. |
+
+Call `invalidateCache*` after a mutation (e.g. changing a status, creating a user)
+so the next read refetches.
+
+### `hooks/useCachedFetch.js`
+
+A drop-in fetch hook with cache-first behavior:
+
+```js
+const { data, loading, error, refresh } = useCachedFetch(cacheKey, fetchFn, { ttl, skip })
+```
+
+- On mount it checks `getCached(cacheKey)`; a fresh hit returns instantly (no
+  loading flash, no network). Otherwise it calls `fetchFn()` and caches the result.
+- `refresh()` forces a re-fetch and updates the cache.
+- `skip: true` disables the automatic fetch (for conditional fetches).
+- `fetchFn` doesn't need `useCallback` — the hook always calls the latest version
+  via a ref.
