@@ -104,6 +104,35 @@ The portal layout uses a combination:
 - **Navbar**: Full width, fixed height
 - **Reviewer detail rubric panel**: Fixed width (`340px`) right sidebar
 
+### Container-query sizing inside the cream sheet
+
+The auth pages (`Login.css` / `Signup.css`) and the hacker form make the cream
+content sheet a **container** (`container-type: size`) and size everything inside
+it in `cqmin` units via `max(<minPx>, <X>cqmin)`:
+
+- `cqmin` is the smaller of the sheet's width/height, so the interior scales with
+  whichever dimension is binding. Crucially it shrinks at **high browser zoom**
+  (where `vh` drops) instead of overflowing and forcing a scrollbar.
+- The `max(minPx, …)` floor keeps text legible on tiny phones.
+- Two custom properties drive the geometry: `--cream-w`
+  (`min(92vw, max(1080px, 56vw))`) and `--cream-top` (`max(150px, 17vh)`). The
+  mascot and header are sized as ratios of `--cream-w` so they stay glued to the
+  sheet at any zoom level.
+
+This decoupled approach (responsive DOM, **not** one scaled raster) is why the
+auth + hacker pages hold up across all widths and heights. **The admin and
+reviewer portals do not use this** — they currently have **no `@media` queries**
+and aren't mobile-responsive (see `DEVELOPMENT-GUIDE.md` task **D3**).
+
+### Adding styles for a new component
+
+1. Co-locate a `.css` file next to the `.jsx` and `import './Thing.css'` at the top.
+2. Prefix **every** class with the component group's prefix (table above). If it's
+   a new group, invent a new prefix and record it here and in
+   [Architecture Overview](./architecture-overview.md#3-css-class-prefixing).
+3. Reuse the palette, radius, and shadow tokens documented below rather than
+   introducing new hex values.
+
 ## CSS File Organization
 
 Each component or page has its own CSS file co-located next to its JSX file:

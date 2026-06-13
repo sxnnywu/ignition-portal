@@ -131,6 +131,18 @@ slices:
 Optional teammates (max 3) → the `teammates` slice. Teammates are added by
 **user-id lookup** (`GET /applications/teammate/:userId`) and a "Get" button;
 their name/email are derived server-side from the looked-up user, never typed in.
+Each applicant sees their own User ID (their Mongo `_id`) in the top-right
+`UserIdBadge` to share with teammates.
+
+Lookup states the UI must handle (server responses):
+
+| Case | Response | UI |
+|------|----------|----|
+| Valid applicant id | `200 { user: { _id, name, firstName, lastName, email } }` | add to list |
+| Unknown / malformed id | `404 No user found with that ID` | "not found" message |
+| Your own id | `400 You cannot add yourself as a teammate` | error message |
+| Non-applicant (reviewer/admin) | `404 No user found with that ID` | "not found" |
+| Already added / 4th teammate | client-side guard (max 3, dedupe) | block add |
 
 **Navigation:** Back → `/education` | Continue → `/questions`
 
@@ -190,7 +202,7 @@ The status progresses as reviewers and admins process it:
 submitted → under_review → accepted / waitlisted / rejected
 ```
 
-The applicant sees different full-page backgrounds for each status (except waitlisted/rejected, which show as "under_review" to avoid discouraging applicants before final decisions).
+The applicant sees different full-page backgrounds for each status (except waitlisted/rejected, which show as "under_review" to avoid discouraging applicants before final decisions). **Note:** this masking and the `accepted` view (currently a placeholder `alert()`) are slated for rework — see `DEVELOPMENT-GUIDE.md` task **B1**.
 
 ## Data Flow Diagram
 
