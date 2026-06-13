@@ -111,6 +111,41 @@ component tests yet** (validated by `npm run lint` + `npm run build`). See
 - `backend/node_modules` is currently committed (an anti-pattern flagged for
   cleanup); `frontend/` and `tests/` ignore theirs.
 
+## Common commands
+
+| Goal | Command |
+|------|---------|
+| Run backend (hot reload) | `cd backend && npm run dev` |
+| Run frontend (hot reload) | `cd frontend && npm run dev` |
+| Backend tests | `cd tests && npm test` |
+| Frontend lint + build | `cd frontend && npm run lint && npm run build` |
+| Dev proxy → other backend port | `BACKEND_URL=http://localhost:9000 npm run dev` (in `frontend/`) |
+| Generate a JWT secret | `node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"` |
+
+## Gotchas (things that surprise newcomers)
+
+- The env var is **`MONGO_URI`**, not `MONGODB_URI`, and the **DB name must be in
+  the URI** (before the `?`) or Mongoose uses a `test` database.
+- Frontend role guards (`RequireRole`) are **UX-only** — the backend enforces access.
+- Drafts may be partial; required-field validation runs **only on submit**.
+- `hackathonsAttended: 0` is a valid answer (distinct from `null` = unanswered).
+- Draft numbers are held as **strings** client-side; the server coerces them.
+- The server **re-derives** teammate name/email and **recomputes** review
+  `totalScore` — client-sent values are ignored.
+- Auth routes are **rate-limited** (`429`); the test suite sets `DISABLE_RATE_LIMIT=true`.
+- `backend/node_modules` is **committed** (anti-pattern, flagged for cleanup).
+- `Question` / `File` / `ActivityLog` models exist but are **unused**.
+
+## Glossary
+
+- **slice** — one structured section of an Application (`personal`, `education`,
+  `experience`, `teammates`, `responses`).
+- **draft** — an Application with `status: 'draft'`, edited across the 5 steps.
+- **review pool** — the submitted/under_review applications reviewers see.
+- **rubric** — the four 0–25 scoring categories on the reviewer detail page.
+- **layout route** — a parent route whose element renders `<Outlet/>` (e.g.
+  `PortalLayout`, `ApplicationDraftProvider`).
+
 ## Where to look (task → start here)
 
 | Task | Start in |

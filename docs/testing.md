@@ -72,3 +72,38 @@ Both are part of the definition of done for frontend changes.
   it keeps them true end-to-end and resilient to schema changes.
 - Test files run **sequentially** against one shared in-memory database; rely on
   the per-test collection wipe for isolation rather than hard-coded ids.
+
+## Writing a test (example)
+
+Integration tests use the factories + the supertest `api()` helper:
+
+```js
+import { describe, it, expect } from 'vitest'
+import { api } from '../helpers/app.js'
+import { createApplicant, authHeader } from '../helpers/factories.js'
+
+describe('POST /applications', () => {
+  it('creates a draft for the current user', async () => {
+    const { token } = await createApplicant()
+    const res = await api()
+      .post('/applications')
+      .set(authHeader(token))
+      .send({ personal: { city: 'Toronto' } })
+
+    expect(res.status).toBe(201)
+    expect(res.body.application.status).toBe('draft')
+  })
+})
+```
+
+Helpers in `tests/helpers/factories.js`:
+
+| Helper | Returns / does |
+|--------|----------------|
+| `createApplicant()` / `createReviewer()` / `createAdmin()` | Registers via the real signup route → `{ token, user }` |
+| `authHeader(token)` | `{ Authorization: 'Bearer <token>' }` |
+| `validApplicationPayload(overrides)` | A complete, submittable application body |
+| `createSubmittedApplication(token)` | Fills + submits an application, returns it |
+
+Schema/validator **unit** tests (no HTTP) live in `tests/unit/` and call the
+models' `validateSync()` directly — see `unit/models.test.js`.

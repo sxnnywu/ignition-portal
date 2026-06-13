@@ -90,6 +90,19 @@ Located in `frontend/src/lib/auth.js`:
 
 **Why sessionStorage?** Data is scoped to the browser tab and cleared when the tab closes. This is more secure than localStorage for auth tokens because it limits the exposure window.
 
+## Token Lifecycle & Logout
+
+- **Issued** on signup and login, signed with `JWT_SECRET` (HS256), `expiresIn: '7d'`.
+- **Stored** in `sessionStorage` via `setAuth(token, user)`; cleared when the tab closes.
+- **Sent** as `Authorization: Bearer <token>` on every protected request.
+- **Expiry:** after 7 days `jwt.verify` throws and the API returns `401`. The
+  client should `clearAuth()` and redirect to `/login`.
+- **Logout** is purely client-side (`clearAuth()` removes token + user from
+  `sessionStorage`). There is **no** server-side session or token revocation —
+  a token stays valid until it expires, even after "logout". Rotating
+  `JWT_SECRET` invalidates every outstanding token at once.
+- There are **no refresh tokens**; on expiry the user simply logs in again.
+
 ## Backend Middleware
 
 ### auth.js — Token Verification
@@ -190,3 +203,36 @@ All signup routes enforce name validation:
 - Names can only contain **letters and spaces** (no numbers, no special characters)
 - Names are **auto-formatted**: first letter of each word is capitalized, rest lowercased
 - Example: `"jOHN dOE"` becomes `"John Doe"`
+
+## Worked examples
+
+Sign up an applicant and capture the token (bash):
+
+```bash
+TOKEN=$(curl -s -X POST http://localhost:8000/signup \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Ada Lovelace","email":"ada@example.com","password":"Password123"}' \
+  | node -pe 'JSON.parse(require("fs").readFileSync(0)).token')
+
+# use it on a protected route
+curl http://localhost:8000/applications/me -H "Authorization: Bearer $TOKEN"
+```
+
+Log in (returns `{ token, user }`):
+
+```bash
+curl -X POST http://localhost:8000/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"ada@example.com","password":"Password123"}'
+```
+
+Create a reviewer (needs the secret):
+
+```bash
+curl -X POST http://localhost:8000/signup/reviewer \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Jane Smith","email":"jane@example.com","password":"Password123","secret":"<REVIEWER_SIGNUP_SECRET>"}'
+```
+
+A `401` from any protected route means the token is missing, expired, or invalid —
+clear it and log in again.

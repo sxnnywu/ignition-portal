@@ -10,6 +10,52 @@ All endpoints return JSON. Protected endpoints require the `Authorization: Beare
 
 ---
 
+## Endpoint index
+
+**Auth** (mounted at `/`, in `routes/signup.js`)
+
+| Method & path | Auth | Purpose |
+|---------------|------|---------|
+| `POST /signup` | public (rate-limited) | Create an applicant |
+| `POST /signup/reviewer` | secret | Create a reviewer |
+| `POST /signup/admin` | secret | Create an admin |
+| `POST /login` | public (rate-limited) | Log in |
+| `POST /forgot-password` | public (rate-limited) | Request a reset email |
+| `POST /reset-password` | public | Set a new password via token |
+
+**Applications** (mounted at `/applications`, in `routes/applications.js`)
+
+| Method & path | Auth | Purpose |
+|---------------|------|---------|
+| `POST /applications` | applicant | Create/update the draft (find-or-create, per-slice) |
+| `GET /applications/me` | any auth | Current user's application(s) |
+| `GET /applications/teammate/:userId` | any auth | Look up a teammate by user-id |
+| `POST /applications/:id/submit` | owner | Submit (runs completeness validation) |
+| `GET /applications` | admin | All applications |
+| `GET /applications/reviewer` | reviewer/admin | The review pool (+ your review status/score) |
+| `GET /applications/:id` | reviewer/admin | One application (populated) |
+| `POST /applications/:id/status` | admin | Change status (accept/waitlist/reject/…) |
+| `POST /applications/:id/review` | reviewer/admin | Create a review |
+| `PUT /applications/:id/review` | reviewer/admin | Update your own review |
+| `GET /applications/:id/review/me` | reviewer/admin | Your review for an application |
+| `GET /applications/:id/reviews` | admin | All reviews for an application |
+
+**Admin** (mounted at `/api/admin`, in `routes/admin.js`)
+
+| Method & path | Auth | Purpose |
+|---------------|------|---------|
+| `GET /api/admin/stats` | admin | Status counts + reviewer coverage |
+| `GET /api/admin/applications` | admin | Paginated/filterable/sortable list |
+| `GET /api/admin/export-csv` | admin | CSV export |
+| `GET /api/admin/users` | admin | Paginated user list |
+| `POST /api/admin/users` | admin | Create a user (any role) |
+| `PUT /api/admin/users/:id/role` | admin | Change a user's role |
+| `DELETE /api/admin/users/:id` | admin | Delete a user (cascades reviews + application) |
+
+Full request/response details for each follow below.
+
+---
+
 ## Authentication Endpoints
 
 ### POST /signup

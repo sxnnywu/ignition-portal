@@ -327,14 +327,9 @@ If REMOVE: delete Landing.jsx + its CSS, remove the import + route from routes.j
 Branch: chore/landing-decision.
 ```
 
-### B7 — Restyle AdminSignup / ReviewerSignup (decision-gated)
+### B7 — Restyle AdminSignup / ReviewerSignup
 ```
-Ignition Portal. frontend/src/pages/auth/AdminSignup.jsx and ReviewerSignup.jsx still use the old image-based design (sign-up-bg.png / signup-button.png), inconsistent with the rebuilt Login/Signup (decoupled SVG background + cream content sheet + login-/signup- CSS).
-
-ASK ME FIRST: should these be restyled to match the new look? (They're privileged, secret-gated signup pages.)
-
-If yes: rebuild both to mirror frontend/src/pages/auth/Signup.jsx structure + CSS conventions, keeping their extra "secret" field (they post to /signup/reviewer and /signup/admin). Delete any now-unused image assets. Keep responsive. `npm run lint` + `npm run build` clean. Update docs/frontend-pages-auth.md.
-Branch: feat/restyle-privileged-signup.
+delete adminsignup and reviewersignup and any routes that lead to them because they are not needed anymore
 ```
 
 ## Group C — Testing & debugging
@@ -493,3 +488,73 @@ Branch: chore/backups-monitoring.
 
 When everything in Groups A–D is green and a QA pass (C4) is clean, the product is
 ready for the E1 deployment.
+
+---
+
+# Appendix A — Commands cheat sheet
+
+```bash
+# Backend (port 8000)
+cd backend && npm install && npm run dev      # dev (nodemon)
+cd backend && npm start                        # production-style
+
+# Frontend (port 5173)
+cd frontend && npm install && npm run dev      # dev (HMR)
+cd frontend && npm run lint && npm run build   # the frontend "done" gate
+BACKEND_URL=http://localhost:9000 npm run dev  # dev proxy → non-default backend port
+
+# Backend tests (in-memory Mongo; the backend "done" gate)
+cd tests && npm install && npm test
+cd tests && npm run test:watch
+
+# Generate a strong JWT secret
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+openssl rand -hex 32
+
+# Seed accounts (dev)
+curl -X POST localhost:8000/signup -H 'Content-Type: application/json' \
+  -d '{"name":"A B","email":"a@b.com","password":"Password123"}'
+curl -X POST localhost:8000/signup/admin -H 'Content-Type: application/json' \
+  -d '{"name":"Ad Min","email":"admin@b.com","password":"Password123","secret":"<ADMIN_SIGNUP_SECRET>"}'
+
+# Git branch hygiene (task A1)
+git fetch --all --prune
+git rev-list --left-right --count main...<branch>   # behind<->ahead
+git branch -d <merged-branch>                        # delete a merged local branch
+```
+
+The **definition of done** for any change: backend → `cd tests && npm test` green
+(plus new tests for new behavior); frontend → `npm run lint` and `npm run build`
+clean; docs updated for anything user-facing or structural.
+
+# Appendix B — Gotchas & conventions
+
+- Env var is **`MONGO_URI`** (not `MONGODB_URI`); the DB name must be in the URI.
+- Frontend `RequireRole` is **UX-only** — the backend `auth`/`requireRole` is the
+  real boundary. Never rely on the client guard for protection.
+- **Drafts may be partial**; required-field validation runs only on submit
+  (`getMissingFields`). `program` is required only for undergraduate/graduate.
+- `hackathonsAttended: 0` is valid (≠ `null`). Draft numbers are strings on the
+  client; the server coerces them.
+- The server is authoritative: it **re-derives** teammate name/email, **recomputes**
+  review `totalScore`, and re-validates every field. Don't trust client values.
+- The review rubric keys live in the **frontend** (`scores` is a `Map`); changing
+  them needs no schema migration.
+- Auth routes are **rate-limited** (`429`); tests set `DISABLE_RATE_LIMIT=true`.
+  In production set `app.set('trust proxy', …)` so the limiter sees real IPs.
+- `backend/node_modules` is **committed** (anti-pattern → task A2).
+- `Question` / `File` / `ActivityLog` models are **unused** (→ task D1).
+- ES modules backend (`"type": "module"`); `createApp()` (no DB/listen) is shared
+  by `index.js` and the tests.
+
+# Appendix C — Glossary
+
+- **slice** — a structured Application section (`personal`, `education`,
+  `experience`, `teammates`, `responses`).
+- **draft** — an Application with `status: 'draft'`.
+- **review pool** — submitted/under_review applications shown to reviewers.
+- **rubric** — the four 0–25 reviewer scoring categories.
+- **layout route** — a parent route rendering `<Outlet/>` (`PortalLayout`,
+  `ApplicationDraftProvider`).
+- **slice-independent save** — `POST /applications` only overwrites the slices
+  present in the body; other slices are left intact.
