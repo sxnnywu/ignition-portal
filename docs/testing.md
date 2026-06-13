@@ -43,9 +43,14 @@ starting a server or connecting to the production database.
 | `integration/reviews.test.js` | scoring, role gating, duplicate-review 409, **reviewer comment persistence round-trip**, update/recompute, multi-reviewer, reviewer-pool status |
 | `integration/admin.test.js` | role protection, stats + coverage buckets, pagination/search/filter, CSV quoting, user-management edges, status transitions |
 | `integration/security.test.js` | JWT edge cases (wrong secret, expired, tampered, deleted-user) and the full role-based access-control matrix |
+| `integration/rate-limit.test.js` | per-IP login rate limiting (429 after the threshold) and helmet security headers |
 | `unit/models.test.js` | schema validators and save hooks exercised directly on the Mongoose models (no HTTP) |
 
-At the time of writing the suite is **127 tests across 9 files, all passing**.
+At the time of writing the suite is **130 tests across 10 files, all passing**.
+
+The suite runs with `DISABLE_RATE_LIMIT=true` (set in `setup.js`) so the hundreds
+of auth calls aren't throttled; `rate-limit.test.js` flips it off locally to
+exercise the 429 path.
 
 ## Frontend checks
 

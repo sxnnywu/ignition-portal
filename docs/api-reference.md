@@ -4,6 +4,10 @@ Base URL: `http://localhost:8000` (development)
 
 All endpoints return JSON. Protected endpoints require the `Authorization: Bearer <token>` header.
 
+**Rate limiting:** the auth endpoints (`POST /login`, `/signup`, `/signup/reviewer`, `/signup/admin`, `/forgot-password`) are rate-limited per client IP and return **429** with `{ "message": ... }` once the limit is exceeded (see [Authentication › Rate Limiting](./authentication.md#rate-limiting)). Security headers are applied globally by `helmet`.
+
+**Common error shapes:** validation `400`, auth `401`, role `403`, not-found `404`, conflict `409`, rate-limit `429`, and server `500` all return `{ "message": "..." }`.
+
 ---
 
 ## Authentication Endpoints

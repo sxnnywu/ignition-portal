@@ -153,7 +153,7 @@ This component is used in `routes.jsx` to wrap every role-specific route.
 | Login / Signup pages | Yes | Yes | Yes |
 | Dashboard, Landing | Yes | No (→ 404) | No (→ 404) |
 | Application form (Info, Education, etc.) | Yes | No (→ 404) | No (→ 404) |
-| Submission page | Yes | No (→ 404) | No (→ 404) |
+| Finish step (`/finish`) | Yes | No (→ 404) | No (→ 404) |
 | Reviewer portal (/reviewer) | No (→ 404) | Yes | Yes |
 | POST /signup | Yes | Yes | Yes |
 | POST /signup/reviewer | Requires secret | Requires secret | Requires secret |
@@ -171,6 +171,18 @@ Reviewer and admin accounts cannot be created through the standard signup UI. Th
 - **Admin**: `POST /signup/admin` with `{ secret: ADMIN_SIGNUP_SECRET }`
 
 These secrets are defined in the backend `.env` file and must be shared out-of-band with authorized people.
+
+## Rate Limiting
+
+The abuse-prone auth endpoints are rate-limited **per client IP** (via `express-rate-limit`, configured in `backend/src/middleware/rateLimit.js` and applied per-route in `routes/signup.js`), over a 15-minute window:
+
+| Endpoint | Limit / 15 min |
+|----------|----------------|
+| `POST /login` | 10 |
+| `POST /signup`, `/signup/reviewer`, `/signup/admin` | 5 |
+| `POST /forgot-password` | 5 |
+
+Over-limit requests get **429** with a JSON `message`. The limiter honours `DISABLE_RATE_LIMIT=true` (used by the test suite). Behind a production reverse proxy, set `app.set('trust proxy', …)` so the real client IP is used. Security headers are additionally applied by `helmet` — see [Architecture Overview › Security Hardening](./architecture-overview.md#security-hardening).
 
 ## Name Validation
 
