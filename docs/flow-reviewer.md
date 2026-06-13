@@ -165,6 +165,13 @@ Four fixed scoring categories, each 0-25 via range sliders:
 
 The total score (0-100) updates live as sliders are adjusted.
 
+> The backend **recomputes** `totalScore` from `scores` on every create/update and
+> ignores any client-sent total. Each score must be a **non-negative number** or
+> the request is rejected with `400`. The optional `comment` is capped at 2000
+> chars. Scores are stored as a `Map`, so the four keys above are **not** hardcoded
+> server-side — the rubric lives entirely in the frontend and can change without a
+> schema migration.
+
 ### Submitting a New Review
 
 ```

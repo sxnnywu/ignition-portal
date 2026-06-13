@@ -27,7 +27,7 @@ The page renders differently based on application status:
 | `draft` | Card with "In Progress" | "Continue Application" → `/info` |
 | `submitted` | Full-page PNG background | None |
 | `under_review` | Full-page PNG background | None |
-| `accepted` | Full-page PNG background | Invisible hit area (shows alert) |
+| `accepted` | Full-page PNG background | ⚠ Placeholder `alert()` — flagged for rework (`DEVELOPMENT-GUIDE.md` task B1) |
 | `waitlisted` | Mapped to `under_review` display | None |
 | `rejected` | Mapped to `under_review` display | None |
 
@@ -70,7 +70,9 @@ keeps the draft in memory so values survive navigation between steps and across
 devices. Each step reads/writes the shared draft via the `useApplicationDraft`
 hook; the draft is saved to the backend (`POST /applications`, structured
 slices) on save and autosaved when leaving a step. The applicant's name is **not**
-collected — it comes from `User.name`.
+collected — it comes from `User.name`. Every step shows the applicant's own User ID
+(their Mongo `_id`) via the `UserIdBadge` in the top-right, so they can share it
+with teammates.
 
 ### Step 1 — Info (`/info`)
 

@@ -2,6 +2,15 @@
 
 These pages handle user authentication. They are publicly accessible (no login required).
 
+All auth pages share one **decoupled layout**: a full-bleed SVG background with the
+cream `#FFF9F2` sheet as the content container and a mascot glued to it. Everything
+inside the sheet is sized in container-query units (`max(px, Xcqmin)`) so it scales
+with the sheet at any viewport size or zoom — see
+[CSS Architecture › Container-query sizing](./css-architecture.md#container-query-sizing-inside-the-cream-sheet).
+Login / Forgot / Reset share `Login.css` (`login-` classes); Signup has its own
+`Signup.css` (`signup-`). The card title ("IGNITION HACKS"), subtitle, inputs, and
+button are intentionally large.
+
 ## Login
 
 **File:** `frontend/src/pages/auth/Login.jsx`
@@ -71,7 +80,7 @@ own `Signup.css` (`signup-` prefix) and `signup-mascot`.
 ## Forgot Password
 
 **File:** `frontend/src/pages/auth/ForgotPassword.jsx`
-**CSS:** `frontend/src/pages/auth/ForgotPassword.css`
+**CSS:** reuses `Login.css` (`login-` classes) — there is no separate `ForgotPassword.css`
 **Route:** `/forgot-password`
 
 ### Layout
