@@ -1,56 +1,75 @@
 # Project Structure
 
+A complete, annotated map of the repository. Paths are relative to the repo root.
+
 ## Root
 
 ```
 ignition-portal/
-├── backend/               ← Express.js REST API
-├── frontend/              ← React 19 SPA (Vite)
-├── tests/                 ← End-to-end API test suite (Vitest + supertest)
-├── docs/                  ← Documentation (this folder)
-├── package-lock.json      ← Root lockfile
-└── README.md              ← Project readme
+├── backend/               Express.js REST API (Node 18+, port 8000)
+├── frontend/              React 19 SPA (Vite 7, port 5173)
+├── tests/                 Backend end-to-end / integration test suite (Vitest)
+├── docs/                  Documentation (this folder)
+├── DEVELOPMENT-GUIDE.md   Project explanation + task prompts for remaining work
+├── README.md              Top-level readme
+└── package-lock.json      Stray root lockfile (no root package.json; can be ignored)
 ```
+
+There is **no root `package.json`** — `backend/`, `frontend/`, and `tests/` are
+three independent npm packages, each installed separately.
+
+---
 
 ## Backend
 
 ```
 backend/
-├── .env                   ← Environment variables (not committed)
-├── package.json           ← Dependencies and scripts
-├── node_modules/          ← Installed packages
+├── .env                   Secrets & config (NOT committed; copy from .env.example)
+├── .env.example           Documented template for .env
+├── package.json           Deps + scripts (dev/start/test)
+├── package-lock.json
+├── node_modules/          ⚠ currently COMMITTED to git (anti-pattern; slated for cleanup)
 └── src/
-    ├── index.js           ← Production entry: load env, connect DB, build app, listen
-    ├── app.js             ← Builds & exports the configured Express app (no DB/listen
-    │                         side effects) — used by index.js and the test suite
+    ├── index.js           Production entry: dotenv → connectDB() → createApp().listen(PORT)
+    ├── app.js             createApp(): builds the Express app (helmet → CORS → JSON → routes),
+    │                       NO DB connect and NO listen. Imported by index.js AND the tests.
     ├── config/
-    │   └── db.js          ← MongoDB connection using Mongoose (also re-exports mongoose)
+    │   └── db.js          connectDB() (mongoose.connect(MONGO_URI)); also re-exports the
+    │                       shared `mongoose` instance so tests register models on it.
     ├── middleware/
-    │   ├── auth.js        ← JWT token verification middleware (sets req.user)
-    │   └── roles.js       ← Role-based access control middleware (requireRole)
+    │   ├── auth.js        Verifies `Authorization: Bearer <jwt>`, sets req.user = {userId, role}
+    │   ├── roles.js       requireRole(...allowed): 401 if no user, 403 if role not allowed
+    │   └── rateLimit.js   Per-IP express-rate-limit limiters for the auth routes
     ├── models/
-    │   ├── User.js        ← User schema: name, email, password, role, reset token
-    │   ├── Application.js ← Application schema: structured personal/education/
-    │   │                     experience/teammates/responses slices, status, version
-    │   ├── Review.js      ← Review schema: applicationId, reviewerId, scores, totalScore, comment
-    │   ├── Question.js    ← Question schema: key, label, type, order (config/testing)
-    │   ├── File.js        ← File schema: applicationId, fileName, storagePath (not yet used)
-    │   └── ActivityLog.js ← ActivityLog schema: actorId, action, meta (not yet used)
+    │   ├── User.js        name, email(unique,lowercased), role enum, bcrypt password, reset fields
+    │   ├── Application.js  Structured slices: personal/education/experience/teammates/responses
+    │   │                   + status enum, version, submittedAt. Indexes on userId & status+submittedAt.
+    │   ├── Review.js      applicationId, reviewerId, scores(Map), totalScore, comment.
+    │   │                   Unique index on (applicationId, reviewerId).
+    │   ├── Question.js    key/label/type/order — ⚠ NOT wired into any route
+    │   ├── File.js        applicationId/fileName/storagePath/uploadedBy — ⚠ NOT wired in
+    │   └── ActivityLog.js actorId/action/meta — ⚠ NOT wired in
     └── routes/
-        ├── signup.js      ← Auth routes: /signup, /signup/reviewer, /signup/admin,
-        │                     /login, /forgot-password, /reset-password
-        ├── applications.js ← Application & review CRUD: /applications/*
-        └── admin.js       ← Admin dashboard: stats, paginated lists, CSV export, user mgmt
+        ├── signup.js      Auth: POST /signup, /signup/reviewer, /signup/admin, /login,
+        │                   /forgot-password, /reset-password (+ rate limiters, mailer)
+        ├── applications.js Applicant + reviewer endpoints under /applications/*
+        └── admin.js       Admin dashboard under /api/admin/* (stats, lists, CSV, user mgmt)
 ```
 
-### Route Mounting
+### Route mounting (in `app.js`)
 
-In `app.js`:
-```
-/applications   → applications.js
-/api/admin      → admin.js
-/               → signup.js (so /signup, /login, etc. are at root level)
-```
+| Mount point | Router file | Example full path |
+|-------------|-------------|-------------------|
+| `/applications` | `applications.js` | `GET /applications/me` |
+| `/api/admin` | `admin.js` | `GET /api/admin/stats` |
+| `/` | `signup.js` | `POST /login` |
+
+### Unused models
+
+`Question`, `File`, and `ActivityLog` are defined but **not referenced by any
+route**. They're either scaffolding for planned features (file upload, audit log,
+configurable questions) or dead code. Decide per task — see `DEVELOPMENT-GUIDE.md`
+task **D1**.
 
 ---
 
@@ -58,135 +77,138 @@ In `app.js`:
 
 ```
 frontend/
-├── package.json            ← Dependencies and scripts
-├── vite.config.js          ← Vite config: plugins, dev proxy
-├── index.html              ← SPA entry HTML (loads main.jsx)
-├── node_modules/           ← Installed packages
-├── dist/                   ← Production build output (generated)
-├── public/                 ← Static assets served as-is
+├── .env.example           Template documenting VITE_API_BASE_URL
+├── .gitignore             ignores node_modules, .env*, dist (with !.env.example)
+├── package.json           Deps + scripts (dev/build/preview/lint)
+├── vite.config.js         Plugins (react, tailwind) + dev API proxy
+├── index.html             SPA shell; loads /src/main.jsx
+├── node_modules/          (gitignored)
+├── dist/                  Production build output (generated)
 └── src/
-    ├── main.jsx            ← App entry: creates router, renders to DOM
-    ├── index.css           ← Global styles: Tailwind import, body reset
+    ├── main.jsx           Entry: builds the router from routes.jsx, renders <RouterProvider>
+    ├── index.css          Global styles + Tailwind import + body reset
     │
     ├── routes/
-    │   └── routes.jsx      ← Centralized route configuration
+    │   └── routes.jsx     All route objects; role-specific routes wrapped in <RequireRole>
     │
     ├── lib/
-    │   ├── auth.js         ← Auth helpers: getToken, getUser, setAuth, clearAuth
-    │   ├── api.js          ← API URL helper: apiUrl() adds optional base URL
-    │   ├── cache.js        ← Module-level TTL cache with invalidation helpers
-    │   ├── applicationDraft.jsx        ← ApplicationDraftProvider (load-once draft, in-memory)
-    │   └── applicationDraftContext.js  ← Draft context + useApplicationDraft hook
-    │
-    ├── assets/
-    │   ├── backgrounds/
-    │   │   ├── hacker-application/
-    │   │   │   ├── hacker-application-background-with-white.svg  ← Shared form SVG background
-    │   │   │   └── login-mascot.svg                              ← Mascot (auth pages)
-    │   │   ├── header.svg
-    │   │   ├── sign-up-bg.png
-    │   │   ├── landing-cloud.svg
-    │   │   ├── landing-iggy.svg
-    │   │   ├── info-check-circle.svg
-    │   │   ├── app-submitted-bg.png
-    │   │   ├── app-underreview-bg.png
-    │   │   └── app-accepted-bg.png
-    │   ├── buttons/
-    │   │   └── signup-button.png
-    │   ├── icons/          ← SVG icons for portal UI
-    │   │   ├── ignition-logo.svg
-    │   │   ├── Article-icon.svg
-    │   │   ├── clock-icon.svg
-    │   │   └── check-mark-icon.svg
-    │   ├── iggy.svg        ← Mascot illustration
-    │   └── logo.svg        ← Ignition logo
-    │
-    ├── components/
-    │   ├── auth/
-    │   │   └── RequireRole.jsx    ← Route guard: redirects by role
-    │   ├── hacker/
-    │   │   ├── UserIdBadge.jsx    ← Top-right "Your User ID" badge
-    │   │   └── UserIdBadge.css
-    │   ├── portal/
-    │   │   ├── PortalLayout.jsx   ← Shared layout wrapper (navbar + outlet)
-    │   │   ├── PortalLayout.css
-    │   │   ├── PortalNavBar.jsx   ← Shared navbar for reviewer/admin
-    │   │   ├── PortalNavBar.css
-    │   │   ├── PortalSidebar.jsx  ← Shared sidebar with filter items + children
-    │   │   └── PortalSidebar.css
-    │   └── shared/
-    │       ├── StatusBadge.jsx    ← Unified status badge for all portals
-    │       ├── StatusBadge.css
-    │       ├── AvatarInitials.jsx ← Initials avatar circle
-    │       ├── AvatarInitials.css
-    │       ├── FilterTabs.jsx     ← Horizontal filter tab bar
-    │       └── FilterTabs.css
-    │
-    ├── pages/
-    │   ├── NotFound.jsx           ← 404 page
-    │   ├── NotFound.css
-    │   ├── auth/
-    │   │   ├── Login.jsx          ← Login page (Login.css shared by Login/Forgot/Reset)
-    │   │   ├── Login.css
-    │   │   ├── Signup.jsx         ← Applicant signup page
-    │   │   ├── Signup.css
-    │   │   ├── ReviewerSignup.jsx ← Reviewer signup (requires secret)
-    │   │   ├── AdminSignup.jsx    ← Admin signup (requires secret)
-    │   │   ├── ForgotPassword.jsx ← Forgot password page (reuses Login.css)
-    │   │   └── ResetPassword.jsx  ← Reset password page (reuses Login.css)
-    │   └── hacker/
-    │       ├── Dashboard.jsx      ← Applicant dashboard (status-aware)
-    │       ├── Dashboard.css
-    │       ├── Landing.jsx        ← Landing/welcome page
-    │       ├── Landing.css
-    │       ├── Info.jsx           ← Form step 1: personal info
-    │       ├── Education.jsx      ← Form step 2: education + hackathon experience
-    │       ├── Teammates.jsx      ← Form step 3: teammates by user-id lookup
-    │       ├── Questions.jsx      ← Form step 4: three written responses
-    │       └── FinishApp.jsx      ← Form step 5: review & submit
-    │
-    ├── admin/
-    │   ├── AdminApp.jsx           ← Admin portal root (sidebar + page routing)
-    │   ├── AdminApp.css
-    │   ├── pages/
-    │   │   ├── AllApplications.jsx  ← Admin application table page
-    │   │   ├── AllApplications.css
-    │   │   ├── AdminApplicationDetail.jsx ← Admin single-application view
-    │   │   └── AdminApplicationDetail.css
-    │   └── components/
-    │       └── ...                ← Admin-specific sub-components
+    │   ├── api.js                  apiUrl(path): prefixes VITE_API_BASE_URL when set
+    │   ├── auth.js                 getToken/getUser/setAuth/clearAuth over sessionStorage
+    │   ├── cache.js                Module-level TTL cache + invalidation helpers
+    │   ├── applicationDraft.jsx    <ApplicationDraftProvider>: load-once draft, autosave, in-memory state
+    │   └── applicationDraftContext.js  React context + useApplicationDraft() hook
     │
     ├── hooks/
-    │   └── useCachedFetch.js      ← Hook for cache-first data fetching
+    │   └── useCachedFetch.js       Cache-first data-fetching hook (uses lib/cache.js)
+    │
+    ├── assets/
+    │   ├── logo.svg, iggy.svg
+    │   ├── backgrounds/            app-(accepted|submitted|underreview)-bg.png, header.svg,
+    │   │   ├── hacker-application/ hacker-application-background-with-white.svg, login-mascot.svg
+    │   │   ├── info-check-circle.svg, landing-cloud.svg, landing-iggy.svg, sign-up-bg.png
+    │   ├── buttons/signup-button.png
+    │   └── icons/                  ignition-logo.svg, Article-icon.svg, clock-icon.svg, check-mark-icon.svg
+    │
+    ├── components/
+    │   ├── auth/RequireRole.jsx         Route guard: no token → /login, wrong role → /not-found
+    │   ├── hacker/UserIdBadge.(jsx|css) Top-right "Your User ID" badge on hacker pages
+    │   ├── portal/                      Shared reviewer/admin chrome:
+    │   │   ├── PortalLayout.(jsx|css)   Layout wrapper (navbar + <Outlet/>)
+    │   │   ├── PortalNavBar.(jsx|css)   Top navbar
+    │   │   └── PortalSidebar.(jsx|css)  Sidebar with filter items + children
+    │   └── shared/                      Cross-portal UI primitives:
+    │       ├── StatusBadge, AvatarInitials, FilterTabs, Pagination, ConfirmModal (jsx + css)
+    │       └── Icons.jsx                Inline SVG icon set
+    │
+    ├── pages/
+    │   ├── NotFound.(jsx|css)           404 page
+    │   ├── auth/
+    │   │   ├── Login.(jsx|css)          Login (Login.css is shared by Login/Forgot/Reset)
+    │   │   ├── Signup.(jsx|css)         Applicant signup
+    │   │   ├── ReviewerSignup.jsx       Reviewer signup (secret-gated; old image design)
+    │   │   ├── AdminSignup.jsx          Admin signup (secret-gated; old image design)
+    │   │   ├── ForgotPassword.jsx       Request reset email (reuses Login.css)
+    │   │   └── ResetPassword.jsx        Set new password (reuses Login.css)
+    │   └── hacker/
+    │       ├── Dashboard.(jsx|css)      Status-aware applicant dashboard
+    │       ├── Landing.(jsx|css)        Welcome page — routed at /landing but UNLINKED
+    │       ├── Info.(jsx|css)           Step 1: personal info
+    │       ├── Education.(jsx|css)      Step 2: education + hackathon experience
+    │       ├── Teammates.(jsx|css)      Step 3: teammates by user-id lookup
+    │       ├── Questions.(jsx|css)      Step 4: three written responses
+    │       ├── FinishApp.(jsx|css)      Step 5: review & submit
+    │       └── portal.css               Shared hacker-form layout styles
+    │
+    ├── admin/
+    │   ├── AdminApp.(jsx|css)           Admin portal root (sidebar + routing)
+    │   ├── api/adminApi.js              Admin-specific fetch wrappers
+    │   ├── pages/
+    │   │   ├── AllApplications.(jsx|css)        Paginated/filterable application table
+    │   │   ├── AdminApplicationDetail.(jsx|css) Single application (scores + comments)
+    │   │   └── UserManagement.(jsx|css)         Create / change-role / delete users
+    │   └── components/AddUserModal.(jsx|css)    Modal to create a user
     │
     └── reviewer/
         ├── pages/
-        │   ├── ReviewerMainPage.jsx ← Main reviewer dashboard
-        │   ├── ReviewerMainPage.css
-        │   ├── ReviewerApplicationDetail.jsx ← Review detail page with scoring rubric
-        │   └── ReviewerApplicationDetail.css
-        └── components/
-            ├── ApplicationTable.jsx ← Sortable, paginated application table
-            └── ApplicationTable.css
+        │   ├── ReviewerMainPage.(jsx|css)            Reviewer dashboard
+        │   └── ReviewerApplicationDetail.(jsx|css)   Scoring rubric + comment
+        └── components/ApplicationTable.(jsx|css)     Sortable, paginated table
 ```
+
+> Note: admin/reviewer portal CSS has **no `@media` queries** yet — those portals
+> aren't mobile-responsive (see `DEVELOPMENT-GUIDE.md` task **D3**).
 
 ---
 
-## Key Files at a Glance
+## Tests
 
-| File | One-line Description |
-|------|---------------------|
-| `backend/src/index.js` | Production entry: connects to DB, builds the app, starts the server |
-| `backend/src/app.js` | Builds and exports the Express app (no DB/listen) — shared by index.js and tests |
-| `backend/src/middleware/auth.js` | Verifies JWT tokens and sets `req.user` |
-| `backend/src/middleware/roles.js` | Checks `req.user.role` against allowed roles |
-| `backend/src/routes/signup.js` | All auth endpoints (signup, login, password reset) |
-| `backend/src/routes/applications.js` | All application and review CRUD endpoints |
-| `backend/src/routes/admin.js` | Admin dashboard endpoints (stats, lists, CSV, user management) |
-| `tests/` | End-to-end API tests — see [Testing](./testing.md) |
-| `frontend/src/main.jsx` | React app entry point, creates browser router |
-| `frontend/src/routes/routes.jsx` | All route definitions with role guards |
-| `frontend/src/lib/auth.js` | Token/user storage helpers (sessionStorage) |
-| `frontend/src/lib/api.js` | API URL construction helper |
-| `frontend/src/lib/cache.js` | Module-level TTL cache shared across pages |
-| `frontend/vite.config.js` | Vite plugins and dev server proxy configuration |
+```
+tests/
+├── package.json           vitest, supertest, mongodb-memory-server, jsonwebtoken
+├── vitest.config.js       include globs, globalSetup, setupFiles, sequential run
+├── globalSetup.js         Starts ONE in-memory mongod for the whole run; shares URI via env
+├── setup.js               Per-file: connects backend mongoose to it; wipes collections each test;
+│                          sets test secrets + DISABLE_RATE_LIMIT=true
+├── .gitignore             ignores node_modules/, coverage/
+├── README.md
+├── helpers/
+│   ├── app.js             createApp() + supertest api() factory
+│   └── factories.js       createApplicant/Reviewer/Admin, valid payloads, submitted-app helper
+├── integration/
+│   ├── auth.test.js
+│   ├── applications.test.js
+│   ├── submit.test.js
+│   ├── teammates.test.js
+│   ├── reviews.test.js
+│   ├── admin.test.js
+│   ├── security.test.js
+│   ├── password-reset.test.js
+│   └── rate-limit.test.js
+└── unit/
+    └── models.test.js
+```
+
+See [Testing](./testing.md) for what each suite covers and how to run/write tests.
+
+---
+
+## Key files at a glance
+
+| File | One-liner |
+|------|-----------|
+| `backend/src/app.js` | Builds the Express app (no DB/listen) — shared by prod + tests |
+| `backend/src/index.js` | Connects DB, then starts the server |
+| `backend/src/config/db.js` | `connectDB()` + shared `mongoose` export |
+| `backend/src/middleware/auth.js` | JWT verification → `req.user` |
+| `backend/src/middleware/roles.js` | `requireRole(...)` role gate |
+| `backend/src/middleware/rateLimit.js` | Per-IP auth rate limiters |
+| `backend/src/routes/signup.js` | Auth endpoints + mailer |
+| `backend/src/routes/applications.js` | Application + review endpoints |
+| `backend/src/routes/admin.js` | Admin dashboard endpoints |
+| `frontend/src/main.jsx` | React entry, builds the router |
+| `frontend/src/routes/routes.jsx` | All routes + role guards |
+| `frontend/src/lib/api.js` | `apiUrl()` |
+| `frontend/src/lib/auth.js` | sessionStorage token/user helpers |
+| `frontend/src/lib/applicationDraft.jsx` | Draft provider for the application steps |
+| `frontend/vite.config.js` | Dev proxy + plugins |
+| `tests/` | Backend test suite — [Testing](./testing.md) |
