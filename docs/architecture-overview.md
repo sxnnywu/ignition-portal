@@ -130,3 +130,97 @@ All API communication uses the native `fetch()` API (not Axios, despite it being
 5. Frontend processes the JSON response
 
 Authentication is done via the `Authorization: Bearer <token>` header on every protected request.
+
+### Request flow (production)
+
+There is no Vite proxy in production. The built SPA is served as static files; its
+API calls are prefixed with `VITE_API_BASE_URL` (set at build time) so they go
+straight to the backend's public origin, which is now genuinely cross-origin:
+
+```
+Browser ──static──▶ CDN/host (built SPA)
+Browser ──fetch(`${VITE_API_BASE_URL}/applications/me`)──▶ Express (https://api...)
+                              │  (CORS_ORIGIN must allow the frontend origin)
+                              └──▶ MongoDB Atlas
+```
+
+Alternatively a reverse proxy can serve the SPA and forward the API prefixes,
+keeping everything same-origin (then `VITE_API_BASE_URL` stays empty). See
+[Vite Proxy](./vite-proxy.md#production-no-vite-proxy).
+
+---
+
+## Backend request lifecycle
+
+`createApp()` (`backend/src/app.js`) registers middleware in a fixed order; every
+request passes through them top to bottom:
+
+```
+helmet()                      → security headers, strips X-Powered-By
+cors({ origin: … })           → CORS based on CORS_ORIGIN
+express.json()                → parses JSON body into req.body
+── route matched ──
+[rate limiter]                → only on the auth routes (per-IP)
+auth                          → verifies JWT, sets req.user (protected routes)
+requireRole(...roles)         → role gate (role-restricted routes)
+handler                       → business logic + Mongoose + res.json(...)
+```
+
+**Example — `POST /applications/:id/review`:**
+1. helmet → cors → json parse.
+2. `auth` reads `Authorization: Bearer …`, verifies with `JWT_SECRET`, sets
+   `req.user = { userId, role }` (else `401`).
+3. `requireRole('reviewer','admin')` checks `req.user.role` (else `403`).
+4. Handler validates `scores`/`comment`, loads the application, ensures it's
+   submitted/under_review, computes `totalScore`, blocks duplicate reviews
+   (`409`), creates the `Review`, and flips the app to `under_review`.
+
+Unhandled errors are caught per-handler (`try/catch`) and returned as
+`{ message }` with the right status; Mongoose `ValidationError` is surfaced as a
+`400`.
+
+---
+
+## Data lifecycle: an application from draft to decision
+
+1. **Applicant signs up** → `User` created (role `applicant`), JWT issued.
+2. **Draft** → each step calls `POST /applications` with one slice; the server
+   find-or-creates the single `Application`, applies+validates that slice, and
+   bumps `version`. Drafts may be partial.
+3. **Submit** → `POST /applications/:id/submit` runs `getMissingFields`; if
+   complete, sets `status='submitted'` + `submittedAt`.
+4. **Review** → reviewers see it via `GET /applications/reviewer`; each
+   `POST /applications/:id/review` creates a `Review` and moves the app to
+   `under_review` (first review). Reviewers may `PUT` to update their own review.
+5. **Decision** → admin sets `status` to `accepted`/`waitlisted`/`rejected` via
+   `POST /applications/:id/status`; the applicant's dashboard reflects it.
+
+---
+
+## Error handling & response conventions
+
+- All error responses are JSON `{ "message": "..." }`.
+- Status codes: `400` validation, `401` unauthenticated, `403` wrong role, `404`
+  not found, `409` conflict (duplicate review / email), `429` rate-limited, `500`
+  server error.
+- Handlers wrap logic in `try/catch`, log with `console.error`, and return a
+  generic `500 { message: 'Server error' }` so internals aren't leaked.
+- The server is authoritative: it re-derives teammate name/email, recomputes
+  review `totalScore`, and re-validates every field regardless of the client.
+
+---
+
+## Frontend data layer
+
+- **`fetch`** is used everywhere (Axios is installed but unused).
+- **`lib/api.js`** — `apiUrl(path)` builds the URL (relative in dev, prefixed by
+  `VITE_API_BASE_URL` in prod).
+- **`lib/auth.js`** — token/user in `sessionStorage`; attach
+  `Authorization: Bearer ${getToken()}` to protected calls.
+- **`lib/cache.js` + `hooks/useCachedFetch.js`** — a small module-level TTL cache
+  for cache-first fetching across portal pages, with invalidation helpers.
+- **`lib/applicationDraft.jsx`** — `ApplicationDraftProvider` loads the draft once,
+  holds it in memory across the 5 steps, and autosaves, so navigating between
+  steps never loses data and the draft survives a page reload (cross-device).
+
+See [Shared Components](./shared-components.md) and [Frontend Routing](./frontend-routing.md).

@@ -1,94 +1,171 @@
 # Environment Variables
 
-All backend environment variables are defined in `backend/.env` and loaded by the `dotenv` package at server startup. Copy [`backend/.env.example`](../backend/.env.example) to `backend/.env` to get started — it lists every variable the backend reads. The frontend's optional variable lives in `frontend/.env`, templated by [`frontend/.env.example`](../frontend/.env.example).
+All **backend** environment variables live in `backend/.env`, loaded by `dotenv`
+at startup. Copy [`backend/.env.example`](../backend/.env.example) →
+`backend/.env` to begin — it documents every variable with safe placeholders. The
+**frontend** has one optional build-time variable in `frontend/.env`, templated by
+[`frontend/.env.example`](../frontend/.env.example).
 
-## Required Variables
+> `.env` files are gitignored and must **never** be committed. Only the
+> `.env.example` templates are tracked.
+
+---
+
+## Summary
+
+| Variable | Where | Required? | Purpose |
+|----------|-------|-----------|---------|
+| `MONGO_URI` | backend | **Yes** | MongoDB connection string |
+| `JWT_SECRET` | backend | **Yes** | Signs/verifies JWTs |
+| `CORS_ORIGIN` | backend | Prod: **Yes** | Allowed frontend origin(s) |
+| `REVIEWER_SIGNUP_SECRET` | backend | **Yes** | Gate for reviewer signups |
+| `ADMIN_SIGNUP_SECRET` | backend | **Yes** | Gate for admin signups |
+| `PORT` | backend | No (default 8000) | Server port |
+| `EMAIL_SERVICE` | backend | Email only | nodemailer provider |
+| `EMAIL_USER` | backend | Email only | Sending address |
+| `EMAIL_PASSWORD` | backend | Email only | App password |
+| `FRONTEND_URL` | backend | Email only | Base for reset links |
+| `DISABLE_RATE_LIMIT` | backend | Tests only | Skips auth rate limiting |
+| `BACKEND_URL` | frontend (dev) | No | Dev proxy target override |
+| `VITE_API_BASE_URL` | frontend (build) | Prod: **Yes** | API base URL prefix |
+
+Exhaustive list verified against `process.env.*` usages in `backend/src/`.
+
+---
+
+## Backend — required
 
 ### `MONGO_URI`
-**MongoDB connection string.** Connects the backend to MongoDB Atlas (or local MongoDB).
+MongoDB connection string. Read in `src/config/db.js`.
 
 ```
-MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/ignition-portal?ssl=true&...
+MONGO_URI=mongodb+srv://user:pass@cluster.mongodb.net/ignition-portal?retryWrites=true&w=majority
 ```
 
-**Critical:** The database name (`ignition-portal`) must appear directly after the host/port, before the `?` query string. If omitted, Mongoose defaults to the `test` database and your data will be in the wrong place.
+**Critical:** the database name (`ignition-portal`) must sit **between the host
+and the `?`**. Omit it and Mongoose silently uses a database named `test`. To get
+the string: Atlas → Connect → Drivers (see [Getting Started](./getting-started.md#3-mongodb-get-a-connection-string)).
+The variable is `MONGO_URI`, **not** `MONGODB_URI`.
 
 ### `JWT_SECRET`
-**Secret key used to sign and verify JWT tokens.** All authentication tokens are signed with this value. If changed, all existing tokens become invalid and users must log in again.
+Secret used to sign/verify JWTs (HS256). Changing it invalidates all existing
+tokens (everyone must log in again).
 
 ```
-JWT_SECRET=your_very_secure_jwt_secret_key_here_change_in_production
+JWT_SECRET=<long random string>
 ```
 
-In production, use a long random string (32+ characters).
+Generate a strong value:
+
+```bash
+openssl rand -hex 32
+# or
+node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+```
 
 ### `CORS_ORIGIN`
-**Comma-separated list of allowed origins for CORS.** Controls which frontend URLs can make API requests.
+Comma-separated list of allowed browser origins. Read in `src/app.js`.
 
 ```
 CORS_ORIGIN=http://localhost:5173,http://localhost:3000
 ```
 
-If empty or unset, CORS allows all origins (`origin: true`) — see `src/app.js`. This fallback is for local development only.
+If empty/unset the server allows **all** origins (`origin: true`) — **dev only**.
+**Production:** set the exact deployed frontend origin (a specific `https://…`);
+never `*`, never empty.
 
-**Production:** always set `CORS_ORIGIN` to the real deployed frontend origin (a specific `https://…` value). Never leave it empty and never use `*` in production.
-
-### `REVIEWER_SIGNUP_SECRET`
-**Secret passphrase required to create a reviewer account.** Passed in the `secret` field of `POST /signup/reviewer`. Prevents unauthorized users from creating reviewer accounts.
-
-```
-REVIEWER_SIGNUP_SECRET=reviewer_signup_secret_change_this
-```
-
-### `ADMIN_SIGNUP_SECRET`
-**Secret passphrase required to create an admin account.** Same mechanism as the reviewer secret, for `POST /signup/admin`.
+### `REVIEWER_SIGNUP_SECRET` / `ADMIN_SIGNUP_SECRET`
+Passphrases required in the `secret` field of `POST /signup/reviewer` and
+`POST /signup/admin`. Without the matching secret these return `403`. Share them
+out-of-band; rotate after launch.
 
 ```
-ADMIN_SIGNUP_SECRET=admin_signup_secret_change_this
+REVIEWER_SIGNUP_SECRET=<random>
+ADMIN_SIGNUP_SECRET=<different random>
 ```
 
-## Email Variables (Forgot Password)
+---
 
-These are required only if the forgot-password feature is used.
+## Backend — email (forgot/reset password)
+
+Required only for the password-reset emails (that flow is being finished by
+another team member). The same nodemailer setup will also power future applicant
+emails (see `DEVELOPMENT-GUIDE.md` task B2).
 
 ### `EMAIL_SERVICE`
-The email provider. Default: `gmail`.
+nodemailer service name. Default `gmail`.
 
 ### `EMAIL_USER`
-The sending email address (e.g., `noreply@ignitionhacks.com`).
+The sending address, e.g. `noreply@ignitionhacks.com`.
 
 ### `EMAIL_PASSWORD`
-The email password or app-specific password. For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833), not your regular password.
+The mailbox password — for Gmail an **App Password**, not your account password.
+To create one: enable 2-Step Verification on the Google account, then Google
+Account → Security → App passwords → generate one for "Mail". See
+<https://support.google.com/accounts/answer/185833>.
 
 ### `FRONTEND_URL`
-The URL where the frontend is hosted. Used to construct password reset links in emails.
+Public base URL of the frontend, used to build reset links:
+`{FRONTEND_URL}/reset-password?token=…`.
 
 ```
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:5173    # prod: https://your-frontend-domain
 ```
 
-The reset email will contain a link like: `http://localhost:5173/reset-password?token=abc123`
+---
 
-## Server Configuration
+## Backend — server & tests
 
 ### `PORT`
-The port the Express server listens on. Default: `8000`.
+Express listen port. Default `8000`.
 
 ```
 PORT=8000
 ```
 
-The Vite proxy in `frontend/vite.config.js` is hardcoded to forward to `http://localhost:8000`. If you change this port, update the Vite config as well.
+The Vite dev proxy targets `http://localhost:8000` by default; if you change
+`PORT`, point the proxy at it with `BACKEND_URL` (below) — it is **not** hardcoded.
 
-## Frontend Environment Variables
+### `DISABLE_RATE_LIMIT` (test/dev only)
+When `=== 'true'`, the auth rate limiters are skipped (`src/middleware/rateLimit.js`).
+The test suite sets this in `tests/setup.js` so the hundreds of auth calls aren't
+throttled; `rate-limit.test.js` flips it off to exercise the 429 path. **Do not
+set this in production.**
 
-The frontend uses Vite's `import.meta.env` system. Currently, one optional variable is supported:
+---
 
-### `VITE_API_BASE_URL`
-**Optional.** If set, all API calls will be prefixed with this URL instead of using relative paths.
+## Frontend
+
+### `BACKEND_URL` (dev only)
+Overrides the Vite dev-proxy target (default `http://localhost:8000`). Read in
+`vite.config.js`. Use it when the backend runs on a non-default port:
+
+```bash
+BACKEND_URL=http://localhost:9000 npm run dev
+```
+
+### `VITE_API_BASE_URL` (build time)
+Optional. When set, `apiUrl()` (`src/lib/api.js`) prefixes every API call with it.
+Vite only exposes `VITE_`-prefixed vars to the client (`import.meta.env`).
 
 ```
 VITE_API_BASE_URL=https://api.ignitionhacks.com
 ```
 
-In development, this is typically left unset — the Vite proxy handles routing. In production, set this to the backend's public URL.
+- **Dev:** leave blank — the Vite proxy handles routing (same origin).
+- **Prod:** set to the backend's public origin (no trailing slash needed — it's
+  stripped). The backend must allow this frontend's origin via `CORS_ORIGIN`.
+
+---
+
+## Production checklist
+
+- [ ] `MONGO_URI` points at the production cluster (with the DB name).
+- [ ] `JWT_SECRET` is a fresh 32+ byte random value (not the dev one).
+- [ ] `CORS_ORIGIN` is the exact frontend origin (no `*`).
+- [ ] `REVIEWER_SIGNUP_SECRET` / `ADMIN_SIGNUP_SECRET` rotated to strong values.
+- [ ] Email vars set if password reset / applicant emails are enabled.
+- [ ] `FRONTEND_URL` is the real frontend URL.
+- [ ] Frontend built with `VITE_API_BASE_URL` = backend public URL.
+- [ ] `DISABLE_RATE_LIMIT` is **unset**.
+- [ ] No `.env` committed; secrets stored in the host's secret manager.
