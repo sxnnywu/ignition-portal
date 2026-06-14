@@ -18,7 +18,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.3",
-    "mongoose": "^8.20.4"
+    "mongoose": "^8.20.4",
+    "nodemailer": "^9.0.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

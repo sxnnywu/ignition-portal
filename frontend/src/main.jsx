@@ -5,6 +5,7 @@ import Landing from './Landing.jsx'
 import Login from './Login.jsx'
 import Signup from './Signup.jsx'
 import ForgotPassword from './ForgotPassword.jsx'
+import ResetPassword from './ResetPassword.jsx'
 import Info from './Info.jsx'
 import Education from './Education.jsx'
 import Experience from './Experience.jsx'
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/signup/reviewer" element={<ReviewerSignup />} />
         <Route path="/signup/admin" element={<AdminSignup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/landing" element={<Landing />} />
         <Route path="/info" element={<Info />} />
         <Route path="/education" element={<Education />} />
